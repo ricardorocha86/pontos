@@ -1,0 +1,7 @@
+[theme]
+base = "light"
+primaryColor = "#0749AB"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#EBF5FF" # azul clarinho  
+textColor = "#1F1F1F"
+
