@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.colors import hex_to_rgb, n_colors
 
-from config import ORDEM_FAIXA_POPULACIONAL, PALETA_CORES
+from config import CORES_GRAFICOS, ORDEM_FAIXA_POPULACIONAL, PALETA_CORES
 from dados import (
     ACOES_ESTRUTURANTES,
     FAIXAS_RECEITA,
@@ -23,10 +23,13 @@ def mostrar_cabecalho():
     st.image(CAMINHO_CABECALHO, width=720)
 
 
-def mostrar_grafico(fig, subtitulo):
+def mostrar_grafico(fig, subtitulo, config_extra=None):
     if subtitulo and (not fig.layout.title or not fig.layout.title.text):
         fig.update_layout(title=dict(text=subtitulo, y=0.98))
-    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
+    config = {'displayModeBar': True, 'displaylogo': False}
+    if config_extra:
+        config.update(config_extra)
+    st.plotly_chart(fig, use_container_width=True, config=config)
 
 
 def grafico_abrangencia_empilhado(filtrado):
@@ -389,72 +392,6 @@ def pagina_perfil_institucional():
         if fig_abrangencia:
             mostrar_grafico(fig_abrangencia, 'Composição dos Pontos de Cultura por Abrangência Territorial')
 
-        dicionario_infraestrutura = {
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (O Ponto de Cultura não disponibiliza espaço/infraestrutura para a comunidade)': 'Sem espaço/infraestrutura para comunidade',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Biblioteca)': 'Biblioteca',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Cineclube)': 'Cineclube',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Cozinha)': 'Cozinha',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Equipamentos de som e audiovisual (microfone, câmeras, ﬁlmadoras, caixas de som, mesa de som, mesa de iluminação))': 'Equipamentos de som e audiovisual',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Espaço para apresentações (auditório, teatro de bolso, lona de circo e outros))': 'Espaço para apresentações',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Espaço para armazenamento de conteúdos digitais (discos e drives virtuais))': 'Espaço para armazenamento de conteúdos digitais',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Estúdio de gravação e ensaio)': 'Estúdio de gravação e ensaio',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Horta Comunitária)': 'Horta Comunitária',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Lona pré-moldada)': 'Lona pré-moldada',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de exposição (galeria))': 'Sala de exposição (galeria)',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala para oﬁcinas artísticas e culturais (trabalhos com corpo, artes, leitura e outros))': 'Sala para oficinas artísticas e culturais',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Rádio comunitária)': 'Rádio comunitária',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de Informática)': 'Sala de Informática',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de reuniões (espaço com cadeiras e mesas))': 'Sala de reuniões',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Software/Plataforma pagos (Google, Zoom, Microsoft e outros))': 'Software/Plataforma pagos',
-            '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Outros)': 'Outros tipos de infraestrutura'
-        }
-        dicionario_servicos = {
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Ações de assistência social)': 'Ações de assistência social',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Ações de promoção à saúde e ao bem-estar)': 'Promoção à saúde e bem-estar',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Ações culturais de fortalecimento dos laços de pertencimento da população)': 'Fortalecimento de pertencimento',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Ajuda emergencial (arrecadação de recursos, doação de cestas básicas, kit segurança, etc))': 'Ajuda emergencial',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Educação artística nas escolas)': 'Educação artística nas escolas',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Educação patrimonial)': 'Educação patrimonial',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Espiritualidade)': 'Espiritualidade',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Formação artística e cultural)': 'Formação artística e cultural',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Formação cidadã)': 'Formação cidadã',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Iniciativas de promoção da qualidade de vida da população)': 'Qualidade de vida',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Inserção produtiva de jovens)': 'Inserção produtiva de jovens',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Mediação de leitura e formação de leitores)': 'Mediação de leitura',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Preservação e valorização das memórias e identidades do território)': 'Memórias e identidades do território',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Preservação e responsabilidade ambiental)': 'Responsabilidade ambiental',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Projetos voltados ao desenvolvimento local)': 'Desenvolvimento local',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Promoção à participação de grupos em feiras, festivais e outros eventos.)': 'Participação em eventos',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Promoção do turismo de base comunitária)': 'Turismo de base comunitária',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Outros)': 'Outros',
-            '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (O Ponto de Cultura não presta serviços à comunidade)': 'Não presta serviços à comunidade'
-        }
-
-        infraestrutura = {}
-        for coluna, rotulo in dicionario_infraestrutura.items():
-            if coluna in filtrado.columns:
-                infraestrutura[rotulo] = int(para_bool(filtrado[coluna]).sum())
-        servicos = {}
-        for coluna, rotulo in dicionario_servicos.items():
-            if coluna in filtrado.columns:
-                servicos[rotulo] = int(para_bool(filtrado[coluna]).sum())
-
-        col9, col10 = st.columns(2)
-        with col9:
-            if infraestrutura:
-                serie_infra = pd.Series(infraestrutura).sort_values(ascending=True)
-                mostrar_grafico(
-                    grafico_barras_series(serie_infra, 'Infraestrutura disponível', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=520),
-                    'Infraestrutura disponível'
-                )
-        with col10:
-            if servicos:
-                serie_servicos = pd.Series(servicos).sort_values(ascending=True).tail(16)
-                mostrar_grafico(
-                    grafico_barras_series(serie_servicos, 'Serviços prestados à comunidade', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=520),
-                    'Serviços prestados à comunidade'
-                )
-
     with aba3:
         st.title('Linguagens artísticas, ações estruturantes e visão micro')
         col1, col2, col3 = st.columns(3)
@@ -592,10 +529,7 @@ def pagina_capacidade_infraestrutura():
         return
 
     st.title('Capacidade e Infraestrutura')
-    st.markdown('O que fazem e o que possuem.')
-    st.markdown('- **Foco massivo em Formação e Produção.**')
-    st.markdown('- **Música, Dança e Teatro são as linguagens dominantes.**')
-    st.markdown('- **Infraestrutura é voltada para fazer: salas de oficina e som.**')
+    st.markdown('Apresenta as principais atividades realizadas e a estrutura disponível para sustentar essas ações.')
 
     dicionario_infraestrutura = {
         '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (O Ponto de Cultura não disponibiliza espaço/infraestrutura para a comunidade)': 'Sem espaço/infraestrutura para comunidade',
@@ -646,102 +580,39 @@ def pagina_capacidade_infraestrutura():
         'Descreva as ações realizadas (6)': 'Outros tipos de atividades'
     }
 
-    total_registros = max(len(filtrado), 1)
     serie_infra = serie_multiselecionada(filtrado, dicionario_infraestrutura)
-    coluna_sem_infra = '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (O Ponto de Cultura não disponibiliza espaço/infraestrutura para a comunidade)'
-    nome_infra_base = 'Sala para oficinas artísticas e culturais'
-    infra_top_nome = serie_infra.idxmax() if not serie_infra.empty else nome_infra_base
-    infra_base_nome = nome_infra_base if nome_infra_base in serie_infra.index else infra_top_nome
-    infra_base_valor = int(serie_infra.get(infra_base_nome, 0))
-    infra_base_perc = (infra_base_valor / total_registros) * 100 if total_registros else 0
+    dados_atividades = filtrado.rename(columns=lista_nomes_atividades)
+    colunas_atividades = list(lista_nomes_atividades.values())
+    base_atividades = dados_atividades[colunas_atividades].apply(pd.to_numeric, errors='coerce')
+    medianas = base_atividades.median().reindex(colunas_atividades)
+    st.subheader('Quantidade esperada de atividades gratuitas por eixo')
+    colunas_kpi = st.columns(6)
+    for coluna, nome in zip(colunas_kpi, colunas_atividades):
+        valor = medianas.get(nome)
+        texto = f'{int(valor)}' if pd.notna(valor) else 'Sem dado'
+        coluna.metric(nome, texto)
 
-    linguagens = filtrado['linguagens_lista'].explode().dropna() if 'linguagens_lista' in filtrado.columns else pd.Series(dtype=object)
-    serie_linguagens = linguagens.value_counts()
-    nome_musica = None
-    for item in serie_linguagens.index.tolist():
-        if normalizar_texto(item) == normalizar_texto('Música'):
-            nome_musica = item
-            break
-    linguagem_top_nome = nome_musica or (serie_linguagens.idxmax() if not serie_linguagens.empty else 'Música')
-    linguagem_top_valor = int(serie_linguagens.get(linguagem_top_nome, 0))
-
-    coluna_publico = encontrar_coluna(filtrado.columns, 'Público indireto')
-    publico_indireto = pd.to_numeric(filtrado[coluna_publico], errors='coerce').median() if coluna_publico else 80
-    publico_indireto = int(publico_indireto) if not pd.isna(publico_indireto) else 80
-
-    colunas_acao = [c for c in ACOES_ESTRUTURANTES if c in filtrado.columns]
-    contagens_acao = {c: int(para_bool(filtrado[c]).sum()) for c in colunas_acao}
-    acao_top_nome = 'Culturas Populares'
-    if contagens_acao:
-        acao_top_nome = max(contagens_acao, key=contagens_acao.get)
-    acao_top_valor = contagens_acao.get(acao_top_nome, 0)
-    acao_top_perc = (acao_top_valor / total_registros) * 100 if total_registros else 0
-
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric('Infraestrutura mais comum', f'{infra_base_nome} ({infra_base_perc:.1f}%)')
-    k2.metric('Linguagem Top 1', f'{linguagem_top_nome} ({linguagem_top_valor:,})'.replace(',', '.'))
-    k3.metric('Público indireto (mediana)', f'{publico_indireto} pessoas/mês')
-    k4.metric('Ação estruturante Top', f'{acao_top_nome} ({acao_top_perc:.1f}%)')
-
-    st.subheader('Ranking das Linguagens Artísticas (Macro)')
-    st.caption('Importante para analisar transcrições das respostas e identificar concentração nas linguagens dominantes.')
-    if not serie_linguagens.empty:
-        df_linguagens = serie_linguagens.sort_values(ascending=True).tail(12).reset_index()
-        df_linguagens.columns = ['linguagem', 'valor']
-        df_linguagens['rank'] = df_linguagens['valor'].rank(ascending=False, method='first')
-        cores_top = [PALETA_CORES['azul_principal'], PALETA_CORES['verde_secundario'], PALETA_CORES['amarelo_destaque']]
-        df_linguagens['cor'] = df_linguagens['rank'].apply(lambda r: cores_top[int(r) - 1] if r <= 3 else PALETA_CORES['cinza_medio'])
-        fig_hero = px.bar(df_linguagens, x='valor', y='linguagem', orientation='h', color='cor', color_discrete_map='identity')
-        fig_hero.update_traces(text=df_linguagens['valor'], textposition='outside', cliponaxis=False)
-        fig_hero.update_layout(
-            title='Ranking das Linguagens Artísticas (Macro)',
-            height=420,
-            margin=dict(l=10, r=60, t=50, b=10),
-            showlegend=False,
-            font=dict(color=PALETA_CORES['cinza_escuro'])
-        )
-        fig_hero.update_xaxes(title='')
-        fig_hero.update_yaxes(title='')
-        mostrar_grafico(fig_hero, 'Ranking das Linguagens Artísticas (Macro)')
-    else:
-        st.info('Sem dados suficientes para o ranking das linguagens.')
-
-    col1, col2 = st.columns([0.55, 0.45])
+    col1, col2 = st.columns(2)
     with col1:
-        st.subheader('Infraestrutura disponível: tem vs não tem')
+        st.subheader('Infraestrutura disponível')
         st.caption('Importante para analisar transcrições e reconhecer gargalos de infraestrutura no território.')
         if not serie_infra.empty:
-            serie_infra_plot = serie_infra.drop(labels=[dicionario_infraestrutura.get(coluna_sem_infra, '')], errors='ignore')
-            if not serie_infra_plot.empty:
-                df_infra = serie_infra_plot.reset_index()
-                df_infra.columns = ['infraestrutura', 'tem']
-                df_infra['nao_tem'] = total_registros - df_infra['tem']
-                df_infra = df_infra.sort_values('tem')
-                fig_dot = go.Figure()
-                fig_dot.add_trace(go.Scatter(x=df_infra['tem'], y=df_infra['infraestrutura'], mode='markers', name='Tem', marker=dict(size=10, color=PALETA_CORES['azul_principal'])))
-                fig_dot.add_trace(go.Scatter(x=df_infra['nao_tem'], y=df_infra['infraestrutura'], mode='markers', name='Não tem', marker=dict(size=10, color=PALETA_CORES['cinza_medio'])))
-                fig_dot.update_layout(
-                    title='Infraestrutura disponível (tem vs não tem)',
-                    height=420,
-                    margin=dict(l=10, r=60, t=50, b=10),
-                    font=dict(color=PALETA_CORES['cinza_escuro'])
-                )
-                fig_dot.update_xaxes(title='')
-                fig_dot.update_yaxes(title='')
-                mostrar_grafico(fig_dot, 'Infraestrutura disponível (tem vs não tem)')
-            else:
-                st.info('Sem dados suficientes para infraestrutura.')
+            mostrar_grafico(
+                grafico_barras_series(serie_infra, '', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=525),
+                ''
+            )
         else:
             st.info('Sem dados suficientes para infraestrutura.')
     with col2:
-        st.subheader('Principais serviços prestados à comunidade')
+        st.subheader('Serviços prestados à comunidade')
         st.caption('Importante para analisar transcrições das respostas e identificar o perfil de serviço comunitário.')
         serie_servicos = serie_multiselecionada(filtrado, dicionario_servicos)
-        serie_servicos = serie_servicos.drop(labels=['Não presta serviços à comunidade'], errors='ignore').sort_values(ascending=False).head(10)
+        serie_servicos = serie_servicos.sort_values(ascending=True).tail(16)
         if not serie_servicos.empty:
-            for nome, valor in serie_servicos.items():
-                perc = (valor / total_registros) * 100 if total_registros else 0
-                st.write(f'{nome}: {valor} ({perc:.1f}%)')
+            mostrar_grafico(
+                grafico_barras_series(serie_servicos, '', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=525),
+                ''
+            )
         else:
             st.info('Sem dados suficientes para serviços prestados.')
 
@@ -755,93 +626,88 @@ def pagina_sustentabilidade_economica():
         st.warning('Nenhum registro com os filtros atuais.')
         return
 
-    st.title('Sustentabilidade Econômica (O Dinheiro)')
+    st.title('Sustentabilidade Econômica')
     st.markdown('Painel crítico para gestores: revela fragilidades, dependências e a base real de financiamento.')
-    st.markdown('- **Fragilidade financeira**: 26,8% sem receita e 53% abaixo de R$ 100 mil/ano.')
-    st.markdown('- **Dependência do Estado**: 76% acessaram recursos públicos (municipal lidera).')
-    st.markdown('- **Recurso privado é minoria**: apenas 25% acessaram.')
 
     total_registros = max(len(filtrado), 1)
     sem_receita = int((filtrado['faixa_receita'] == 'Não teve receita').sum()) if 'faixa_receita' in filtrado.columns else 0
     col_publico = encontrar_coluna(filtrado.columns, '14. O Ponto de Cultura acessou recursos públicos nos últimos 24 meses?')
     col_privado = encontrar_coluna(filtrado.columns, '15. O Ponto de Cultura acessou recursos financeiros privados nos últimos 24 meses?')
     col_cultura_viva = encontrar_coluna(filtrado.columns, '13. O Projeto do Ponto de Cultura representa a principal fonte de renda da entidade/coletivo/pessoa física?')
+    col_credito = encontrar_coluna(filtrado.columns, '18. O Ponto de Cultura acessou linha de crédito para a realização de suas ações?')
 
     perc_publico = para_bool(filtrado[col_publico]).mean() if col_publico else 0
     perc_privado = para_bool(filtrado[col_privado]).mean() if col_privado else 0
     perc_cultura_viva = para_bool(filtrado[col_cultura_viva]).mean() if col_cultura_viva else 0
+    perc_credito = para_bool(filtrado[col_credito]).mean() if col_credito else 0
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric('Sem Receita em 2024', f"{(sem_receita / total_registros) * 100:.2f}%")
     col2.metric('Acessaram Recurso Público', f"{perc_publico * 100:.2f}%")
     col3.metric('Acessaram Recurso Privado', f"{perc_privado * 100:.2f}%")
     col4.metric('Cultura Viva é fonte principal', f"{perc_cultura_viva * 100:.2f}%")
+    col5.metric('Acessaram linha de crédito', f"{perc_credito * 100:.2f}%")
 
-    col_esq, col_dir = st.columns([0.65, 0.35])
-    with col_esq:
+    col1, col2 = st.columns([4, 2])
+    with col1:
         st.subheader('Distribuição das Faixas de Receita Anual')
         st.caption('Importante para analisar transcrições das respostas e identificar concentração de receita nas faixas mais baixas.')
         serie_receita = filtrado['faixa_receita'].value_counts().reindex(FAIXAS_RECEITA).fillna(0).astype(int) if 'faixa_receita' in filtrado.columns else pd.Series(dtype=int)
         if not serie_receita.empty:
             fig_receita = grafico_barras_series(serie_receita, 'Distribuição das Faixas de Receita Anual', cor=PALETA_CORES['azul_principal'], altura=420)
             fig_receita.update_xaxes(tickangle=-25)
-            mostrar_grafico(fig_receita, 'Distribuição das Faixas de Receita Anual')
+            fig_receita.update_layout(title='')
+            mostrar_grafico(fig_receita, '')
         else:
             st.info('Sem dados suficientes para a distribuição de receita.')
 
-    with col_dir:
+    with col2:
         st.subheader('Origem do Recurso Público')
-        st.caption('Importante para analisar transcrições das respostas e entender a dependência por esfera e programa.')
-        def soma_colunas(colunas):
-            return int(sum(para_bool(filtrado[c]).sum() for c in colunas if c))
-
-        col_pnab_fed_1 = encontrar_coluna(filtrado.columns, 'Recursos federais (Editais estaduais da PNAB')
-        col_pnab_fed_2 = encontrar_coluna(filtrado.columns, 'Recursos federais (Editais municipais da PNAB')
-        col_lpg_fed_1 = encontrar_coluna(filtrado.columns, 'Recursos federais (Editais estaduais da LPG')
-        col_lpg_fed_2 = encontrar_coluna(filtrado.columns, 'Recursos federais (Editais municipais da LPG')
-
+        st.caption('Importante para analisar transcrições das respostas e entender o peso por esfera de governo.')
         total_federal = int(para_bool(filtrado['rec_federal']).sum()) if 'rec_federal' in filtrado.columns else 0
         total_estadual = int(para_bool(filtrado['rec_estadual']).sum()) if 'rec_estadual' in filtrado.columns else 0
         total_municipal = int(para_bool(filtrado['rec_municipal']).sum()) if 'rec_municipal' in filtrado.columns else 0
-
-        pnab_federal = soma_colunas([col_pnab_fed_1, col_pnab_fed_2])
-        pnab_estadual = int(para_bool(filtrado['pnab_estadual']).sum()) if 'pnab_estadual' in filtrado.columns else 0
-        pnab_municipal = int(para_bool(filtrado['pnab_municipal']).sum()) if 'pnab_municipal' in filtrado.columns else 0
-
-        lpg_federal = soma_colunas([col_lpg_fed_1, col_lpg_fed_2])
-        lpg_estadual = 0
-        lpg_municipal = 0
-
-        outros_federal = max(total_federal - pnab_federal - lpg_federal, 0)
-        outros_estadual = max(total_estadual - pnab_estadual - lpg_estadual, 0)
-        outros_municipal = max(total_municipal - pnab_municipal - lpg_municipal, 0)
-
-        dados_sunburst = []
-        for esfera, pnab, lpg, outros in [
-            ('Federal', pnab_federal, lpg_federal, outros_federal),
-            ('Estadual', pnab_estadual, lpg_estadual, outros_estadual),
-            ('Municipal', pnab_municipal, lpg_municipal, outros_municipal)
-        ]:
-            for programa, valor in [('PNAB', pnab), ('LPG', lpg), ('Outros', outros)]:
-                if valor > 0:
-                    dados_sunburst.append({'esfera': esfera, 'tipo': 'Editais', 'programa': programa, 'valor': valor})
-
-        df_sunburst = pd.DataFrame(dados_sunburst)
-        if not df_sunburst.empty:
-            fig_sunburst = px.sunburst(df_sunburst, path=['esfera', 'tipo', 'programa'], values='valor', color='esfera', color_discrete_sequence=[PALETA_CORES['azul_principal'], PALETA_CORES['verde_secundario'], PALETA_CORES['amarelo_destaque']])
-            fig_sunburst.update_layout(height=380, margin=dict(l=10, r=10, t=40, b=10))
-            mostrar_grafico(fig_sunburst, 'Origem do Recurso Público')
+        serie_origem = pd.Series({'Federal': total_federal, 'Estadual': total_estadual, 'Municipal': total_municipal}).sort_values(ascending=True)
+        if serie_origem.sum() > 0:
+            fig_origem = grafico_barras_series(serie_origem, '', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=420, mostrar_percentual=False)
+            textos = [f'{int(v)} ({(v / total_registros) * 100:.1f}%)' for v in serie_origem.values]
+            fig_origem.update_traces(text=textos, textposition='outside', cliponaxis=False)
+            mostrar_grafico(fig_origem, '')
         else:
             st.info('Sem dados suficientes para a origem do recurso público.')
 
-        st.subheader('Acesso Público vs Privado')
-        st.caption('Importante para analisar transcrições das respostas e comparar o peso relativo do financiamento no setor.')
-        df_comp = pd.DataFrame({'categoria': ['Público', 'Privado'], 'valor': [perc_publico * 100, perc_privado * 100]})
-        fig_comp = go.Figure(go.Bar(x=df_comp['categoria'], y=df_comp['valor'], marker_color=PALETA_CORES['azul_principal'], text=[f'{v:.1f}%' for v in df_comp['valor']], textposition='outside', cliponaxis=False))
-        fig_comp.update_layout(height=300, margin=dict(l=10, r=10, t=40, b=10))
-        fig_comp.update_yaxes(title='', ticksuffix='%')
-        fig_comp.update_xaxes(title='')
-        mostrar_grafico(fig_comp, 'Acesso Público vs Privado')
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.subheader('Top 3 motivos para não acessar linha de crédito')
+        col_motivo = encontrar_coluna(filtrado.columns, '18. 2. Se não, sinalize o motivo')
+        motivos_texto = filtrado[col_motivo].fillna('').astype(str) if col_motivo else pd.Series(dtype=str)
+        motivos_lista = motivos_texto.apply(lambda t: [p.strip() for p in t.split(',') if p.strip()])
+        serie_motivos = motivos_lista.explode().value_counts()
+        top_motivos = serie_motivos.head(3)
+        base_motivos = max(int(serie_motivos.sum()), 1)
+        if not top_motivos.empty:
+            itens = [f"- *{motivo}* **{valor}** (**{perc:.1f}%**)" for motivo, valor in top_motivos.items() for perc in [(valor / base_motivos) * 100]]
+            st.markdown("\n".join(itens))
+        else:
+            st.info('Sem dados suficientes para motivos de não acesso.')
+
+    with col_b:
+        st.subheader('Top 3 dificuldades na captação de recursos públicos')
+        colunas_dificuldades = [c for c in filtrado.columns if normalizar_texto(c).startswith(normalizar_texto('16. Identifique até três principais'))]
+        serie_dificuldades = {}
+        for coluna in colunas_dificuldades:
+            rotulo = coluna.split('(', 1)[1].rsplit(')', 1)[0].strip() if '(' in coluna and ')' in coluna else coluna
+            if 'nao temos dificuldades' in normalizar_texto(rotulo):
+                continue
+            serie_dificuldades[rotulo] = int(para_bool(filtrado[coluna]).sum())
+        serie_dificuldades = pd.Series(serie_dificuldades).sort_values(ascending=False)
+        top_dificuldades = serie_dificuldades.head(3)
+        base_dificuldades = max(int(serie_dificuldades.sum()), 1)
+        if not top_dificuldades.empty:
+            itens = [f"- *{rotulo}* **{valor}** (**{perc:.1f}%**)" for rotulo, valor in top_dificuldades.items() for perc in [(valor / base_dificuldades) * 100]]
+            st.markdown("\n".join(itens))
+        else:
+            st.info('Sem dados suficientes para dificuldades de captação.')
 
 
 def pagina_mercados_comercializacao():
@@ -893,67 +759,52 @@ def pagina_mercados_comercializacao():
     col_estrategia = encontrar_coluna(filtrado.columns, '23. Identifique até três principais dificuldades do Ponto de Cultura para acessar mercados/comercializar produtos e/ou serviços? (Ausência de estratégia comercial)')
     perc_estrategia = (para_bool(filtrado[col_estrategia]).mean()) if col_estrategia else 0
 
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric('Comercializam', f'{(comercializa.mean() if not comercializa.empty else 0):.1%}')
-    col2.metric('Produto top', f'{top_produto} ({perc_produto:.1%})')
-    col3.metric('Serviço top', f'{top_servico} ({perc_servico:.1%})')
-    col4.metric('Dificuldade nº 1', f'Estratégia comercial ({perc_estrategia:.1%})')
+    st.subheader('Resumo das principais métricas')
+    st.metric('Comercializam', f'{(comercializa.mean() if not comercializa.empty else 0):.1%}')
 
-    st.subheader('Fluxo da venda e destinação do recurso')
-    st.caption('Mostra como a receita própria é reinvestida no Ponto, reforçando a lógica de retroalimentação.')
-    col_custeio = encontrar_coluna(filtrado.columns, '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Custeio das despesas obtidas com a própria ação cultural realizada)')
-    col_infra = encontrar_coluna(filtrado.columns, '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Investimento em infraestrutura (reforma do espaço, compra de equipamento, maquinário, etc))')
-    valor_custeio = int(para_bool(base_comercializa[col_custeio]).sum()) if col_custeio else 0
-    valor_infra = int(para_bool(base_comercializa[col_infra]).sum()) if col_infra else 0
-    if valor_custeio or valor_infra:
-        fig_sankey = go.Figure(data=[go.Sankey(
-            node=dict(
-                pad=15,
-                thickness=18,
-                line=dict(color=PALETA_CORES['cinza_escuro'], width=0.5),
-                label=['Venda', 'Custeio da ação', 'Infraestrutura'],
-                color=[PALETA_CORES['azul_principal']] * 3
-            ),
-            link=dict(
-                source=[0, 0],
-                target=[1, 2],
-                value=[valor_custeio, valor_infra],
-                color=[PALETA_CORES['azul_principal'], PALETA_CORES['cinza_medio']]
-            )
-        )])
-        fig_sankey.update_layout(height=420, margin=dict(l=10, r=10, t=40, b=10))
-        mostrar_grafico(fig_sankey, 'Fluxo da venda e destinação do recurso')
-    else:
-        st.info('Sem dados suficientes para o fluxo de destinação do recurso.')
-
-    col_esq, col_dir = st.columns([0.65, 0.35])
-    with col_esq:
-        st.subheader('Produtos vs serviços mais vendidos')
-        st.caption('Compara o que gera receita própria e ajuda a orientar estratégias comerciais.')
-        produtos_top = serie_produtos.sort_values(ascending=False).head(5)
-        servicos_top = serie_servicos.sort_values(ascending=False).head(5)
-        categorias = list(produtos_top.index) + list(servicos_top.index)
-        valores_prod = [-produtos_top.get(c, 0) for c in categorias]
-        valores_serv = [servicos_top.get(c, 0) for c in categorias]
-        if categorias:
-            fig_div = go.Figure()
-            fig_div.add_trace(go.Bar(x=valores_prod, y=categorias, orientation='h', name='Produtos', marker_color=PALETA_CORES['cinza_medio']))
-            fig_div.add_trace(go.Bar(x=valores_serv, y=categorias, orientation='h', name='Serviços', marker_color=PALETA_CORES['azul_principal']))
-            fig_div.update_layout(barmode='relative', height=380, margin=dict(l=10, r=80, t=40, b=10))
-            fig_div.update_xaxes(title='', tickformat='d')
-            fig_div.update_yaxes(title='')
-            mostrar_grafico(fig_div, 'Produtos vs serviços mais vendidos')
+    col_fluxo, col_justo = st.columns([0.65, 0.35])
+    with col_fluxo:
+        dicionario_destinacao = {
+            '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Custeio das despesas obtidas com a própria ação cultural realizada)': 'Custeio da ação',
+            '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Fundo de caixa)': 'Fundo de caixa',
+            '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Investimento em infraestrutura (reforma do espaço, compra de equipamento, maquinário, etc))': 'Infraestrutura',
+            '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Aplicações ﬁnanceiras)': 'Aplicações financeiras',
+            '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Divisão entre os participantes)': 'Divisão entre participantes',
+            '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Revertido para a associação associação/Ponto de Cultura)': 'Revertido para o Ponto',
+            '21. 2. Se sim, informe para que foram usados os recursos obtidos com a venda. (Outra)': 'Outros'
+        }
+        serie_destinacao = serie_multiselecionada(base_comercializa, dicionario_destinacao)
+        if not serie_destinacao.empty:
+            fig_dest = grafico_barras_series(serie_destinacao, 'Destinação do recurso', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=360)
+            fig_dest.update_layout(margin=dict(l=10, r=80, t=40, b=10))
+            mostrar_grafico(fig_dest, 'Destinação do recurso')
         else:
-            st.info('Sem dados suficientes para comparar produtos e serviços.')
-    with col_dir:
-        st.subheader('Relação com mercado justo/solidário')
-        st.caption('Aponta o nível de conexão com práticas econômicas solidárias.')
-        col_justo = encontrar_coluna(filtrado.columns, '22. O Ponto de Cultura possui relação comercial com o mercado justo e solidário?')
-        serie_justo = serie_tem_nao(filtrado, col_justo, 'Sim', 'Não') if col_justo else pd.Series(dtype=int)
+            st.info('Sem dados suficientes para o fluxo de destinação do recurso.')
+    with col_justo:
+        col_justo_base = encontrar_coluna(filtrado.columns, '22. O Ponto de Cultura possui relação comercial com o mercado justo e solidário?')
+        serie_justo = serie_tem_nao(filtrado, col_justo_base, 'Sim', 'Não') if col_justo_base else pd.Series(dtype=int)
         if not serie_justo.empty:
-            mostrar_grafico(grafico_donut(serie_justo, 'Relação com mercado justo/solidário', altura=380), 'Relação com mercado justo/solidário')
+            mostrar_grafico(grafico_donut(serie_justo, 'Relação com mercado justo/solidário', altura=360), 'Relação com mercado justo/solidário')
         else:
             st.info('Sem dados suficientes sobre mercado justo/solidário.')
+
+    col_prod, col_serv = st.columns(2)
+    with col_prod:
+        produtos_top = serie_produtos.sort_values(ascending=False).head(5)
+        if not produtos_top.empty:
+            fig_prod = grafico_barras_series(produtos_top, 'Produtos mais comercializados', cor=PALETA_CORES['azul_principal'], horizontal=False, altura=360)
+            fig_prod.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+            mostrar_grafico(fig_prod, 'Produtos mais comercializados')
+        else:
+            st.info('Sem dados suficientes de produtos.')
+    with col_serv:
+        servicos_top = serie_servicos.sort_values(ascending=False).head(5)
+        if not servicos_top.empty:
+            fig_serv = grafico_barras_series(servicos_top.sort_values(ascending=True), 'Serviços mais comercializados', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=360)
+            fig_serv.update_layout(margin=dict(l=10, r=80, t=40, b=10))
+            mostrar_grafico(fig_serv, 'Serviços mais comercializados')
+        else:
+            st.info('Sem dados suficientes de serviços.')
 
 
 def pagina_economias_singulares():
@@ -1000,19 +851,10 @@ def pagina_economias_singulares():
                 dados_recursos[rotulo] = int(para_bool(filtrado[coluna]).sum())
         serie_recursos = pd.Series(dados_recursos)
         if not serie_recursos.empty:
-            categorias = serie_recursos.index.tolist()
-            valores = (serie_recursos / base_mobilizam * 100).round(1).tolist()
-            fig = go.Figure()
-            fig.add_trace(go.Scatterpolar(r=valores + [valores[0]], theta=categorias + [categorias[0]], fill='toself', line=dict(color=PALETA_CORES['azul_principal'])))
-            fig.update_layout(
-                title='Radar: Recursos não-monetários',
-                height=420,
-                margin=dict(l=10, r=10, t=40, b=10),
-                polar=dict(radialaxis=dict(visible=True, range=[0, max(valores + [1])]))
-            )
-            mostrar_grafico(fig, 'Radar: Recursos não-monetários')
+            serie_percentual = (serie_recursos / base_mobilizam * 100).round(1).sort_values(ascending=True)
+            mostrar_grafico(grafico_barras_series(serie_percentual, 'Recursos não-monetários (%)', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=420, mostrar_percentual=False), 'Recursos não-monetários (%)')
         else:
-            st.info('Sem dados para o radar de recursos.')
+            st.info('Sem dados para recursos não-monetários.')
     with col_dir:
         st.subheader('Práticas Ancestrais')
         st.caption('Aponta a presença de saberes tradicionais que geram renda e pertencimento.')
@@ -1028,8 +870,6 @@ def pagina_economias_singulares():
             mostrar_grafico(grafico_barras_series(serie_praticas, 'Tipos de práticas ancestrais', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=320), 'Tipos de práticas ancestrais')
         else:
             st.info('Sem descrições suficientes para classificar práticas.')
-        st.markdown('**Resiliência comunitária**')
-        st.caption('Quando o dinheiro falta, a solidariedade sustenta o território: trabalho coletivo, trocas e redes locais garantem continuidade das ações culturais.')
 
 
 def pagina_articulacao_rede():
@@ -1074,24 +914,20 @@ def pagina_articulacao_rede():
     k2.metric('Participação municipal', f'{participa_mun:.1%}')
     k3.metric('Demanda principal: Parcerias', f'{demanda_parceria:.1%}')
 
-    col_esq, col_dir = st.columns([0.62, 0.38])
+    col_esq, col_dir = st.columns([0.4, 0.6])
     with col_esq:
-        st.subheader('Participação por esfera')
-        st.caption('Compara participação e não participação nas esferas municipal, estadual e federal para localizar onde a rede está mais ativa.')
         esferas = ['Municipal', 'Estadual', 'Federal']
         participa_vals = [participa_mun, participa_est, participa_fed]
         nao_vals = [nao_mun, nao_est, nao_fed]
         fig_participa = go.Figure()
         fig_participa.add_trace(go.Bar(x=esferas, y=participa_vals, name='Participa', marker_color=PALETA_CORES['azul_principal'], text=[f'{v:.1%}' for v in participa_vals], textposition='outside'))
         fig_participa.add_trace(go.Bar(x=esferas, y=nao_vals, name='Não participa', marker_color=PALETA_CORES['cinza_medio'], text=[f'{v:.1%}' for v in nao_vals], textposition='outside'))
-        fig_participa.update_layout(title='Participação social por esfera', barmode='group', height=420, margin=dict(l=10, r=80, t=40, b=10), legend_title_text='')
+        fig_participa.update_layout(title='Participação por esfera', barmode='group', height=420, margin=dict(l=10, r=80, t=40, b=10), legend_title_text='')
         fig_participa.update_yaxes(title='', tickformat='.0%', range=[0, 1])
         fig_participa.update_xaxes(title='')
-        mostrar_grafico(fig_participa, 'Participação social por esfera')
+        mostrar_grafico(fig_participa, '', config_extra={'displayModeBar': 'hover'})
 
     with col_dir:
-        st.subheader('Oferta x Demanda na Rede Cultura Viva')
-        st.caption('Evidencia o gap entre o que os Pontos conseguem oferecer e o que mais precisam, destacando equipamentos e parcerias.')
         dicionario_oferta = {
             '35. O que o Ponto de Cultura gostaria de oferecer para a Rede Cultura Viva? (Espaço físico)': 'Espaço físico',
             '35. O que o Ponto de Cultura gostaria de oferecer para a Rede Cultura Viva? (Equipamentos)': 'Equipamentos',
@@ -1130,10 +966,10 @@ def pagina_articulacao_rede():
             fig_gap = go.Figure()
             fig_gap.add_trace(go.Bar(y=df_gap['categoria'], x=-df_gap['oferta'], name='Oferta', orientation='h', marker_color=PALETA_CORES['cinza_medio'], text=[f'{v:.1%}' for v in df_gap['oferta']], textposition='outside'))
             fig_gap.add_trace(go.Bar(y=df_gap['categoria'], x=df_gap['demanda'], name='Demanda', orientation='h', marker_color=PALETA_CORES['azul_principal'], text=[f'{v:.1%}' for v in df_gap['demanda']], textposition='outside'))
-            fig_gap.update_layout(title='Oferta vs Demanda', barmode='relative', height=420, margin=dict(l=10, r=80, t=40, b=10), legend_title_text='')
+            fig_gap.update_layout(title='Oferta x Demanda na Rede Cultura Viva', barmode='relative', height=420, margin=dict(l=10, r=80, t=40, b=10), legend_title_text='')
             fig_gap.update_xaxes(title='', tickformat='.0%', range=[-max_val, max_val])
             fig_gap.update_yaxes(title='', autorange='reversed')
-            mostrar_grafico(fig_gap, 'Oferta vs Demanda')
+            mostrar_grafico(fig_gap, '', config_extra={'displayModeBar': 'hover'})
         else:
             st.info('Sem dados suficientes para o comparativo de oferta e demanda.')
 
@@ -1185,7 +1021,8 @@ def pagina_gestao_mundo_trabalho():
                 q1 = serie.quantile(0.25)
                 q3 = serie.quantile(0.75)
                 iqr = q3 - q1
-                limite = q3 + 1.5 * iqr if iqr > 0 else serie.max()
+                p99 = serie.quantile(0.99)
+                limite = min(q3 + 1.5 * iqr, p99) if iqr > 0 else p99
                 serie = serie[serie <= limite]
                 dados_vinculo.append(pd.DataFrame({'vinculo': rotulo, 'quantidade': serie}))
     if dados_vinculo:
@@ -1198,28 +1035,33 @@ def pagina_gestao_mundo_trabalho():
 
     col_esq, col_dir = st.columns(2)
     with col_esq:
-        st.subheader('Dependência de renda da equipe (0% vs >75%)')
-        st.caption('Evidencia o quanto o Ponto sustenta (ou não) o sustento principal da equipe.')
+        st.subheader('Capacidade de Geração de Renda para a Equipe')
+        st.caption('Mostra a proporção de pessoas cuja principal fonte de renda vem do Ponto.')
         if col_renda:
             serie_renda = filtrado[col_renda].fillna('').astype(str)
-            categorias = ['Nenhuma pessoa (0%)', 'Mais de 75% das pessoas']
-            contagens = serie_renda.value_counts().reindex(categorias, fill_value=0)
-            total = contagens.sum()
-            if total:
-                proporcoes = (contagens / total).tolist()
-                fig = go.Figure()
-                cores = [PALETA_CORES['cinza_medio'], PALETA_CORES['azul_principal']]
-                textos = [f'{v} ({p:.1%})' for v, p in zip(contagens.tolist(), proporcoes)]
-                for nome, valor, cor, texto in zip(['0%', '>75%'], proporcoes, cores, textos):
-                    fig.add_trace(go.Bar(x=['Dependência'], y=[valor], name=nome, marker_color=cor, text=[texto], textposition='inside'))
-                fig.update_layout(barmode='stack', height=320, margin=dict(l=10, r=80, t=40, b=10), yaxis=dict(tickformat='.0%'), legend_title_text='')
-                fig.update_xaxes(title='')
-                fig.update_yaxes(title='', range=[0, 1])
-                mostrar_grafico(fig, 'Dependência de renda da equipe (0% vs >75%)')
+            mapa_rotulos = {
+                'Menos de 10% das pessoas trabalhadoras do Ponto de Cultura': 'Menos de 10% das pessoas'
+            }
+            serie_renda = serie_renda.replace(mapa_rotulos)
+            ordem = [
+                'Nenhuma pessoa (0%)',
+                'Menos de 10% das pessoas',
+                'Entre 10% e 25% das pessoas',
+                'Entre 26% e 50% das pessoas',
+                'Entre 51% e 75% das pessoas',
+                'Mais de 75% das pessoas',
+                'Não sei informar'
+            ]
+            contagens = serie_renda.value_counts().reindex(ordem, fill_value=0)
+            if contagens.sum() > 0:
+                mostrar_grafico(
+                    grafico_barras_series(contagens, 'Capacidade de Geração de Renda para a Equipe', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=320),
+                    'Capacidade de Geração de Renda para a Equipe'
+                )
             else:
-                st.info('Sem respostas válidas para dependência de renda.')
+                st.info('Sem respostas válidas para capacidade de geração de renda.')
         else:
-            st.info('Sem coluna de dependência de renda na base.')
+            st.info('Sem coluna de capacidade de geração de renda na base.')
 
     with col_dir:
         st.subheader('Ferramentas de gestão financeira utilizadas')
