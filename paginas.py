@@ -79,7 +79,7 @@ CAMINHO_CEPS_GEO = 'assets/ceps_geocodificados.csv'
 
 
 @st.cache_data(show_spinner=False)
-def carregar_ceps_geocodificados():
+def carregar_ceps_geocodificados(mtime=None):
     if not os.path.exists(CAMINHO_CEPS_GEO):
         return pd.DataFrame(columns=['cep', 'latitude', 'longitude'])
     df = pd.read_csv(CAMINHO_CEPS_GEO, encoding='utf-8-sig')
@@ -94,7 +94,8 @@ def geocodificar_ceps(ceps):
     serie = pd.Series(ceps).dropna().astype(str).str.replace(r'\D', '', regex=True).str.zfill(8)
     if serie.empty:
         return pd.DataFrame(columns=['cep', 'latitude', 'longitude'])
-    dados = carregar_ceps_geocodificados()
+    mtime = os.path.getmtime(CAMINHO_CEPS_GEO) if os.path.exists(CAMINHO_CEPS_GEO) else None
+    dados = carregar_ceps_geocodificados(mtime=mtime)
     if dados.empty:
         return pd.DataFrame(columns=['cep', 'latitude', 'longitude'])
     df = pd.DataFrame({'cep': serie}).merge(dados, on='cep', how='left')
@@ -351,9 +352,9 @@ def pagina_perfil_institucional():
     contagem_estado.columns = ['uf', 'contagem']
     contagem_cidades = filtrado['cidade'].value_counts().head(5).sort_values(ascending=True)
 
-    aba1, aba2, aba3 = st.tabs(['Mapa e perfil', 'Abrangência e infraestrutura', 'Linguagens e ações'])
+    aba1, aba2, aba3 = st.tabs(['Mapa e perfil', 'Abrangencia', 'Linguagens e ações'])
     with aba1:
-        st.title('Distribuição dos Pontos de Cultura e características institucionais')
+        st.title('Distribuição dos Pontos de Cultura e Características Institucionais')
         st.markdown('Aqui você vê a distribuição territorial dos Pontos, o perfil jurídico e o tipo de reconhecimento, além dos municípios com maior concentração e dos canais digitais mais usados. Este painel ajuda a entender onde a rede está mais presente e como se organiza institucionalmente.')
         col_esq, col_dir = st.columns([1.2, 0.8])
         with col_esq:
@@ -547,8 +548,6 @@ def pagina_perfil_institucional():
                     mostrar_grafico(fig_micro, f'Visão micro: {escolha}')
 
     st.divider()
-    st.subheader('Pins por CEP (teste)')
-    st.caption('Teste de pontos geolocalizados por CEP para validar a dispersão territorial dos Pontos de Cultura.')
     if 'cep_corrigido' in filtrado.columns:
         if not os.path.exists(CAMINHO_CEPS_GEO):
             st.info('Arquivo de CEPs geocodificados não encontrado. Rode o script para gerar.')
@@ -640,23 +639,19 @@ def pagina_capacidade_infraestrutura():
 
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader('Infraestrutura disponível')
-        st.caption('Importante para analisar transcrições e reconhecer gargalos de infraestrutura no território.')
         if not serie_infra.empty:
             mostrar_grafico(
-                grafico_barras_series(serie_infra, '', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=525),
+                grafico_barras_series(serie_infra, 'Infraestrutura disponível', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=525),
                 ''
             )
         else:
             st.info('Sem dados suficientes para infraestrutura.')
     with col2:
-        st.subheader('Serviços prestados à comunidade')
-        st.caption('Importante para analisar transcrições das respostas e identificar o perfil de serviço comunitário.')
         serie_servicos = serie_multiselecionada(filtrado, dicionario_servicos)
         serie_servicos = serie_servicos.sort_values(ascending=True).tail(16)
         if not serie_servicos.empty:
             mostrar_grafico(
-                grafico_barras_series(serie_servicos, '', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=525),
+                grafico_barras_series(serie_servicos, 'Serviços prestados à comunidade', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=525),
                 ''
             )
         else:
@@ -696,20 +691,15 @@ def pagina_sustentabilidade_economica():
 
     col1, col2 = st.columns([4, 2])
     with col1:
-        st.subheader('Distribuição das Faixas de Receita Anual')
-        st.caption('Importante para analisar transcrições das respostas e identificar concentração de receita nas faixas mais baixas.')
         serie_receita = filtrado['faixa_receita'].value_counts().reindex(FAIXAS_RECEITA).fillna(0).astype(int) if 'faixa_receita' in filtrado.columns else pd.Series(dtype=int)
         if not serie_receita.empty:
             fig_receita = grafico_barras_series(serie_receita, 'Distribuição das Faixas de Receita Anual', cor=PALETA_CORES['azul_principal'], altura=420)
             fig_receita.update_xaxes(tickangle=-25)
-            fig_receita.update_layout(title='')
-            mostrar_grafico(fig_receita, '')
+            mostrar_grafico(fig_receita, 'Distribuição das Faixas de Receita Anual')
         else:
             st.info('Sem dados suficientes para a distribuição de receita.')
 
     with col2:
-        st.subheader('Origem do Recurso Público')
-        st.caption('Importante para analisar transcrições das respostas e entender o peso por esfera de governo.')
         total_federal = int(para_bool(filtrado['rec_federal']).sum()) if 'rec_federal' in filtrado.columns else 0
         total_estadual = int(para_bool(filtrado['rec_estadual']).sum()) if 'rec_estadual' in filtrado.columns else 0
         total_municipal = int(para_bool(filtrado['rec_municipal']).sum()) if 'rec_municipal' in filtrado.columns else 0
@@ -718,13 +708,15 @@ def pagina_sustentabilidade_economica():
             fig_origem = grafico_barras_series(serie_origem, '', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=420, mostrar_percentual=False)
             textos = [f'{int(v)} ({(v / total_registros) * 100:.1f}%)' for v in serie_origem.values]
             fig_origem.update_traces(text=textos, textposition='outside', cliponaxis=False)
-            mostrar_grafico(fig_origem, '')
+            mostrar_grafico(fig_origem, 'Origem do Recurso Público')
         else:
             st.info('Sem dados suficientes para a origem do recurso público.')
 
+    st.markdown("---")
+    st.subheader('Principais Barreiras e Desafios Financeiros')
     col_a, col_b = st.columns(2)
     with col_a:
-        st.subheader('Top 3 motivos para não acessar linha de crédito')
+        st.markdown('**Top 3 motivos para não acessar linha de crédito**')
         col_motivo = encontrar_coluna(filtrado.columns, '18. 2. Se não, sinalize o motivo')
         motivos_texto = filtrado[col_motivo].fillna('').astype(str) if col_motivo else pd.Series(dtype=str)
         motivos_lista = motivos_texto.apply(lambda t: [p.strip() for p in t.split(',') if p.strip()])
@@ -738,7 +730,7 @@ def pagina_sustentabilidade_economica():
             st.info('Sem dados suficientes para motivos de não acesso.')
 
     with col_b:
-        st.subheader('Top 3 dificuldades na captação de recursos públicos')
+        st.markdown('**Top 3 dificuldades na captação de recursos públicos**')
         colunas_dificuldades = [c for c in filtrado.columns if normalizar_texto(c).startswith(normalizar_texto('16. Identifique até três principais'))]
         serie_dificuldades = {}
         for coluna in colunas_dificuldades:
@@ -797,16 +789,17 @@ def pagina_mercados_comercializacao():
 
     serie_produtos = serie_multiselecionada(base_comercializa, dicionario_produtos)
     serie_servicos = serie_multiselecionada(base_comercializa, dicionario_servicos)
-    top_produto = serie_produtos.idxmax() if not serie_produtos.empty else '-'
-    top_servico = serie_servicos.idxmax() if not serie_servicos.empty else '-'
-    perc_produto = (serie_produtos.max() / total_comercializa) if not serie_produtos.empty else 0
-    perc_servico = (serie_servicos.max() / total_comercializa) if not serie_servicos.empty else 0
+    col_gratuitas = encontrar_coluna(filtrado.columns, '20. As ações e atividades culturais realizadas pelo Ponto de Cultura são predominantemente (Gratuitas ao público)')
+    col_pagas = encontrar_coluna(filtrado.columns, '20. As ações e atividades culturais realizadas pelo Ponto de Cultura são predominantemente (Pagas)')
+    serie_gratuitas = para_bool(filtrado[col_gratuitas]) if col_gratuitas else pd.Series(dtype=bool)
+    serie_pagas = para_bool(filtrado[col_pagas]) if col_pagas else pd.Series(dtype=bool)
+    perc_gratuitas = serie_gratuitas.mean() if not serie_gratuitas.empty else 0
+    perc_pagas = serie_pagas.mean() if not serie_pagas.empty else 0
 
-    col_estrategia = encontrar_coluna(filtrado.columns, '23. Identifique até três principais dificuldades do Ponto de Cultura para acessar mercados/comercializar produtos e/ou serviços? (Ausência de estratégia comercial)')
-    perc_estrategia = (para_bool(filtrado[col_estrategia]).mean()) if col_estrategia else 0
-
-    st.subheader('Resumo das principais métricas')
-    st.metric('Comercializam', f'{(comercializa.mean() if not comercializa.empty else 0):.1%}')
+    kpi1, kpi2, kpi3 = st.columns(3)
+    kpi1.metric('Comercializam', f'{(comercializa.mean() if not comercializa.empty else 0):.1%}')
+    kpi2.metric('Ações gratuitas ao público', f'{perc_gratuitas:.1%}')
+    kpi3.metric('Ações pagas', f'{perc_pagas:.1%}')
 
     col_fluxo, col_justo = st.columns([0.65, 0.35])
     with col_fluxo:
@@ -882,13 +875,14 @@ def pagina_economias_singulares():
 
     col_esq, col_dir = st.columns([0.6, 0.4])
     with col_esq:
-        st.subheader('Tipos de Recursos Não-Monetários')
-        st.caption('Revela o peso das trocas solidárias que sustentam as ações culturais.')
         dicionario_recursos = {
-            'Trabalho voluntário': 'Voluntariado',
-            'Ações de ajuda mútua (mutirões, ações comunitárias, iniciativas beneﬁcentes, etc)': 'Mutirões',
-            'Doações não-monetárias (equipamentos, mobiliários, espaços, vestuário, etc.)': 'Doações',
-            'Trocas diretas de produtos e serviços': 'Trocas'
+            'Trabalho voluntário': 'Trabalho voluntário',
+            'Ações de ajuda mútua (mutirões, ações comunitárias, iniciativas beneﬁcentes, etc)': 'Ajuda mútua (mutirões)',
+            'Doações não-monetárias (equipamentos, mobiliários, espaços, vestuário, etc.)': 'Doações não-monetárias',
+            'Produção própria para o autoconsumo': 'Autoconsumo',
+            'Intercâmbio de espetáculos ou apresentações': 'Intercâmbio de espetáculos',
+            'Trocas diretas de produtos e serviços': 'Trocas diretas',
+            'Outros': 'Outros recursos'
         }
         dados_recursos = {}
         for busca, rotulo in dicionario_recursos.items():
@@ -897,23 +891,33 @@ def pagina_economias_singulares():
                 dados_recursos[rotulo] = int(para_bool(filtrado[coluna]).sum())
         serie_recursos = pd.Series(dados_recursos)
         if not serie_recursos.empty:
-            serie_percentual = (serie_recursos / base_mobilizam * 100).round(1).sort_values(ascending=True)
-            mostrar_grafico(grafico_barras_series(serie_percentual, 'Recursos não-monetários (%)', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=420, mostrar_percentual=False), 'Recursos não-monetários (%)')
+            serie_recursos = serie_recursos.sort_values(ascending=True)
+            fig_recursos = grafico_barras_series(serie_recursos, 'Recursos não-monetários', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=420, mostrar_percentual=False)
+            percentuais = (serie_recursos / base_mobilizam * 100).round(1).tolist()
+            textos = [f'{v} ({p:.1f}%)' for v, p in zip(serie_recursos.tolist(), percentuais)]
+            fig_recursos.update_traces(text=textos, textposition='outside', cliponaxis=False)
+            mostrar_grafico(fig_recursos, 'Recursos não-monetários')
         else:
             st.info('Sem dados para recursos não-monetários.')
     with col_dir:
-        st.subheader('Práticas Ancestrais')
-        st.caption('Aponta a presença de saberes tradicionais que geram renda e pertencimento.')
         col_descricao = encontrar_coluna(filtrado.columns, '24. 1. Se sim, descreva brevemente as práticas e atividades realizadas')
         praticas_texto = filtrado[col_descricao].fillna('').astype(str).apply(normalizar_texto) if col_descricao else pd.Series(dtype=str)
-        dados_praticas = {
-            'Festas populares': praticas_texto.str.contains('festa|festejo|folia').sum() if not praticas_texto.empty else 0,
-            'Rituais': praticas_texto.str.contains('ritual|reza|cerimonia|culto|terreiro').sum() if not praticas_texto.empty else 0,
-            'Artesanato': praticas_texto.str.contains('artesan|bordad|croche|ceram|costur|biojoia|tecel').sum() if not praticas_texto.empty else 0
+        categorias_praticas = {
+            'Festas populares': 'festa|festejo|folia|sao joao|carnaval|procissao|romaria',
+            'Rituais e espiritualidade': 'ritual|reza|cerimonia|culto|terreiro|benz|encantad|orixa|umbanda|candomble',
+            'Artesanato': 'artesan|bordad|croche|ceram|costur|biojoia|tecel|trancad',
+            'Dança e folguedos': 'danca|dança|samba|maracatu|boi|reisado|coco|ciranda|jongo|catira|fandango',
+            'Capoeira': 'capoeira',
+            'Culinária tradicional': 'culinaria|comida|cozinha|gastronomia|receita tradicional',
+            'Medicina tradicional': 'medicina|fitoter|erva|benzimento|cura',
+            'Agricultura e roça': 'roca|roça|agricult|plantio|horta|quintal produtivo',
+            'Música e instrumentos': 'musica|música|tambor|canto|ladainha|toque'
         }
-        serie_praticas = pd.Series(dados_praticas).sort_values(ascending=True)
+        dados_praticas = {rotulo: (praticas_texto.str.contains(padrao).sum() if not praticas_texto.empty else 0) for rotulo, padrao in categorias_praticas.items()}
+        serie_praticas = pd.Series(dados_praticas)
+        serie_praticas = serie_praticas[serie_praticas > 0].sort_values(ascending=True).tail(7)
         if serie_praticas.sum() > 0:
-            mostrar_grafico(grafico_barras_series(serie_praticas, 'Tipos de práticas ancestrais', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=320), 'Tipos de práticas ancestrais')
+            mostrar_grafico(grafico_barras_series(serie_praticas, 'Tipos de práticas ancestrais', cor=PALETA_CORES['azul_principal'], horizontal=True, altura=420), 'Tipos de práticas ancestrais')
         else:
             st.info('Sem descrições suficientes para classificar práticas.')
 
@@ -1030,7 +1034,7 @@ def pagina_gestao_mundo_trabalho():
         return
 
     st.title('Gestão e Mundo do Trabalho')
-    st.markdown('Quem trabalha e como são pagos.')
+    st.markdown('Panorama da equipe, vínculos, formalização e dependência de renda no cotidiano dos Pontos culturais locais.')
 
     col_volunt = encontrar_coluna(filtrado.columns, 'Trabalhadores voluntários (parceiros e colaboradores)')
     col_clt = encontrar_coluna(filtrado.columns, 'Pessoas com vínculo empregatício (CLT)')
@@ -1056,33 +1060,8 @@ def pagina_gestao_mundo_trabalho():
     k3.metric('Usa Planilha de Custos', f'{perc_planilha:.1%}')
     k4.metric('Usa Software de Gestão', f'{perc_software:.1%}')
 
-    st.subheader('Distribuição de trabalhadores por tipo de vínculo')
-    st.caption('Mostra a base real de sustentação da equipe e evidencia a raridade de vínculos formais.')
-    dados_vinculo = []
-    for coluna, rotulo in [(col_volunt, 'Voluntários'), (col_clt, 'CLT'), (col_mei, 'MEI')]:
-        if coluna:
-            serie = pd.to_numeric(filtrado[coluna], errors='coerce').dropna()
-            serie = serie[serie >= 0]
-            if not serie.empty:
-                q1 = serie.quantile(0.25)
-                q3 = serie.quantile(0.75)
-                iqr = q3 - q1
-                p99 = serie.quantile(0.99)
-                limite = min(q3 + 1.5 * iqr, p99) if iqr > 0 else p99
-                serie = serie[serie <= limite]
-                dados_vinculo.append(pd.DataFrame({'vinculo': rotulo, 'quantidade': serie}))
-    if dados_vinculo:
-        df_vinculo = pd.concat(dados_vinculo, ignore_index=True)
-        fig_box = grafico_boxplot(df_vinculo, 'vinculo', 'quantidade', 'Distribuição por vínculo', altura=420)
-        fig_box.update_xaxes(categoryorder='array', categoryarray=['Voluntários', 'CLT', 'MEI'])
-        mostrar_grafico(fig_box, 'Distribuição por vínculo')
-    else:
-        st.info('Sem dados suficientes para o boxplot de vínculos.')
-
     col_esq, col_dir = st.columns(2)
     with col_esq:
-        st.subheader('Capacidade de Geração de Renda para a Equipe')
-        st.caption('Mostra a proporção de pessoas cuja principal fonte de renda vem do Ponto.')
         if col_renda:
             serie_renda = filtrado[col_renda].fillna('').astype(str)
             mapa_rotulos = {
@@ -1110,8 +1089,6 @@ def pagina_gestao_mundo_trabalho():
             st.info('Sem coluna de capacidade de geração de renda na base.')
 
     with col_dir:
-        st.subheader('Ferramentas de gestão financeira utilizadas')
-        st.caption('Indica o nível de organização administrativa e capacidade de controle financeiro.')
         dicionario_gestao = {
             '31. Quais ferramentas ou práticas de gestão financeira o Ponto de Cultura utiliza atualmente? (Orçamento anual formalizado (planilha ou documento escrito))': 'Orçamento anual formalizado',
             '31. Quais ferramentas ou práticas de gestão financeira o Ponto de Cultura utiliza atualmente? (Controle mensal de fluxo de caixa)': 'Fluxo de caixa mensal',
@@ -1139,31 +1116,38 @@ def pagina_cruzamentos_estrategicos():
     if filtrado.empty:
         st.warning('Nenhum registro com os filtros atuais.')
         return
-    st.title('Cruzamentos Estratégicos (Análise Avançada)')
-    st.markdown('Correlações e descobertas finais.')
+    st.title('Cruzamentos Estratégicos')
+    st.markdown('Cruza variáveis-chave para revelar padrões entre receita, formalização, vínculos e território na rede cultural brasileira.')
 
     colunas_vinculo = {
         'Pessoas com vínculo empregatício (CLT)': 'CLT',
         'Prestadores de serviços contratados como MEI': 'MEI',
-        'Trabalhadores voluntários (parceiros e colaboradores)': 'Voluntariado'
+        'Trabalhadores voluntários (parceiros e colaboradores)': 'Voluntariado',
+        'Bolsistas': 'Bolsistas',
+        'Associados da instituição': 'Associados',
+        'Pessoa física': 'Pessoa física'
     }
     dados_bolhas = []
     faixas_disponiveis = [f for f in FAIXAS_RECEITA if f in filtrado['faixa_receita'].dropna().unique()]
     for faixa in faixas_disponiveis:
         base_faixa = filtrado[filtrado['faixa_receita'] == faixa]
         for coluna, rotulo in colunas_vinculo.items():
-            if coluna not in base_faixa.columns:
-                continue
-            serie = base_faixa[coluna]
-            numerico = pd.to_numeric(serie, errors='coerce')
-            presenca = (numerico.fillna(0) > 0) if numerico.notna().any() else para_bool(serie)
+            if coluna == 'Pessoa física':
+                if 'registro' not in base_faixa.columns:
+                    continue
+                registro_norm = base_faixa['registro'].fillna('').map(normalizar_texto)
+                presenca = registro_norm.str.contains('cpf|pessoa fisica|pessoa física')
+            else:
+                if coluna not in base_faixa.columns:
+                    continue
+                serie = base_faixa[coluna]
+                numerico = pd.to_numeric(serie, errors='coerce')
+                presenca = (numerico.fillna(0) > 0) if numerico.notna().any() else para_bool(serie)
             dados_bolhas.append({'faixa_receita': faixa, 'vinculo': rotulo, 'qtde': int(presenca.sum())})
     df_bolhas = pd.DataFrame(dados_bolhas)
 
-    st.subheader('Vínculo de trabalho por faixa de receita')
-    st.caption('Leitura direta da distribuição de vínculos por faixa de receita.')
     if not df_bolhas.empty:
-        matriz = df_bolhas.pivot(index='vinculo', columns='faixa_receita', values='qtde').reindex(index=['Voluntariado', 'CLT', 'MEI'], columns=FAIXAS_RECEITA).fillna(0)
+        matriz = df_bolhas.pivot(index='vinculo', columns='faixa_receita', values='qtde').reindex(index=['Voluntariado', 'CLT', 'MEI', 'Bolsistas', 'Associados', 'Pessoa física'], columns=FAIXAS_RECEITA).fillna(0)
         fig_heat = go.Figure(data=go.Heatmap(
             z=matriz.values,
             x=list(matriz.columns),
@@ -1178,113 +1162,33 @@ def pagina_cruzamentos_estrategicos():
     else:
         st.info('Sem dados suficientes para o gráfico de vínculos.')
 
-    col_esq, col_dir = st.columns(2)
-    with col_esq:
-        st.subheader('Ação estruturante por território')
-        st.caption('Compara o foco das ações quando o engajamento se dá por municípios ou por redes.')
-        colunas_municipio = [c for c in filtrado.columns if str(c).startswith('Esfera Municipal')]
-        colunas_rede = [c for c in filtrado.columns if str(c).startswith('Redes de articulação setorial') or 'Rede Estadual de Pontos de Cultura' in str(c)]
-
-        def tem_participacao(colunas):
-            if not colunas:
-                return pd.Series([False] * len(filtrado), index=filtrado.index)
-            base = pd.concat([para_bool(filtrado[c]) for c in colunas if c in filtrado.columns], axis=1)
-            return base.any(axis=1)
-
-        mask_municipio = tem_participacao(colunas_municipio)
-        mask_rede = tem_participacao(colunas_rede)
-
-        acoes_temas = [
-            'Cultura e Direitos Humanos',
-            'Cultura e Educação',
-            'Cultura e Juventude',
-            'Cultura e Meio Ambiente',
-            'Cultura e Saúde',
-            'Cultura e Mulheres',
-            'Gênero e Diversidade',
-            'Acessibilidade Cultural e Equidade',
-            'Cultura e Territórios Rurais',
-            'Cultura, Territórios de Fronteira e Integração Latino-americana',
-            'Culturas Populares',
-            'Culturas Tradicionais',
-            'Culturas de Matriz Africana',
-            'Culturas Indígenas',
-            'Memória e Patrimônio cultural',
-            'Mestres e Mestras das Culturas Tradicionais e Populares',
-            'Cultura, Infância e Adolescência'
-        ]
-        acoes_ferramentas = [
-            'Cultura Digital',
-            'Cultura, Comunicação e Mídia livre',
-            'Economia criativa e solidária',
-            'Intercâmbio e residências',
-            'Linguagens Artísticas',
-            'Livro, leitura e literatura',
-            'Cultura Hip Hop',
-            'Agente cultura viva',
-            'Conhecimentos tradicionais'
-        ]
-
-        def conta_grupo(mask, acoes):
-            colunas = [c for c in acoes if c in filtrado.columns]
-            if not colunas:
-                return 0
-            base = pd.concat([para_bool(filtrado[c]) for c in colunas], axis=1)
-            return int(base.any(axis=1)[mask].sum())
-
-        dados_territorio = pd.DataFrame([
-            {
-                'territorio': 'Municípios',
-                'Temas sociais': conta_grupo(mask_municipio, acoes_temas),
-                'Ferramentas': conta_grupo(mask_municipio, acoes_ferramentas)
-            },
-            {
-                'territorio': 'Redes',
-                'Temas sociais': conta_grupo(mask_rede, acoes_temas),
-                'Ferramentas': conta_grupo(mask_rede, acoes_ferramentas)
-            }
-        ])
-        if dados_territorio[['Temas sociais', 'Ferramentas']].sum().sum() > 0:
-            fig_territorio = go.Figure()
-            fig_territorio.add_trace(go.Bar(x=dados_territorio['territorio'], y=dados_territorio['Temas sociais'], name='Temas sociais', marker_color=PALETA_CORES['azul_principal'], opacity=0.85))
-            fig_territorio.add_trace(go.Bar(x=dados_territorio['territorio'], y=dados_territorio['Ferramentas'], name='Ferramentas', marker_color=PALETA_CORES['azul_principal'], opacity=0.45))
-            fig_territorio.update_layout(barmode='stack', height=360, margin=dict(l=10, r=10, t=40, b=10))
-            fig_territorio.update_xaxes(title='')
-            fig_territorio.update_yaxes(title='')
-            mostrar_grafico(fig_territorio, 'Ação estruturante por território')
+    if 'registro' in filtrado.columns:
+        registro_norm = filtrado['registro'].fillna('').map(normalizar_texto)
+        mask_cnpj = registro_norm.str.contains('cnpj')
+        dados_cnpj = []
+        for faixa in faixas_disponiveis:
+            base_faixa = filtrado['faixa_receita'] == faixa
+            total_faixa = int(base_faixa.sum())
+            perc_cnpj = (mask_cnpj[base_faixa].sum() / total_faixa * 100) if total_faixa else 0
+            dados_cnpj.append({'faixa_receita': faixa, 'percentual': round(perc_cnpj, 1)})
+        df_cnpj = pd.DataFrame(dados_cnpj)
+        if not df_cnpj.empty:
+            fig_cnpj = go.Figure(go.Bar(
+                x=df_cnpj['faixa_receita'],
+                y=df_cnpj['percentual'],
+                marker_color=PALETA_CORES['azul_principal'],
+                text=[f'{v:.1f}%' for v in df_cnpj['percentual']],
+                textposition='outside',
+                cliponaxis=False
+            ))
+            fig_cnpj.update_layout(height=360, margin=dict(l=10, r=10, t=40, b=10))
+            fig_cnpj.update_xaxes(title='', categoryorder='array', categoryarray=FAIXAS_RECEITA, tickangle=-25)
+            fig_cnpj.update_yaxes(title='', ticksuffix='%')
+            mostrar_grafico(fig_cnpj, 'Formalização (CNPJ) por faixa de receita')
         else:
-            st.info('Sem dados suficientes para o cruzamento de território.')
-
-    with col_dir:
-        st.subheader('Formalização (CNPJ) por faixa de receita')
-        st.caption('Evidencia a correlação positiva entre receita e formalização jurídica.')
-        if 'registro' in filtrado.columns:
-            registro_norm = filtrado['registro'].fillna('').map(normalizar_texto)
-            mask_cnpj = registro_norm.str.contains('cnpj')
-            dados_cnpj = []
-            for faixa in faixas_disponiveis:
-                base_faixa = filtrado['faixa_receita'] == faixa
-                total_faixa = int(base_faixa.sum())
-                perc_cnpj = (mask_cnpj[base_faixa].sum() / total_faixa * 100) if total_faixa else 0
-                dados_cnpj.append({'faixa_receita': faixa, 'percentual': round(perc_cnpj, 1)})
-            df_cnpj = pd.DataFrame(dados_cnpj)
-            if not df_cnpj.empty:
-                fig_cnpj = go.Figure(go.Bar(
-                    x=df_cnpj['faixa_receita'],
-                    y=df_cnpj['percentual'],
-                    marker_color=PALETA_CORES['azul_principal'],
-                    text=[f'{v:.1f}%' for v in df_cnpj['percentual']],
-                    textposition='outside',
-                    cliponaxis=False
-                ))
-                fig_cnpj.update_layout(height=360, margin=dict(l=10, r=10, t=40, b=10))
-                fig_cnpj.update_xaxes(title='', categoryorder='array', categoryarray=FAIXAS_RECEITA, tickangle=-25)
-                fig_cnpj.update_yaxes(title='', ticksuffix='%')
-                mostrar_grafico(fig_cnpj, 'Formalização (CNPJ) por faixa de receita')
-            else:
-                st.info('Sem dados suficientes para formalização por receita.')
-        else:
-            st.info('Sem coluna de cadastro jurídico para medir formalização.')
+            st.info('Sem dados suficientes para formalização por receita.')
+    else:
+        st.info('Sem coluna de cadastro jurídico para medir formalização.')
 
 
 
