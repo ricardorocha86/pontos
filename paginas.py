@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import streamlit as st
 import plotly.express as px
@@ -72,6 +73,33 @@ def grafico_abrangencia_empilhado(filtrado):
     fig.update_xaxes(title='', categoryorder='array', categoryarray=list(variaveis))
     fig.update_yaxes(title='', range=[0, 1])
     return fig
+
+
+CAMINHO_CEPS_GEO = 'assets/ceps_geocodificados.csv'
+
+
+@st.cache_data(show_spinner=False)
+def carregar_ceps_geocodificados():
+    if not os.path.exists(CAMINHO_CEPS_GEO):
+        return pd.DataFrame(columns=['cep', 'latitude', 'longitude'])
+    df = pd.read_csv(CAMINHO_CEPS_GEO, encoding='utf-8-sig')
+    df['cep'] = df['cep'].astype(str).str.replace(r'\D', '', regex=True).str.zfill(8)
+    df['latitude'] = pd.to_numeric(df['latitude'], errors='coerce')
+    df['longitude'] = pd.to_numeric(df['longitude'], errors='coerce')
+    return df.dropna(subset=['latitude', 'longitude'])
+
+
+@st.cache_data(show_spinner=False)
+def geocodificar_ceps(ceps):
+    serie = pd.Series(ceps).dropna().astype(str).str.replace(r'\D', '', regex=True).str.zfill(8)
+    if serie.empty:
+        return pd.DataFrame(columns=['cep', 'latitude', 'longitude'])
+    dados = carregar_ceps_geocodificados()
+    if dados.empty:
+        return pd.DataFrame(columns=['cep', 'latitude', 'longitude'])
+    df = pd.DataFrame({'cep': serie}).merge(dados, on='cep', how='left')
+    df = df.dropna(subset=['latitude', 'longitude'])
+    return df.drop_duplicates(subset=['cep', 'latitude', 'longitude'])
 
 
 def serie_multiselecionada(filtrado, dicionario):
@@ -517,6 +545,24 @@ def pagina_perfil_institucional():
                     textos = [f'{v} ({(v / total_registros):.1%})' for v in serie.tolist()]
                     fig_micro.update_traces(text=textos, textposition='outside', cliponaxis=False)
                     mostrar_grafico(fig_micro, f'Visão micro: {escolha}')
+
+    st.divider()
+    st.subheader('Pins por CEP (teste)')
+    st.caption('Teste de pontos geolocalizados por CEP para validar a dispersão territorial dos Pontos de Cultura.')
+    if 'cep_corrigido' in filtrado.columns:
+        if not os.path.exists(CAMINHO_CEPS_GEO):
+            st.info('Arquivo de CEPs geocodificados não encontrado. Rode o script para gerar.')
+        else:
+            df_pins = geocodificar_ceps(filtrado['cep_corrigido'])
+            if not df_pins.empty:
+                fig_ceps = px.scatter_mapbox(df_pins, lat='latitude', lon='longitude', hover_name='cep', zoom=3.2, center={'lat': -15, 'lon': -55}, height=620)
+                fig_ceps.update_traces(marker=dict(size=6, color=PALETA_CORES['azul_principal']))
+                fig_ceps.update_layout(mapbox_style='carto-positron', margin=dict(l=0, r=0, t=40, b=0))
+                mostrar_grafico(fig_ceps, 'Pins por CEP (teste)')
+            else:
+                st.info('Não foi possível localizar CEPs válidos para o mapa.')
+    else:
+        st.info('Coluna de CEP não encontrada.')
 
 
 def pagina_capacidade_infraestrutura():
