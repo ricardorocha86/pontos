@@ -144,7 +144,32 @@ def pagina_visao_geral_dados():
         'regiao',
         'cidade_api'
     ] if c in filtrado.columns]
-    st.dataframe(filtrado[colunas], use_container_width=True)
+    col_mapa, col_tabela = st.columns([1, 2])
+    with col_mapa:
+        if 'cep_corrigido' in filtrado.columns:
+            if not os.path.exists(CAMINHO_CEPS_GEO):
+                st.info('Arquivo de CEPs geocodificados não encontrado. Rode o script para gerar.')
+            else:
+                df_pins = geocodificar_ceps(filtrado['cep_corrigido'])
+                if not df_pins.empty:
+                    fig_ceps = px.scatter_mapbox(
+                        df_pins,
+                        lat='latitude',
+                        lon='longitude',
+                        hover_name='cep',
+                        zoom=3.2,
+                        center={'lat': -15, 'lon': -55},
+                        height=560
+                    )
+                    fig_ceps.update_traces(marker=dict(size=7, color=PALETA_CORES['azul_principal'], opacity=0.7))
+                    fig_ceps.update_layout(mapbox_style='carto-positron', margin=dict(l=0, r=0, t=40, b=0))
+                    mostrar_grafico(fig_ceps, 'Pins por CEP')
+                else:
+                    st.info('Não foi possível localizar CEPs válidos para o mapa.')
+        else:
+            st.info('Coluna de CEP não encontrada.')
+    with col_tabela:
+        st.dataframe(filtrado[colunas], use_container_width=True, height=560)
 
 
 def painel_filtros(df, chave_pagina):
@@ -546,23 +571,6 @@ def pagina_perfil_institucional():
                     textos = [f'{v} ({(v / total_registros):.1%})' for v in serie.tolist()]
                     fig_micro.update_traces(text=textos, textposition='outside', cliponaxis=False)
                     mostrar_grafico(fig_micro, f'Visão micro: {escolha}')
-
-    st.divider()
-    if 'cep_corrigido' in filtrado.columns:
-        if not os.path.exists(CAMINHO_CEPS_GEO):
-            st.info('Arquivo de CEPs geocodificados não encontrado. Rode o script para gerar.')
-        else:
-            df_pins = geocodificar_ceps(filtrado['cep_corrigido'])
-            if not df_pins.empty:
-                fig_ceps = px.scatter_mapbox(df_pins, lat='latitude', lon='longitude', hover_name='cep', zoom=3.2, center={'lat': -15, 'lon': -55}, height=620)
-                fig_ceps.update_traces(marker=dict(size=6, color=PALETA_CORES['azul_principal']))
-                fig_ceps.update_layout(mapbox_style='carto-positron', margin=dict(l=0, r=0, t=40, b=0))
-                mostrar_grafico(fig_ceps, 'Pins por CEP (teste)')
-            else:
-                st.info('Não foi possível localizar CEPs válidos para o mapa.')
-    else:
-        st.info('Coluna de CEP não encontrada.')
-
 
 def pagina_capacidade_infraestrutura():
     mostrar_cabecalho()
