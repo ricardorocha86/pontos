@@ -1,0 +1,28 @@
+﻿# Python cache / build
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Streamlit local secrets
+.streamlit/secrets.toml
+
+# Local agent/tooling (não publicar)
+.agent/
+
+# Temporary / backup data files
+base_final0.csv
+base.xlsx
+
+# Logs
+*.log
