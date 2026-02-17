@@ -213,7 +213,7 @@ def _carregar_gdf_estados():
     return gdf
 
 
-@st.cache_data(show_spinner='Carregando malha municipalâ€¦')
+@st.cache_data(show_spinner=False)
 def _carregar_gdf_municipios():
     """GeoDataFrame via geobr (cacheado)."""
     import geobr

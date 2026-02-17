@@ -1,6 +1,9 @@
+﻿import html
+
 import streamlit as st
 
 from config import FAIXAS_RECEITA, ORDEM_FAIXA_POPULACIONAL
+from texto_para_filtros import interpretar_solicitacao_texto, tem_algum_filtro
 from utils import ACOES_ESTRUTURANTES, aplicar_filtros
 
 
@@ -21,6 +24,29 @@ def _card_status(label, atual, total):
     """
 
 
+def _limitar_itens(valores, max_itens=5):
+    lista = [str(v) for v in valores if v is not None and str(v).strip()]
+    if len(lista) <= max_itens:
+        return lista, 0
+    return lista[:max_itens], len(lista) - max_itens
+
+
+def _renderizar_chips_sidebar(st_container, titulo, valores, max_itens=5):
+    exibidos, restantes = _limitar_itens(valores, max_itens=max_itens)
+    if not exibidos:
+        return
+
+    chips = ''.join(
+        f'<span class="cv-chip">{html.escape(item)}</span>'
+        for item in exibidos
+    )
+    if restantes > 0:
+        chips += f'<span class="cv-chip cv-chip-more">... (+{restantes})</span>'
+
+    st_container.markdown(f'<div class="cv-chip-title">{html.escape(titulo)}:</div>', unsafe_allow_html=True)
+    st_container.markdown(f'<div class="cv-chip-wrap">{chips}</div>', unsafe_allow_html=True)
+
+
 def renderizar_painel_filtros(df):
     """
     Renderiza o painel de filtros e salva em st.session_state['filtros_globais'].
@@ -31,6 +57,11 @@ def renderizar_painel_filtros(df):
 
     def get_key(base):
         return f'input_{ui_version}_{base}'
+
+    pending_texto_filtros = st.session_state.pop('_texto_para_filtros_pending', None)
+    if isinstance(pending_texto_filtros, dict):
+        for base, valor in pending_texto_filtros.items():
+            st.session_state[get_key(base)] = valor
 
     header_text = 'Painel de Filtros'
 
@@ -60,15 +91,144 @@ def renderizar_painel_filtros(df):
                 return texto.split('(', 1)[1].rsplit(')', 1)[0].strip()
             return texto.replace(pergunta_acao, '').strip(' -')
 
+        opcoes_estado = sorted(df['estado'].dropna().unique())
+        opcoes_regiao = sorted(df['regiao'].dropna().unique())
+        opcoes_municipio_todas = sorted(df['cidade'].dropna().unique())
+        opcoes_tipo = sorted(df['tipo_ponto'].dropna().unique())
+        opcoes_registro = sorted(df['registro'].dropna().unique())
+
+        mapa_acao_rotulo_coluna = {}
+        for coluna_acao in colunas_acao:
+            rotulo = rotulo_acao(coluna_acao)
+            if rotulo and rotulo not in mapa_acao_rotulo_coluna:
+                mapa_acao_rotulo_coluna[rotulo] = coluna_acao
+        opcoes_acao_texto = list(mapa_acao_rotulo_coluna.keys())
+
+        feedback_texto = st.session_state.pop('_texto_para_filtros_feedback', None)
+        if isinstance(feedback_texto, dict) and feedback_texto.get('texto'):
+            tipo_feedback = feedback_texto.get('tipo', 'info')
+            texto_feedback = feedback_texto['texto']
+            if tipo_feedback == 'success':
+                st.toast(texto_feedback, icon='✅')
+            elif tipo_feedback == 'warning':
+                st.warning(texto_feedback)
+            elif tipo_feedback == 'error':
+                st.error(texto_feedback)
+            else:
+                st.info(texto_feedback)
+
+        st.markdown(
+            """
+            <style>
+            .st-key-assistente_filtros_texto {
+                background: #e2efff;
+                border: 1px solid #c9defb;
+                border-radius: 0.75rem;
+                padding: 0.9rem 0.9rem 0.55rem 0.9rem;
+                margin-bottom: 0.8rem;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+        with st.container(key='assistente_filtros_texto'):
+            st.markdown('#### 🧪 Assistente de Filtros por Texto')
+            st.caption('Escreva o recorte que deseja analisar. O assistente interpreta sua solicitação e preenche os filtros automaticamente.')
+            texto_solicitacao = st.text_input(
+                'Descreva o seu filtro:',
+                key='texto_para_filtros_input',
+                placeholder='Ex.: pontões das capitais do Nordeste com recursos federais.',
+            )
+            col_botao_texto, _ = st.columns([1, 4])
+            aplicar_texto = col_botao_texto.button(
+                'Aplicar filtros',
+                key='aplicar_texto_para_filtros',
+                use_container_width=True,
+            )
+
+            if aplicar_texto:
+                if not texto_solicitacao.strip():
+                    st.warning('Digite uma solicitação para aplicar os filtros automaticamente.')
+                else:
+                    catalogo_llm = {
+                        'estado': opcoes_estado,
+                        'regiao': opcoes_regiao,
+                        'municipio': opcoes_municipio_todas,
+                        'faixa_populacional': [f for f in ORDEM_FAIXA_POPULACIONAL if f in df['faixa_populacional'].unique()],
+                        'acoes_estruturantes': opcoes_acao_texto,
+                        'linguagem_artistica': opcoes_linguagens,
+                        'faixa_receita': FAIXAS_RECEITA,
+                        'tipo_ponto': opcoes_tipo,
+                        'registro': opcoes_registro,
+                        'filtros_booleanos': ['Sim', 'Não'],
+                    }
+
+                    with st.spinner('Analisando sua solicitação...', show_time=True):
+                        resultado_llm = interpretar_solicitacao_texto(texto_solicitacao, catalogo_llm)
+
+                    if resultado_llm['status'] == 'erro':
+                        st.error(resultado_llm['mensagem'])
+                    elif resultado_llm['status'] == 'invalida':
+                        st.warning(resultado_llm['mensagem'])
+                    else:
+                        filtros_llm = resultado_llm['filtros']
+                        selecao_widgets = {
+                            'estado': filtros_llm['estado'],
+                            'regiao': filtros_llm['regiao'],
+                            'municipio': filtros_llm['municipio'],
+                            'pop': filtros_llm['faixa_populacional'],
+                            'acao': [
+                                mapa_acao_rotulo_coluna[rotulo]
+                                for rotulo in filtros_llm['acoes_estruturantes']
+                                if rotulo in mapa_acao_rotulo_coluna
+                            ],
+                            'linguagem': filtros_llm['linguagem_artistica'],
+                            'receita': filtros_llm['faixa_receita'],
+                            'tipo': filtros_llm['tipo_ponto'],
+                            'registro': filtros_llm['registro'],
+                            'rec_fed': filtros_llm['rec_federal'],
+                            'rec_minc': filtros_llm['rec_minc'],
+                            'rec_est': filtros_llm['rec_estadual'],
+                            'rec_mun': filtros_llm['rec_municipal'],
+                            'pnab_est': filtros_llm['pnab_estadual'],
+                            'pnab_mun': filtros_llm['pnab_municipal'],
+                            'tcc_est_p': filtros_llm['tcc_est_ponto'],
+                            'tcc_est_pt': filtros_llm['tcc_est_pontao'],
+                            'tcc_mun_p': filtros_llm['tcc_mun_ponto'],
+                            'tcc_mun_pt': filtros_llm['tcc_mun_pontao'],
+                        }
+
+                        if selecao_widgets['estado']:
+                            cidades_validas_estado = sorted(
+                                df[df['estado'].isin(selecao_widgets['estado'])]['cidade'].dropna().unique()
+                            )
+                            selecao_widgets['municipio'] = [
+                                cidade for cidade in selecao_widgets['municipio'] if cidade in cidades_validas_estado
+                            ]
+
+                        if not tem_algum_filtro(filtros_llm):
+                            st.info(
+                                'Não encontrei correspondência para essa solicitação com os filtros disponíveis na base atual.'
+                            )
+                        else:
+                            st.session_state['_texto_para_filtros_pending'] = selecao_widgets
+                            st.session_state['_texto_para_filtros_feedback'] = {
+                                'tipo': 'success',
+                                'texto': 'Solicitação aplicada com sucesso. Os filtros foram preenchidos automaticamente.',
+                            }
+                            st.session_state['_filtros_ui_version'] = st.session_state.get('_filtros_ui_version', 0) + 1
+                            st.rerun()
+
+        st.markdown('#### Dados de Cadastro')
         c1, c2, c3 = st.columns(3)
-        sel_estados = c1.multiselect('Estado', options=sorted(df['estado'].dropna().unique()), placeholder='Todos', key=get_key('estado'))
+        sel_estados = c1.multiselect('Estado', options=opcoes_estado, placeholder='Todos', key=get_key('estado'))
 
         cidades_disponiveis = df['cidade'].dropna().unique()
         if sel_estados:
             cidades_disponiveis = df[df['estado'].isin(sel_estados)]['cidade'].dropna().unique()
 
         sel_cidades = c1.multiselect('Município', options=sorted(cidades_disponiveis), placeholder='Todos', key=get_key('municipio'))
-        sel_regiao = c3.pills('Região', options=sorted(df['regiao'].dropna().unique()), selection_mode='multi', key=get_key('regiao'))
+        sel_regiao = c3.pills('Região', options=opcoes_regiao, selection_mode='multi', key=get_key('regiao'))
 
         opcoes_faixa_pop = [f for f in ORDEM_FAIXA_POPULACIONAL if f in df['faixa_populacional'].unique()]
         sel_pop = c1.multiselect('Faixa populacional', options=opcoes_faixa_pop, placeholder='Todas', key=get_key('pop'))
@@ -77,23 +237,86 @@ def renderizar_painel_filtros(df):
         sel_linguagem = c2.multiselect('Linguagem artística', options=opcoes_linguagens, placeholder='Todas', key=get_key('linguagem'))
         sel_receita = c2.multiselect('Faixa de receita anual', options=FAIXAS_RECEITA, placeholder='Todas', key=get_key('receita'))
 
-        sel_tipo = c3.pills('Tipo de reconhecimento', options=sorted(df['tipo_ponto'].dropna().unique()), selection_mode='single', key=get_key('tipo'))
-        sel_registro = c3.pills('Cadastro jurídico', options=sorted(df['registro'].dropna().unique()), selection_mode='single', key=get_key('registro'))
+        sel_tipo = c3.pills('Tipo de reconhecimento', options=opcoes_tipo, selection_mode='single', key=get_key('tipo'))
+        sel_registro = c3.pills('Cadastro jurídico', options=opcoes_registro, selection_mode='single', key=get_key('registro'))
 
-        st.markdown('---')
-        st.caption('Filtros Específicos')
+        st.markdown('#### Acesso a Recursos')
 
-        b1, b2, b3, b4, b5, b6, b7, b8, b9, b10 = st.columns(10)
-        rec_federal = b1.pills('Rec. Federal', ['Sim', 'Não'], key=get_key('rec_fed'))
-        rec_minc = b2.pills('Rec. MinC', ['Sim', 'Não'], key=get_key('rec_minc'))
-        rec_estadual = b3.pills('Rec. Estadual', ['Sim', 'Não'], key=get_key('rec_est'))
-        rec_municipal = b4.pills('Rec. Municipal', ['Sim', 'Não'], key=get_key('rec_mun'))
-        pnab_estadual = b5.pills('PNAB Est.', ['Sim', 'Não'], key=get_key('pnab_est'))
-        pnab_municipal = b6.pills('PNAB Mun.', ['Sim', 'Não'], key=get_key('pnab_mun'))
-        tcc_est_ponto = b7.pills('TCC Est. Ponto', ['Sim', 'Não'], key=get_key('tcc_est_p'))
-        tcc_est_pontao = b8.pills('TCC Est. Pontão', ['Sim', 'Não'], key=get_key('tcc_est_pt'))
-        tcc_mun_ponto = b9.pills('TCC Mun. Ponto', ['Sim', 'Não'], key=get_key('tcc_mun_p'))
-        tcc_mun_pontao = b10.pills('TCC Mun. Pontão', ['Sim', 'Não'], key=get_key('tcc_mun_pt'))
+        linha_1 = st.columns(5)
+        linha_2 = st.columns(5)
+        opcoes_bool = ['Sim', 'Não']
+
+        rec_federal = linha_1[0].pills(
+            'Recursos Federais',
+            opcoes_bool,
+            key=get_key('rec_fed'),
+            help='Indica se o Ponto de Cultura acessou recursos federais nos últimos 24 meses.',
+            width='stretch',
+        )
+        rec_minc = linha_1[1].pills(
+            'Editais do Ministério da Cultura',
+            opcoes_bool,
+            key=get_key('rec_minc'),
+            help='Indica se o Ponto de Cultura acessou editais do Ministério da Cultura (MinC).',
+            width='stretch',
+        )
+        rec_estadual = linha_1[2].pills(
+            'Recursos Estaduais',
+            opcoes_bool,
+            key=get_key('rec_est'),
+            help='Indica se o Ponto de Cultura acessou recursos estaduais nos últimos 24 meses.',
+            width='stretch',
+        )
+        rec_municipal = linha_1[3].pills(
+            'Recursos Municipais',
+            opcoes_bool,
+            key=get_key('rec_mun'),
+            help='Indica se o Ponto de Cultura acessou recursos municipais nos últimos 24 meses.',
+            width='stretch',
+        )
+        pnab_estadual = linha_1[4].pills(
+            'PNAB Estadual',
+            opcoes_bool,
+            key=get_key('pnab_est'),
+            help='Indica se o Ponto de Cultura acessou editais estaduais da PNAB (Política Nacional Aldir Blanc de Fomento à Cultura).',
+            width='stretch',
+        )
+
+        pnab_municipal = linha_2[0].pills(
+            'PNAB Municipal',
+            opcoes_bool,
+            key=get_key('pnab_mun'),
+            help='Indica se o Ponto de Cultura acessou editais municipais da PNAB (Política Nacional Aldir Blanc de Fomento à Cultura).',
+            width='stretch',
+        )
+        tcc_est_ponto = linha_2[1].pills(
+            'TCC Estadual (Ponto)',
+            opcoes_bool,
+            key=get_key('tcc_est_p'),
+            help='Indica se o Ponto de Cultura acessou a modalidade TCC estadual para Ponto de Cultura.',
+            width='stretch',
+        )
+        tcc_est_pontao = linha_2[2].pills(
+            'TCC Estadual (Pontão)',
+            opcoes_bool,
+            key=get_key('tcc_est_pt'),
+            help='Indica se o Ponto de Cultura acessou a modalidade TCC estadual para Pontão de Cultura.',
+            width='stretch',
+        )
+        tcc_mun_ponto = linha_2[3].pills(
+            'TCC Municipal (Ponto)',
+            opcoes_bool,
+            key=get_key('tcc_mun_p'),
+            help='Indica se o Ponto de Cultura acessou a modalidade TCC municipal para Ponto de Cultura.',
+            width='stretch',
+        )
+        tcc_mun_pontao = linha_2[4].pills(
+            'TCC Municipal (Pontão)',
+            opcoes_bool,
+            key=get_key('tcc_mun_pt'),
+            help='Indica se o Ponto de Cultura acessou a modalidade TCC municipal para Pontão de Cultura.',
+            width='stretch',
+        )
 
     filtros = {
         'estado': sel_estados,
@@ -139,6 +362,42 @@ def renderizar_painel_filtros(df):
 
     with st.sidebar:
         st.header('Status da Seleção')
+        st.markdown(
+            """
+            <style>
+            .cv-chip-wrap {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.25rem;
+                margin: 0.08rem 0 0.42rem 0;
+            }
+            .cv-chip-title {
+                margin: 0.22rem 0 0 0;
+                font-size: 0.86rem;
+                font-weight: 600;
+                color: #2f4664;
+                line-height: 1.05rem;
+            }
+            .cv-chip {
+                display: inline-block;
+                padding: 0.08rem 0.52rem;
+                border-radius: 999px;
+                border: 1px solid #c9d2e0;
+                background: #f2f5fa;
+                color: #2f4664;
+                font-size: 0.76rem;
+                line-height: 1.05rem;
+                white-space: nowrap;
+            }
+            .cv-chip-more {
+                background: #e5ebf5;
+                color: #334a68;
+                font-weight: 600;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
         c1, c2 = st.columns(2)
         with c1:
@@ -153,50 +412,48 @@ def renderizar_painel_filtros(df):
             st.markdown('### Filtros Ativos:')
 
             if sel_regiao:
-                st.write(f"**Região:** {', '.join(sel_regiao)}")
+                _renderizar_chips_sidebar(st, 'Região', sel_regiao)
             if sel_estados:
-                st.write(f"**Estado:** {', '.join(sel_estados)}")
+                _renderizar_chips_sidebar(st, 'Estado', sel_estados)
             if sel_cidades:
-                st.write(f'**Município:** {len(sel_cidades)} cidades selecionadas')
+                _renderizar_chips_sidebar(st, 'Município', sel_cidades)
             if sel_pop:
-                st.write(f'**População:** {len(sel_pop)} faixas')
+                _renderizar_chips_sidebar(st, 'População', sel_pop)
             if sel_tipo:
-                st.write(f'**Tipo:** {sel_tipo}')
+                _renderizar_chips_sidebar(st, 'Tipo', [sel_tipo], max_itens=1)
             if sel_registro:
-                st.write(f'**Jurídico:** {sel_registro}')
+                _renderizar_chips_sidebar(st, 'Jurídico', [sel_registro], max_itens=1)
             if sel_acao:
-                st.write(f'**Ação Estruturante:** {len(sel_acao)} selec.')
+                _renderizar_chips_sidebar(st, 'Ação Estruturante', [rotulo_acao(item) for item in sel_acao])
             if sel_linguagem:
-                st.write(f'**Linguagem:** {len(sel_linguagem)} selec.')
+                _renderizar_chips_sidebar(st, 'Linguagem', sel_linguagem)
             if sel_receita:
-                st.write(f'**Receita:** {len(sel_receita)} faixas')
+                _renderizar_chips_sidebar(st, 'Receita', sel_receita)
 
             bool_active = []
             if rec_federal in ['Sim', 'Não']:
-                bool_active.append(f"Rec. Federal: {rec_federal}")
+                bool_active.append(f"Recursos Federais: {rec_federal}")
             if rec_minc in ['Sim', 'Não']:
-                bool_active.append(f"Rec. MinC: {rec_minc}")
+                bool_active.append(f"Editais do Ministério da Cultura: {rec_minc}")
             if rec_estadual in ['Sim', 'Não']:
-                bool_active.append(f"Rec. Estadual: {rec_estadual}")
+                bool_active.append(f"Recursos Estaduais: {rec_estadual}")
             if rec_municipal in ['Sim', 'Não']:
-                bool_active.append(f"Rec. Municipal: {rec_municipal}")
+                bool_active.append(f"Recursos Municipais: {rec_municipal}")
             if pnab_estadual in ['Sim', 'Não']:
-                bool_active.append(f"PNAB Est.: {pnab_estadual}")
+                bool_active.append(f"PNAB Estadual: {pnab_estadual}")
             if pnab_municipal in ['Sim', 'Não']:
-                bool_active.append(f"PNAB Mun.: {pnab_municipal}")
+                bool_active.append(f"PNAB Municipal: {pnab_municipal}")
             if tcc_est_ponto in ['Sim', 'Não']:
-                bool_active.append(f"TCC Est. Ponto: {tcc_est_ponto}")
+                bool_active.append(f"TCC Estadual (Ponto): {tcc_est_ponto}")
             if tcc_est_pontao in ['Sim', 'Não']:
-                bool_active.append(f"TCC Est. Pontão: {tcc_est_pontao}")
+                bool_active.append(f"TCC Estadual (Pontão): {tcc_est_pontao}")
             if tcc_mun_ponto in ['Sim', 'Não']:
-                bool_active.append(f"TCC Mun. Ponto: {tcc_mun_ponto}")
+                bool_active.append(f"TCC Municipal (Ponto): {tcc_mun_ponto}")
             if tcc_mun_pontao in ['Sim', 'Não']:
-                bool_active.append(f"TCC Mun. Pontão: {tcc_mun_pontao}")
+                bool_active.append(f"TCC Municipal (Pontão): {tcc_mun_pontao}")
 
             if bool_active:
-                st.write("**Específicos:**")
-                for item in bool_active:
-                    st.write(f"- {item}")
+                _renderizar_chips_sidebar(st, 'Específicos', bool_active)
 
         # Verificar se há qualquer filtro ativo para habilitar o reset
         any_filter_active = any([
@@ -215,12 +472,18 @@ def renderizar_painel_filtros(df):
             tcc_mun_pontao in ['Sim', 'Não'],
         ])
 
+        st.markdown('<div style="height: 0.75rem;"></div>', unsafe_allow_html=True)
         if st.button('Resetar filtros', use_container_width=True, disabled=not any_filter_active):
             keys_reset = [k for k in st.session_state.keys() if k.startswith('input_')]
             for key in keys_reset:
                 st.session_state.pop(key, None)
             st.session_state.pop('filtros_globais', None)
+            st.session_state.pop('_texto_para_filtros_pending', None)
+            st.session_state.pop('_texto_para_filtros_feedback', None)
             st.session_state['_filtros_ui_version'] = st.session_state.get('_filtros_ui_version', 0) + 1
             st.rerun()
 
     return filtros
+
+
+

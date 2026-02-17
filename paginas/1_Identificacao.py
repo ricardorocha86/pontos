@@ -128,15 +128,33 @@ def _classificar_presenca_digital(df, coluna_rede):
     return contagens[contagens > 0]
 
 
+def _aplicar_layout_donut_identificacao(fig):
+    fig.update_traces(textposition='inside', textinfo='percent')
+    fig.update_layout(
+        showlegend=True,
+        margin=dict(l=8, r=8, t=56, b=96),
+        legend=dict(
+            orientation='v',
+            yanchor='top',
+            y=-0.14,
+            xanchor='left',
+            x=0.0,
+        ),
+    )
+    return fig
+
+
 if _df.empty:
     st.warning('Sem dados para os filtros selecionados.')
 else:
-    visao = st.radio(
-        'visao_territorial',
-        ['Por Estado', 'Por Região', 'Por Município'],
-        horizontal=True,
-        label_visibility='collapsed',
-    )
+    opcoes_visao = ['Por Estado', 'Por Região', 'Por Município']
+    chave_visao = 'visao_territorial_mapa_identificacao'
+
+    if chave_visao not in st.session_state:
+        visao_inicial = st.session_state.get('visao_territorial', opcoes_visao[0])
+        st.session_state[chave_visao] = visao_inicial if visao_inicial in opcoes_visao else opcoes_visao[0]
+
+    visao = st.session_state[chave_visao]
 
     col_mapa, col_lateral = st.columns([1.6, 1.4])
 
@@ -158,11 +176,20 @@ else:
             plt.close(fig_mapa)
 
         else:
-            contagem_cidades = _df['cidade'].value_counts().reset_index()
-            contagem_cidades.columns = ['cidade', 'contagem']
-            fig_mapa = mapa_municipios_matplotlib(contagem_cidades)
+            with st.spinner('Montando mapa municipal...', show_time=True):
+                contagem_cidades = _df['cidade'].value_counts().reset_index()
+                contagem_cidades.columns = ['cidade', 'contagem']
+                fig_mapa = mapa_municipios_matplotlib(contagem_cidades)
             st.pyplot(fig_mapa, use_container_width=True)
             plt.close(fig_mapa)
+
+        st.radio(
+            'Visualização territorial do mapa',
+            opcoes_visao,
+            key=chave_visao,
+            horizontal=True,
+            label_visibility='collapsed',
+        )
 
     with col_lateral:
         p1, p2 = st.columns(2)
@@ -171,12 +198,7 @@ else:
             serie_registro = _serie_registro(_df)
             if not serie_registro.empty:
                 fig_registro = grafico_donut(serie_registro, 'CNPJ x CPF', altura=300)
-                fig_registro.update_traces(textposition='inside', textinfo='percent')
-                fig_registro.update_layout(
-                    showlegend=True,
-                    margin=dict(l=8, r=8, t=56, b=8),
-                    legend=dict(orientation='h', y=-0.12, x=0.0),
-                )
+                fig_registro = _aplicar_layout_donut_identificacao(fig_registro)
                 mostrar_grafico(fig_registro, 'CNPJ x CPF')
             else:
                 st.info('Sem dados de CNPJ/CPF.')
@@ -185,12 +207,7 @@ else:
             serie_tipo = _serie_tipo_ponto(_df)
             if not serie_tipo.empty:
                 fig_tipo = grafico_donut(serie_tipo, 'Ponto x Pontão', altura=300)
-                fig_tipo.update_traces(textposition='inside', textinfo='percent')
-                fig_tipo.update_layout(
-                    showlegend=True,
-                    margin=dict(l=8, r=8, t=56, b=8),
-                    legend=dict(orientation='h', y=-0.12, x=0.0),
-                )
+                fig_tipo = _aplicar_layout_donut_identificacao(fig_tipo)
                 mostrar_grafico(fig_tipo, 'Ponto x Pontão')
             else:
                 st.info('Sem dados de tipo de ponto.')
