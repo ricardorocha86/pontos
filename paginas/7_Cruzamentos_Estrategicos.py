@@ -72,15 +72,6 @@ def _serie_q33(df):
     return s
 
 
-def _serie_limitar_categorias(serie, max_categorias=12, label_outros="Outros"):
-    serie = serie.astype("object")
-    vc = serie.value_counts(dropna=True)
-    if len(vc) <= max_categorias:
-        return serie
-    manter = set(vc.head(max_categorias).index.tolist())
-    return serie.apply(lambda x: x if x in manter else label_outros)
-
-
 def _ordem_referencia_variavel(nome_variavel):
     ordens = {
         "Faixa de receita": list(FAIXAS_RECEITA),
@@ -181,7 +172,6 @@ with col_cfg:
         opcoes,
         index=opcoes.index("Faixa de receita") if "Faixa de receita" in opcoes else 1,
     )
-    limite_cat = st.selectbox("Máximo de Categorias", ["Todas", 8, 10, 12, 15, 20], index=3)
 
 if var_linha == var_coluna:
     with col_chart:
@@ -202,9 +192,6 @@ if df_cross.empty:
         st.info("Sem dados suficientes para esse cruzamento na amostra filtrada.")
     st.stop()
 
-if limite_cat != "Todas":
-    df_cross["linha"] = _serie_limitar_categorias(df_cross["linha"], max_categorias=int(limite_cat))
-    df_cross["coluna"] = _serie_limitar_categorias(df_cross["coluna"], max_categorias=int(limite_cat))
 
 ct_abs = pd.crosstab(df_cross["linha"], df_cross["coluna"])
 ordem_linha = _reordenar_labels(ct_abs.index.tolist(), _ordem_referencia_variavel(var_linha))

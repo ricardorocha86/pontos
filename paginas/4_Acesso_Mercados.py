@@ -14,6 +14,50 @@ from texto_wordcloud import gerar_wordcloud
 from utils import aplicar_filtros, para_bool, preparar_base
 
 
+DICIONARIO_PRODUTOS_SERVICOS = {
+    # Produtos
+    "Produtos  (Artesanato)": "Artesanato",
+    "Produtos  (Produtos de divulgação do ponto de cultura (camisetas, souvernirs, chaveiros etc))": "Produtos de divulgação do ponto de cultura (camisetas, souvernirs, chaveiros etc)",
+    "Produtos  (Instrumentos musicais)": "Instrumentos musicais",
+    "Produtos  (Produtos alimentícios beneficiados)": "Produtos alimentícios beneficiados",
+    "Produtos  (Alimentos in natura)": "Alimentos in natura",
+    "Produtos  (Vestuário)": "Vestuário",
+    "Produtos  (Outros)": "Outros (Produtos)",
+    "Produtos  (Obras artísticas (pinturas, esculturas, etc))": "Obras artísticas (pinturas, esculturas, etc)",
+    "Produtos  (Livros e publicações (revistas, catálogos, jornais e etc))": "Livros e publicações (revistas, catálogos, jornais e etc)",
+    # Serviços
+    "Serviços (Serviços educacionais (aulas, palestras oficinas, cursos etc))": "Serviços educacionais (aulas, palestras oficinas, cursos etc)",
+    "Serviços (Apresentações artísticas e eventos culturais)": "Apresentações artísticas e eventos culturais",
+    "Serviços (Gestão e produção cultural)": "Gestão e produção cultural",
+    "Serviços (Locação de espaços e equipamentos)": "Locação de espaços e equipamentos",
+    "Serviços (Serviços audiovisuais)": "Serviços audiovisuais",
+    "Serviços (Serviços de confecção têxtil (costura, figurinos, consertos etc))": "Serviços de confecção têxtil (costura, figurinos, consertos etc)",
+    "Serviços (Outros)": "Outros (Serviços)",
+}
+
+LISTA_PRODUTOS = [
+    "Artesanato",
+    "Produtos de divulgação do ponto de cultura (camisetas, souvernirs, chaveiros etc)",
+    "Instrumentos musicais",
+    "Produtos alimentícios beneficiados",
+    "Alimentos in natura",
+    "Vestuário",
+    "Outros (Produtos)",
+    "Obras artísticas (pinturas, esculturas, etc)",
+    "Livros e publicações (revistas, catálogos, jornais e etc)",
+]
+
+LISTA_SERVICOS = [
+    "Serviços educacionais (aulas, palestras oficinas, cursos etc)",
+    "Apresentações artísticas e eventos culturais",
+    "Gestão e produção cultural",
+    "Locação de espaços e equipamentos",
+    "Serviços audiovisuais",
+    "Serviços de confecção têxtil (costura, figurinos, consertos etc)",
+    "Outros (Serviços)",
+]
+
+
 def _aplicar_padrao_donut(fig):
     fig.update_traces(
         textposition="inside",
@@ -188,27 +232,33 @@ def _serie_multiselect_por_prefixo(df, prefixo_normalizado):
 
 def _serie_produtos(df):
     dados = {}
-    for col in df.columns:
-        col_norm = _norm_local(col)
-        if not col_norm.startswith("produtos ("):
+    rotulo_para_coluna = {}
+    for texto_coluna, rotulo in DICIONARIO_PRODUTOS_SERVICOS.items():
+        if rotulo not in LISTA_PRODUTOS:
             continue
-        if "(" not in str(col) or ")" not in str(col):
-            continue
-        rotulo = str(col).split("(", 1)[1].rsplit(")", 1)[0].strip()
-        dados[rotulo] = int(para_bool(df[col]).sum())
+        col = _encontrar_coluna_local(df.columns, texto_coluna)
+        rotulo_para_coluna[rotulo] = col
+
+    for rotulo in LISTA_PRODUTOS:
+        col = rotulo_para_coluna.get(rotulo)
+        dados[rotulo] = int(para_bool(df[col]).sum()) if col else 0
+
     return pd.Series(dados, dtype="int64")
 
 
 def _serie_servicos(df):
     dados = {}
-    for col in df.columns:
-        col_norm = _norm_local(col)
-        if not col_norm.startswith("servicos ("):
+    rotulo_para_coluna = {}
+    for texto_coluna, rotulo in DICIONARIO_PRODUTOS_SERVICOS.items():
+        if rotulo not in LISTA_SERVICOS:
             continue
-        if "(" not in str(col) or ")" not in str(col):
-            continue
-        rotulo = str(col).split("(", 1)[1].rsplit(")", 1)[0].strip()
-        dados[rotulo] = int(para_bool(df[col]).sum())
+        col = _encontrar_coluna_local(df.columns, texto_coluna)
+        rotulo_para_coluna[rotulo] = col
+
+    for rotulo in LISTA_SERVICOS:
+        col = rotulo_para_coluna.get(rotulo)
+        dados[rotulo] = int(para_bool(df[col]).sum()) if col else 0
+
     return pd.Series(dados, dtype="int64")
 
 
@@ -538,7 +588,7 @@ with tab2:
             serie_q23_plot, labels_q23 = _encurtar_serie_labels(serie_q23, limite=42)
             fig_q23 = grafico_barras_series(
                 serie_q23_plot,
-                "Principais dificuldades para acesso a mercados (Q23)",
+                "Top 8 Principais dificuldades para acesso a mercados (Q23)",
                 cor=PALETA_CORES["principais"][0],
                 horizontal=True,
                 altura=650,
@@ -550,7 +600,7 @@ with tab2:
             max_q23 = max(float(serie_q23.max()), 1.0)
             fig_q23.update_xaxes(range=[0, max_q23 * 1.15])
             fig_q23.update_layout(margin=dict(l=12, r=42, t=58, b=24))
-            mostrar_grafico(fig_q23, "Principais dificuldades para acesso a mercados (Q23)")
+            mostrar_grafico(fig_q23, "Top 8 Principais dificuldades para acesso a mercados (Q23)")
         else:
             st.info("Sem dados de dificuldades de comercialização (Q23) na amostra filtrada.")
 

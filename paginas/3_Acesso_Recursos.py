@@ -177,19 +177,43 @@ with tab_economia:
   }
   serie_publico_detalhe = _contar_colunas_booleanas(df, detalhe_publico_map).sort_values(ascending=True)
 
-  recursos_privados_map = {
-    "Empresas privadas": "15. 1. Se sim, quais recursos financeiros privados? (Recursos de Empresas Privadas)",
-    "OSC brasileiras": "15. 1. Se sim, quais recursos financeiros privados? (Organizações da Sociedade Civil - OSC brasileiras)",
-    "Editais internacionais": "15. 1. Se sim, quais recursos financeiros privados? (Editais de Organizações Internacionais)",
-    "Organismo internacional": "15. 1. Se sim, quais recursos financeiros privados? (Organismo de fomento internacional",
-    "Bancos de fomento": "15. 1. Se sim, quais recursos financeiros privados? (Bancos de fomento nacional",
-    "Sistema S": "15. 1. Se sim, quais recursos financeiros privados? (Sistema S",
-    "Rifas ou bingos": "15. 1. Se sim, quais recursos financeiros privados? (Rifas ou bingos)",
-    "Doações (vaquinha)": "15. 1. Se sim, quais recursos financeiros privados? (Doações via campanhas de pessoas físicas (vaquinha))",
-    "Festas arrecadação": "15. 1. Se sim, quais recursos financeiros privados? (Festas para arrecadação de recursos)",
-    "Campanhas em plataforma": "15. 1. Se sim, quais recursos financeiros privados? (Campanhas em plataforma virtuais:)",
+  dicionario_recursos_privados = {
+    "15. 1. Se sim, quais recursos financeiros privados? (Recursos de Empresas Privadas)": "Recursos de Empresas Privadas",
+    "15. 1. Se sim, quais recursos financeiros privados? (Organizações da Sociedade Civil - OSC brasileiras)": "Organizações da Sociedade Civil - OSC brasileiras",
+    "15. 1. Se sim, quais recursos financeiros privados? (Editais de Organizações Internacionais)": "Editais de Organizações Internacionais",
+    "15. 1. Se sim, quais recursos financeiros privados? (Rifas ou bingos)": "Rifas ou bingos",
+    "15. 1. Se sim, quais recursos financeiros privados? (Doações via campanhas de pessoas físicas (vaquinha))": "Doações via campanhas de pessoas físicas (vaquinha)",
+    "15. 1. Se sim, quais recursos financeiros privados? (Festas para arrecadação de recursos)": "Festas para arrecadação de recursos",
+    "15. 1. Se sim, quais recursos financeiros privados? (Campanhas em plataforma virtuais:)": "Campanhas em plataforma virtuais:",
+    "15. 1. Se sim, quais recursos financeiros privados? (Outros)": "Outros rec. de meio privado",
+    "15. 1. Se sim, quais recursos financeiros privados? (Organismo de fomento internacional (ONU, Bird, Banco Mundial, etc))": "Organismo de fomento internacional (ONU, Bird, Banco Mundial, etc)",
+    "15. 1. Se sim, quais recursos financeiros privados? (Bancos de fomento nacional (BNDES, BNB, Banco do Brasil, Caixa))": "Bancos de fomento nacional (BNDES, BNB, Banco do Brasil, Caixa)",
+    "15. 1. Se sim, quais recursos financeiros privados? (Sistema S (Sebrae, Senai, Sesi, Senac, Sesc))": "Sistema S (Sebrae, Senai, Sesi, Senac, Sesc)",
   }
-  serie_privados = _contar_colunas_booleanas(df, recursos_privados_map).sort_values(ascending=True)
+
+  total_amostra = len(df)
+  tabela_dados = []
+  acessaram_por_fonte = {}
+  for texto_coluna, nome_fonte in dicionario_recursos_privados.items():
+    coluna = encontrar_coluna(df.columns, texto_coluna)
+    acessaram_freq = int(para_bool(df[coluna]).sum()) if coluna else 0
+    nao_acessaram_freq = int(total_amostra - acessaram_freq)
+    acessaram_perc = (acessaram_freq / total_amostra) * 100 if total_amostra > 0 else 0.0
+    nao_acessaram_perc = (nao_acessaram_freq / total_amostra) * 100 if total_amostra > 0 else 0.0
+
+    tabela_dados.append(
+      {
+        "Fonte de Recurso Privado": nome_fonte,
+        "Acessaram (Freq.)": acessaram_freq,
+        "Acessaram (%)": f"{acessaram_perc:.2f}%",
+        "Não Acessaram (Freq.)": nao_acessaram_freq,
+        "Não Acessaram (%)": f"{nao_acessaram_perc:.2f}%",
+      }
+    )
+    acessaram_por_fonte[nome_fonte] = acessaram_freq
+
+  df_recursos_privados = pd.DataFrame(tabela_dados).sort_values(by="Acessaram (Freq.)", ascending=False)
+  serie_privados = pd.Series(acessaram_por_fonte, dtype="int64").sort_values(ascending=True)
 
   modalidade_map = {
     "Patrocínio": "15. Qual tipo de financiamento? (Patrocínio)",
@@ -285,12 +309,12 @@ with tab_economia:
     if not serie_publico_detalhe.empty and int(serie_publico_detalhe.sum()) > 0:
       fig_det_pub = grafico_barras_series(
         serie_publico_detalhe.tail(10),
-        "Instrumentos públicos mais acessados - Top 10 (Q14.1)",
+        "Top 10 Instrumentos públicos mais acessados (Q14.1)",
         cor=PALETA_CORES["secundarias"][2],
         horizontal=True,
         altura=430,
       )
-      mostrar_grafico(fig_det_pub, "Instrumentos públicos mais acessados - Top 10 (Q14.1)")
+      mostrar_grafico(fig_det_pub, "Top 10 Instrumentos públicos mais acessados (Q14.1)")
     else:
       st.info("Sem dados detalhados de instrumentos públicos na amostra filtrada.")
 
@@ -402,7 +426,7 @@ with tab_dificuldades:
       fig_q16 = grafico_barras_series(
         serie_q16_plot,
         "Principais dificuldades para acessar recursos públicos (Q16)",
-        cor=PALETA_CORES["principais"][0],
+        cor=PALETA_CORES["secundarias"][4],
         horizontal=True,
         altura=430,
       )
@@ -424,7 +448,7 @@ with tab_dificuldades:
       fig_q18_motivos = grafico_barras_series(
         serie_q18_plot,
         "Motivos para não acessar crédito (Q18.2)",
-        cor=PALETA_CORES["principais"][0],
+        cor=PALETA_CORES["secundarias"][2],
         horizontal=True,
         altura=430,
       )

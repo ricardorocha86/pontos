@@ -10,6 +10,7 @@ from filters import renderizar_painel_filtros
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title='Consultoria Cultura Viva - V2',
+    page_icon='assets/logo.png',
     layout='wide',
     initial_sidebar_state='expanded'
 )
@@ -179,8 +180,8 @@ st.markdown(f"""
         [data-testid="stExpander"] > details > summary {{
             background: linear-gradient(135deg, var(--cv-tab-start) 0%, var(--cv-tab-end) 100%) !important;
             color: #ffffff !important;
-            font-size: 1rem !important;
-            font-weight: 700 !important;
+            font-size: 1.12rem !important;
+            font-weight: 800 !important;
             padding: 0.82rem 1.02rem !important;
         }}
 
@@ -243,7 +244,7 @@ st.markdown(f"""
             box-shadow: 0 4px 10px rgba(7, 73, 171, 0.25);
         }}
 
-        /* BotÃµes */
+        /* Botões */
         .stButton > button {{
             border-radius: 10px;
             border: 1px solid #c8d6eb;
@@ -397,3 +398,4 @@ st.sidebar.caption("Use 'Salvar como PDF' na janela de impressão.")
 st.sidebar.divider()
 
 pg.run()
+

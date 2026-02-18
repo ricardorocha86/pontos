@@ -7,7 +7,7 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from utils import preparar_base, aplicar_filtros, para_bool, ACOES_ESTRUTURANTES
+from utils import preparar_base, aplicar_filtros, para_bool, ACOES_ESTRUTURANTES, encontrar_coluna
 from components import mostrar_grafico, grafico_barras_series, grafico_donut
 from config import PALETA_CORES, FONTE_FAMILIA, FONTE_TAMANHOS
 
@@ -101,11 +101,42 @@ with tab1:
             st.info("Sem dados de abrangência territorial.")
 
     with col_dir:
-        colunas_acao = [c for c in ACOES_ESTRUTURANTES if c in df.columns]
+        acoes_estruturantes = [
+            "Conhecimentos tradicionais",
+            "Cultura Hip Hop",
+            "Cultura Alimentar",
+            "Cultura Circense",
+            "Cultura Digital",
+            "Cultura e Mulheres",
+            "Cultura e Territórios Rurais",
+            "Cultura e Direitos Humanos",
+            "Cultura e Educação",
+            "Cultura e Juventude",
+            "Cultura e Meio Ambiente",
+            "Cultura e Saúde",
+            "Cultura Urbana e Direito à Cidade",
+            "Cultura, Territórios de Fronteira e Integração Latino-americana",
+            "Cultura, Comunicação e Mídia livre",
+            "Cultura, Infância e Adolescência",
+            "Culturas Populares",
+            "Culturas Tradicionais",
+            "Culturas de Matriz Africana",
+            "Culturas Indígenas",
+            "Economia criativa e solidária",
+            "Gênero e Diversidade",
+            "Intercâmbio e residências",
+            "Linguagens Artísticas",
+            "Livro, leitura e literatura",
+            "Memória e Patrimônio cultural",
+            "Mestres e Mestras das Culturas Tradicionais e Populares",
+            "Acessibilidade Cultural e Equidade",
+            "Outras ações estruturantes"
+        ]
+
+        colunas_acao = [c for c in acoes_estruturantes if c in df.columns]
         if colunas_acao:
-            contagens = {c: int(para_bool(df[c]).sum()) for c in colunas_acao if c != 'Sem ação estruturante'}
-            serie_acoes = pd.Series(contagens).sort_values(ascending=True)
-            top_acoes = serie_acoes.tail(15)
+            resultado = df[colunas_acao].sum().sort_values(ascending=False)
+            top_acoes = resultado.head(15).sort_values(ascending=True)
 
             # Encurta labels no eixo para aumentar área de barras no layout 40%
             def _encurtar_label(txt, limite=34):
@@ -150,57 +181,99 @@ with tab2:
     c1, c2 = st.columns([2, 3])
 
     with c1:
-        termos = df['linguagem_artistica'].fillna('').astype(str).str.split(',').explode().str.strip()
-        termos = termos.replace({'O Ponto de Cultura não trabalha com linguagens artísticas': 'Sem linguagens'})
-        termos = termos[termos != '']
-        top_linguagens = termos.value_counts().head(10)
+        colunas_linguagens = {
+            'Artes Visuais': 'categorias artes visuais',
+            'Audiovisual': 'Audiovisual',
+            'Dança': 'Dança',
+            'Teatro': 'Teatro',
+            'Música': 'Música',
+            'Literatura': 'Literatura',
+            'Circo': 'Circo',
+            'Hip Hop': 'Hip Hop',
+            'Outras linguagens artísticas': 'Outras linguagens artísticas',
+        }
+        dados_grafico = {}
+        for label, alvo in colunas_linguagens.items():
+            col = encontrar_coluna(df.columns, alvo)
+            dados_grafico[label] = int(df[col].notna().sum()) if col else 0
 
-        if not top_linguagens.empty:
-            fig_ling = grafico_donut(top_linguagens, "Top 10 Linguagens Predominantes", altura=450)
-            mostrar_grafico(fig_ling, "Top 10 Linguagens Predominantes")
+        freq_series = pd.Series(dados_grafico).sort_values(ascending=False)
+        freq_series = freq_series[freq_series > 0]
+
+        if not freq_series.empty:
+            total_amostra = max(len(df), 1)
+            fig_ling = go.Figure(
+                go.Bar(
+                    x=freq_series.index.tolist(),
+                    y=freq_series.values.tolist(),
+                    marker_color=PALETA_CORES['secundarias'][1],
+                    text=[
+                        f"{int(v)}<br>({(v / total_amostra) * 100:.1f}%)"
+                        for v in freq_series.values.tolist()
+                    ],
+                    textposition='outside',
+                    cliponaxis=False,
+                )
+            )
+            fig_ling.update_layout(height=450)
+            fig_ling.update_xaxes(title='')
+            fig_ling.update_yaxes(title='')
+            mostrar_grafico(fig_ling, "Linguagens artísticas predominantes dos Pontos de Cultura")
         else:
             st.info("Sem dados de linguagens.")
 
     with c2:
-        cols_q12 = [c for c in df.columns if str(c).strip().startswith("12.")]
+        variaveis_dimensoes = [
+            'Concepcao e Criacao',
+            'Formacao, Capacitacao e Educacao Cultural',
+            'Producao e Realizacao',
+            'Curadoria, Programacao e Organizacao de Eventos',
+            'Registro, Documentacao e Preservacao',
+            'Comunicacao e Divulgacao Cultura',
+            'Circulacao e Distribuicao',
+            'Comercializacao e Economia da Cultura',
+            'Consumo, Fruicao e Participacao',
+            'Propriedade Intelectual e Direitos Culturais',
+            'Captacao e Financiamento',
+            'Articulacao Institucional, Intersetorialidade e Governanca',
+            'Avaliacao, Monitoramento e Pesquisa Cultural',
+        ]
 
-        if cols_q12:
-            ecosistema_counts = {}
-            for col in cols_q12:
-                if df[col].dtype == object and df[col].str.contains(',').any():
-                    items = df[col].fillna('').astype(str).str.split(',').explode().str.strip()
-                    counts = items.value_counts()
-                    for k, v in counts.items():
-                        if k:
-                            ecosistema_counts[k] = ecosistema_counts.get(k, 0) + v
-                else:
-                    counts = df[col].value_counts()
-                    for k, v in counts.items():
-                        k_str = str(k)
-                        if k_str.lower() not in ['nan', 'none', '']:
-                            label = col.split('(')[-1].strip(')') if '(' in col else str(k)
-                            if len(cols_q12) == 1:
-                                label = str(k)
-                            ecosistema_counts[label] = ecosistema_counts.get(label, 0) + v
+        colunas_dim = [encontrar_coluna(df.columns, v) for v in variaveis_dimensoes]
+        colunas_dim = [c for c in colunas_dim if c is not None]
 
-            if ecosistema_counts:
-                s_eco = pd.Series(ecosistema_counts).sort_values(ascending=True).tail(10)
-                fig_eco = grafico_barras_series(
-                    s_eco,
-                    "Top 10 Elementos do Ecossistema Cultural",
-                    cor=PALETA_CORES['principais'][2],
-                    horizontal=True,
-                    altura=450
+        if colunas_dim:
+            dados_dim = df[colunas_dim]
+            contagens = dados_dim.notna().sum().sort_values(ascending=False)
+            base_relativa = int((dados_dim.notna().sum(axis=1) > 0).sum())
+
+            s_eco = contagens.sort_values(ascending=True)
+            if not s_eco.empty:
+                texto = [
+                    f"{int(v)}<br>({(v / base_relativa) * 100:.1f}%)" if base_relativa > 0 else f"{int(v)}"
+                    for v in s_eco.values
+                ]
+                fig_eco = go.Figure(
+                    go.Bar(
+                        x=s_eco.values,
+                        y=s_eco.index,
+                        orientation='h',
+                        marker_color=PALETA_CORES['principais'][2],
+                        text=texto,
+                        textposition='outside',
+                        cliponaxis=False,
+                    )
                 )
-                mostrar_grafico(fig_eco, "Top 10 Elementos do Ecossistema Cultural")
+                fig_eco.update_layout(height=450)
+                fig_eco.update_xaxes(title='')
+                fig_eco.update_yaxes(title='')
+                mostrar_grafico(fig_eco, "Dimensões do ecossistema cultural de atuação dos Pontos de Cultura")
             else:
                 st.info("Dados de ecossistema não processáveis.")
         else:
-            st.info("Questão 12 não encontrada nos dados.")
+            st.info("Dimensões do ecossistema cultural não encontradas na base.")
 
 with tab3:
-    st.markdown("Visão detalhada das categorias específicas dentro de cada linguagem.")
-
     DICIONARIO_MICRO = {
         'Artes visuais (Pintura)': 'Pintura',
         'Artes visuais (Escultura)': 'Escultura',

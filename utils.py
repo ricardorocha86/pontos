@@ -1,4 +1,4 @@
-import json
+﻿import json
 import re
 import unicodedata
 import os
@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from config import ESTADO_NOME_PARA_SIGLA, REGIOES_POR_UF, FAIXAS_RECEITA
+from config import REGIOES_POR_UF
 
 ACOES_ESTRUTURANTES = [
     'Sem ação estruturante',
@@ -103,12 +103,11 @@ def preparar_base(versao_cache='v2'):
     df.columns = [str(c) for c in df.columns]
 
     col_estado = encontrar_coluna(df.columns, 'Estado')
-    col_cidade = encontrar_coluna(df.columns, 'Cidade')
     col_cidade_api = encontrar_coluna(df.columns, 'cidade_api')
+    col_uf_api = encontrar_coluna(df.columns, 'uf_api')
     col_pontao = encontrar_coluna(df.columns, 'Pontão')
     col_registro = encontrar_coluna(df.columns, 'Registro')
-    col_regiao = encontrar_coluna(df.columns, 'regiao')
-    col_linguagem = encontrar_coluna(df.columns, '11. Se o Ponto de Cultura trabalha com linguagens artísticas, indique qual a predominante:')
+    col_linguagem = encontrar_coluna(df.columns, '11. Se o Ponto de Cultura trabalha com linguagens')
     col_receita = encontrar_coluna(df.columns, 'Receita anual')
     col_rec_federal = encontrar_coluna(df.columns, '14. 1. Se sim, quais? (Recursos Federais)')
     col_rec_estadual = encontrar_coluna(df.columns, '14. 1. Se sim, quais? (Recursos Estaduais)')
@@ -122,9 +121,12 @@ def preparar_base(versao_cache='v2'):
     col_tcc_mun_pontao = encontrar_coluna(df.columns, 'Indique qual modalidade de edital municipal da PNAB: (Termo de Compromisso Cultural (TCC) de Pontão de Cultura)')
 
     df['estado'] = df[col_estado] if col_estado else np.nan
-    df['cidade'] = df[col_cidade_api] if col_cidade_api else (df[col_cidade] if col_cidade else np.nan)
-    df['regiao'] = df[col_regiao] if col_regiao else df['estado'].map(lambda x: REGIOES_POR_UF.get(ESTADO_NOME_PARA_SIGLA.get(normalizar_texto(x), ''), np.nan))
-    df['uf'] = df['estado'].map(lambda x: ESTADO_NOME_PARA_SIGLA.get(normalizar_texto(x), x))
+    df['cidade'] = df[col_cidade_api] if col_cidade_api else np.nan
+    df['uf_api'] = df[col_uf_api] if col_uf_api else np.nan
+    df['uf_api'] = df['uf_api'].fillna('').astype(str).str.upper().str.strip()
+    df['uf_api'] = df['uf_api'].where(df['uf_api'].str.match(r'^[A-Z]{2}$'), np.nan)
+    df['regiao'] = df['uf_api'].map(lambda uf: REGIOES_POR_UF.get(uf, np.nan))
+    df['uf'] = df['uf_api']
     df['tipo_ponto'] = df[col_pontao].apply(lambda x: 'Pontão' if str(x).strip().lower() == 'sim' else 'Ponto') if col_pontao else np.nan
     df['registro'] = df[col_registro] if col_registro else np.nan
     df['linguagem_artistica'] = df[col_linguagem] if col_linguagem else np.nan
@@ -209,3 +211,4 @@ def carregar_geojson_estados():
     caminho = os.path.join(os.path.dirname(__file__), 'assets', 'br_states.json')
     with open(caminho, 'r', encoding='utf-8') as arquivo:
         return json.load(arquivo)
+

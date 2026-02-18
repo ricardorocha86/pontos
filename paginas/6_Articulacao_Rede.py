@@ -378,7 +378,7 @@ with aba2:
     if fig_gap is None:
         st.info("Sem dados suficientes para o comparativo de oferta x demanda.")
     else:
-        mostrar_grafico(fig_gap, "Lacuna estratégica entre oferta (Q35) e demanda (Q36)")
+        mostrar_grafico(fig_gap, "Top 12 Lacunas estratégicas entre oferta (Q35) e demanda (Q36)")
 
     col_dir_1, col_dir_2 = st.columns(2, gap="small")
 
@@ -391,12 +391,12 @@ with aba2:
             if not s_txt35.empty:
                 fig_txt35 = grafico_barras_series(
                     s_txt35,
-                    "Termos mais frequentes em Outros (Q35.1)",
+                    "Top 12 Termos mais frequentes em Outros (Q35.1)",
                     cor=PALETA_CORES["secundarias"][1],
                     horizontal=True,
                     altura=340,
                 )
-                mostrar_grafico(fig_txt35, "Termos mais frequentes em Outros (Q35.1)")
+                mostrar_grafico(fig_txt35, "Top 12 Termos mais frequentes em Outros (Q35.1)")
         else:
             st.info("Sem respostas textuais em Outros (Q35.1).")
 
@@ -409,11 +409,11 @@ with aba2:
             if not s_txt36.empty:
                 fig_txt36 = grafico_barras_series(
                     s_txt36,
-                    "Termos mais frequentes em Outros (Q36.1)",
+                    "Top 12 Termos mais frequentes em Outros (Q36.1)",
                     cor=PALETA_CORES["secundarias"][4],
                     horizontal=True,
                     altura=340,
                 )
-                mostrar_grafico(fig_txt36, "Termos mais frequentes em Outros (Q36.1)")
+                mostrar_grafico(fig_txt36, "Top 12 Termos mais frequentes em Outros (Q36.1)")
         else:
             st.info("Sem respostas textuais em Outros (Q36.1).")

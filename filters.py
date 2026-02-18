@@ -63,7 +63,7 @@ def renderizar_painel_filtros(df):
         for base, valor in pending_texto_filtros.items():
             st.session_state[get_key(base)] = valor
 
-    header_text = 'Painel de Filtros'
+    header_text = 'Painel de Filtros Estratégicos para Exploração e Recorte da Base de Pontos de Cultura'
 
     with st.expander(header_text, expanded=False):
         if 'linguagens_lista' in df.columns:

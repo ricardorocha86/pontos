@@ -19,7 +19,7 @@ from config import (CORES_GRAFICOS, PALETA_CORES, CORES_DINAMICAS,
                     FONTE_FAMILIA, FONTE_TAMANHOS, REGIOES_POR_UF)
 
 # ---------------------------------------------------------------------------
-# Layout-base global que Ã© aplicado em TODOS os grÃ¡ficos
+# Layout-base global que é aplicado em TODOS os gráficos
 # ---------------------------------------------------------------------------
 _FONT_GLOBAL = dict(
     family=FONTE_FAMILIA,
@@ -44,7 +44,7 @@ def mostrar_grafico(fig, subtitulo, config_extra=None, nota_rodape=None):
     if fig is None:
         return
 
-    # Aplica fonte global + padroniza tÃ­tulo / legenda
+    # Aplica fonte global + padroniza título / legenda
     fig.update_layout(
         title=dict(
             text=subtitulo,
@@ -62,7 +62,7 @@ def mostrar_grafico(fig, subtitulo, config_extra=None, nota_rodape=None):
         font=_FONT_GLOBAL
     )
 
-    # Garante que ticks e eixos tambÃ©m usem a fonte
+    # Garante que ticks e eixos também usem a fonte
     fig.update_xaxes(tickfont=dict(family=FONTE_FAMILIA, size=FONTE_TAMANHOS['tick']),
                      title_font=dict(family=FONTE_FAMILIA, size=FONTE_TAMANHOS['eixo']))
     fig.update_yaxes(tickfont=dict(family=FONTE_FAMILIA, size=FONTE_TAMANHOS['tick']),
@@ -164,7 +164,7 @@ def grafico_donut(serie, titulo, altura=400):
         textinfo='label+percent',
         insidetextorientation='horizontal',
         textfont=dict(family=FONTE_FAMILIA, size=FONTE_TAMANHOS['dado']),
-        hovertemplate='%{label}<br>FrequÃªncia: %{value}<br>%{percent}'
+        hovertemplate='%{label}<br>Frequência: %{value}<br>%{percent}'
     )
 
     fig.update_layout(showlegend=False)
@@ -221,7 +221,7 @@ def _carregar_gdf_municipios():
 
 
 # ---------------------------------------------------------------------------
-# MAPA DE ESTADOS  (fiel ao referÃªncia)
+# MAPA DE ESTADOS  (fiel ao referência)
 # ---------------------------------------------------------------------------
 
 # Ajustes de seta para estados pequenos (offsets em graus)
@@ -236,9 +236,9 @@ _AJUSTES_SETAS_ESTADOS = {
 
 def mapa_estados_matplotlib(df_contagem):
     """
-    Mapa coroplÃ©tico de estados â€“ idÃªntico ao arquivo de referÃªncia.
+    Mapa coroplético de estados – idêntico ao arquivo de referência.
 
-    ParÃ¢metros
+    Parâmetros
     ----------
     df_contagem : DataFrame com colunas ['uf', 'contagem'].
     """
@@ -269,7 +269,7 @@ def mapa_estados_matplotlib(df_contagem):
     _aplicar_titulo_mapa(ax, 'Distribuição dos Pontos de Cultura por Estado')
     ax.axis('off')
 
-    # ---- rÃ³tulos ----
+    # ---- rótulos ----
     mapa_proj = mapa.to_crs(epsg=5880)
     mapa['centroide'] = mapa_proj.geometry.centroid.to_crs(mapa.crs)
 
@@ -300,14 +300,15 @@ def mapa_estados_matplotlib(df_contagem):
     return fig
 
 
+
 # ---------------------------------------------------------------------------
-# MAPA DE REGIÃ•ES  (fiel ao referÃªncia)
+# MAPA DE REGIÕES  (fiel ao referência)
 # ---------------------------------------------------------------------------
 def mapa_regioes_matplotlib(df_contagem_regiao):
     """
-    Mapa coroplÃ©tico por regiÃ£o â€“ dissolve estados.
+    Mapa coroplético por região – dissolve estados.
 
-    ParÃ¢metros
+    Parâmetros
     ----------
     df_contagem_regiao : DataFrame com colunas ['regiao', 'contagem'].
     """
@@ -317,12 +318,12 @@ def mapa_regioes_matplotlib(df_contagem_regiao):
     df_contagem_regiao = df_contagem_regiao.copy()
     df_contagem_regiao['percentual'] = df_contagem_regiao['contagem'] / total
 
-    # mapear sigla â†’ nome da regiÃ£o
+    # mapear sigla → nome da região
     gdf['regiao_nome'] = gdf['SIGLA'].map(
         {k: REGIOES_POR_UF.get(k, '') for k in gdf['SIGLA']}
     )
 
-    # correÃ§Ã£o de topologia:  projetar â†’ buffer â†’ dissolve â†’ voltar
+    # correção de topologia:  projetar → buffer → dissolve → voltar
     gdf_temp = gdf.to_crs(epsg=5880)
     gdf_temp['geometry'] = gdf_temp.geometry.buffer(500)
     gdf_regioes = gdf_temp.dissolve(by='regiao_nome').reset_index()
@@ -348,7 +349,7 @@ def mapa_regioes_matplotlib(df_contagem_regiao):
     _aplicar_titulo_mapa(ax, 'Distribuição dos Pontos de Cultura por Região')
     ax.axis('off')
 
-    # ---- rÃ³tulos ----
+    # ---- rótulos ----
     mapa_proj = mapa.to_crs(epsg=5880)
     mapa['ponto_central'] = mapa_proj.geometry.representative_point().to_crs(mapa.crs)
 
@@ -368,15 +369,16 @@ def mapa_regioes_matplotlib(df_contagem_regiao):
     return fig
 
 
+
 # ---------------------------------------------------------------------------
-# MAPA DE MUNICÃPIOS  (fiel ao referÃªncia â€“ 3 camadas)
+# MAPA DE MUNICÍPIOS  (fiel ao referência – 3 camadas)
 # ---------------------------------------------------------------------------
 def mapa_municipios_matplotlib(df_contagem_cidades):
     """
-    Mapa coroplÃ©tico por municÃ­pio â€“ 3 camadas (fundo estadual,
-    municÃ­pios, bordas estaduais).
+    Mapa coroplético por município – 3 camadas (fundo estadual,
+    municípios, bordas estaduais).
 
-    ParÃ¢metros
+    Parâmetros
     ----------
     df_contagem_cidades : DataFrame com colunas ['cidade', 'contagem'].
     """
@@ -401,11 +403,11 @@ def mapa_municipios_matplotlib(df_contagem_cidades):
 
     formatter = FuncFormatter(lambda x, _: f'{x*100:.2f}%')
 
-    # CAMADA 1 â€“ estados como fundo cinza
+    # CAMADA 1 – estados como fundo cinza
     gdf_estados.plot(ax=ax, color='#F0F0F0', edgecolor='gray',
                      linewidth=0.5, zorder=1)
 
-    # CAMADA 2 â€“ municÃ­pios (dados)
+    # CAMADA 2 – municípios (dados)
     mapa_mun.plot(
         column='percentual', cmap=_CMAP_MAPA, ax=ax, cax=cax,
         legend=True, zorder=2,
@@ -417,7 +419,7 @@ def mapa_municipios_matplotlib(df_contagem_cidades):
 
     cax.tick_params(labelsize=14)
 
-    # CAMADA 3 â€“ bordas estaduais por cima
+    # CAMADA 3 – bordas estaduais por cima
     gdf_estados.plot(ax=ax, facecolor='none', edgecolor='gray',
                      linewidth=1.0, zorder=3)
 
@@ -570,9 +572,9 @@ def mapa_pontos_cluster_folium(df_pontos):
     cor_pontao = CORES_DINAMICAS['vermelho_principal'] # '#E43C2F'
 
     for _, row in df_valid.iterrows():
-        # ConteÃºdo do Popup e Tooltip
+        # Conteúdo do Popup e Tooltip
         # Tenta pegar o nome da coluna correta
-        col_nome = '1.1 Nome do Ponto/PontÃ£o de Cultura:'
+        col_nome = '1.1 Nome do Ponto/Pontão de Cultura:'
         nome = str(row.get(col_nome, row.get('Nome do Ponto de Cultura', 'Ponto Sem Nome')))
         cidade = str(row.get('cidade', ''))
         uf = str(row.get('uf', ''))
@@ -581,22 +583,24 @@ def mapa_pontos_cluster_folium(df_pontos):
         # HTML Simples no Popup
         popup_html = f"<b>{nome}</b><br>{cidade}-{uf}<br><i>{tipo}</i>"
         
-        # Estilo "BotÃ£o Bonito": CÃ­rculo SÃ³lido com Borda Branca
+        # Estilo "Botão Bonito": Círculo Sólido com Borda Branca
         # Usar cores HEX oficiais do projeto
-        cor_hex = cor_pontao if tipo == 'PontÃ£o' else cor_ponto
+        cor_hex = cor_pontao if tipo == 'Pontão' else cor_ponto
         
         folium.CircleMarker(
             location=[row['latitude'], row['longitude']],
             popup=folium.Popup(popup_html, max_width=300),
             tooltip=nome,          # Exibe nome ao repousar mouse (hover)
-            radius=8,              # Maior para parecer um botÃ£o
+            radius=8,              # Maior para parecer um botão
             color='#FFFFFF',       # Borda branca (destaque)
             weight=2,              # Largura da borda
             fill=True,
             fill_color=cor_hex,    # Cor interna oficial
-            fill_opacity=1.0,      # SÃ³lido
+            fill_opacity=1.0,      # Sólido
         ).add_to(marker_cluster)
 
     return m
+
+
 
 

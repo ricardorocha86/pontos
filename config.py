@@ -69,14 +69,15 @@ FAIXAS_RECEITA = [
 FONTE_FAMILIA = "Inter, Arial, Helvetica, sans-serif"
 
 FONTE_TAMANHOS = {
-    'titulo': 18,       # tÃ­tulo do grÃ¡fico
-    'subtitulo': 18,    # subtÃ­tulo / anotaÃ§Ãµes
+    'titulo': 18,       # título do gráfico
+    'subtitulo': 18,    # subtítulo / anotações
     'eixo': 14,         # labels dos eixos
     'tick': 13,         # valores nos eixos (ticks)
     'legenda': 14,      # texto da legenda
     'legenda_titulo': 15,
     'dado': 14,         # texto sobre as barras / fatias
-    'anotacao': 20,     # anotaÃ§Ãµes centrais (donut, etc.)
-    'geral': 13,        # font-size padrÃ£o do layout
+    'anotacao': 20,     # anotações centrais (donut, etc.)
+    'geral': 13,        # font-size padrão do layout
 }
+
 
