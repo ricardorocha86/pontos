@@ -140,7 +140,6 @@ variaveis = {
     "Região": lambda df: _serie_col(df, "regiao"),
     "UF": lambda df: _serie_col(df, "uf"),
     "Faixa populacional": lambda df: _serie_col(df, "faixa_populacional"),
-    "Classificação rural/urbana": lambda df: _serie_col(df, "classificacao_rural_urbana"),
     "Tipo de Ponto": lambda df: _serie_col(df, "tipo_ponto"),
     "Registro (CNPJ/CPF)": lambda df: _serie_col(df, "registro"),
     "Faixa de receita": lambda df: _serie_col(df, "faixa_receita"),

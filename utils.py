@@ -200,6 +200,15 @@ def aplicar_filtros(df, filtros):
                     mascara = mascara | para_bool(filtrado[coluna])
             filtrado = filtrado[mascara]
 
+    acessos_recursos_or = filtros.get('acessos_recursos_or', [])
+    if acessos_recursos_or:
+        colunas_bool_validas = [col for col in acessos_recursos_or if col in filtrado.columns]
+        if colunas_bool_validas:
+            mascara_or = pd.Series(False, index=filtrado.index)
+            for coluna in colunas_bool_validas:
+                mascara_or = mascara_or | para_bool(filtrado[coluna])
+            filtrado = filtrado[mascara_or]
+
     for chave, coluna in filtros.get('filtros_booleanos', {}).items():
         if coluna in filtrado.columns and filtros.get(chave) in ['Sim', 'Não']:
             valor = filtros[chave] == 'Sim'
