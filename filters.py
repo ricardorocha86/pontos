@@ -158,8 +158,8 @@ def renderizar_painel_filtros(df):
                 """
                 <style>
                 .st-key-exemplos_filtros_nl button[kind="secondary"] {
-                    min-height: 76px !important;
-                    height: 76px !important;
+                    min-height: 84px !important;
+                    height: clamp(84px, 12vh, 132px) !important;
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
@@ -189,8 +189,7 @@ def renderizar_painel_filtros(df):
                     key='texto_para_filtros_input',
                     placeholder='Ex.: pontões das capitais do Nordeste com recursos federais.',
                 )
-                col_botao_texto, _ = st.columns([1, 4])
-                aplicar_texto = col_botao_texto.button(
+                aplicar_texto = st.button(
                     'Aplicar filtros',
                     key='aplicar_texto_para_filtros',
                     use_container_width=True,
