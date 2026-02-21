@@ -1,5 +1,6 @@
 ﻿import os
 import sys
+import textwrap
 
 import pandas as pd
 import plotly.express as px
@@ -19,6 +20,39 @@ def _aplicar_padrao_donut_pagina_a(fig):
     margin=dict(l=4, r=4, t=46, b=4),
     legend=dict(orientation="h", y=-0.16, x=0.0),
   )
+  return fig
+
+
+def _aplicar_cores_donut_sim_nao(fig):
+  for trace in fig.data:
+    labels = [str(lbl) for lbl in list(getattr(trace, "labels", []))]
+    if not labels:
+      continue
+    trace.sort = False
+    cores = []
+    for lbl in labels:
+      txt = str(lbl).strip().lower()
+      txt = (
+        txt.replace("á", "a")
+        .replace("à", "a")
+        .replace("â", "a")
+        .replace("ã", "a")
+        .replace("é", "e")
+        .replace("ê", "e")
+        .replace("í", "i")
+        .replace("ó", "o")
+        .replace("ô", "o")
+        .replace("õ", "o")
+        .replace("ú", "u")
+        .replace("ç", "c")
+      )
+      if txt.startswith("sim"):
+        cores.append(PALETA_CORES["principais"][1])
+      elif txt.startswith("nao"):
+        cores.append(PALETA_CORES["principais"][0])
+      else:
+        cores.append(PALETA_CORES["secundarias"][0])
+    trace.marker.colors = cores
   return fig
 
 
@@ -43,6 +77,21 @@ def _encurtar_serie_para_barra(serie, limite=38):
   serie_plot = serie.copy()
   serie_plot.index = labels_finais
   return serie_plot, labels_originais
+
+
+def _quebrar_linha_label(texto, largura=16):
+  partes = textwrap.wrap(str(texto), width=largura, break_long_words=False, break_on_hyphens=False)
+  return "<br>".join(partes) if partes else str(texto)
+
+
+def _aplicar_padrao_labels_barra_vertical(fig, largura=16):
+  for trace in fig.data:
+    x_vals = getattr(trace, "x", None)
+    if x_vals is None:
+      continue
+    trace.x = [_quebrar_linha_label(v, largura=largura) for v in list(x_vals)]
+  fig.update_xaxes(tickangle=0, automargin=True)
+  return fig
 
 
 def _serie_sim_nao(df, coluna):
@@ -223,12 +272,6 @@ with tab_economia:
   serie_modalidade = _contar_colunas_booleanas(df, modalidade_map).sort_values(ascending=True)
 
   serie_q13 = _serie_sim_nao(df, col_q13).sort_values(ascending=False)
-  serie_q13.index = serie_q13.index.map(
-    {
-      "Sim": "Sim - é a principal fonte de renda",
-      "Não": "Não - não é a principal fonte de renda",
-    }
-  )
   serie_acesso = pd.Series(
     {
       "Acesso a recursos públicos": int(para_bool(df[col_q14]).sum()) if col_q14 else 0,
@@ -239,8 +282,9 @@ with tab_economia:
   d1, d2, d3, d4 = st.columns(4)
   with d1:
     if not serie_q13.empty and int(serie_q13.sum()) > 0:
-      fig_q13 = grafico_donut(serie_q13, "Principal fonte de renda (Q13)", altura=300)
+      fig_q13 = grafico_donut(serie_q13, "Principal fonte de renda (Q13)", altura=360)
       fig_q13 = _aplicar_padrao_donut_pagina_a(fig_q13)
+      fig_q13 = _aplicar_cores_donut_sim_nao(fig_q13)
       mostrar_grafico(fig_q13, "Principal fonte de renda (Q13)")
     else:
       st.info("Sem dados de Q13 na amostra filtrada.")
@@ -261,6 +305,7 @@ with tab_economia:
         horizontal=False,
         altura=360,
       )
+      fig_acesso = _aplicar_padrao_labels_barra_vertical(fig_acesso, largura=16)
       mostrar_grafico(fig_acesso, "Acesso a recursos (Q14-Q15)")
     else:
       st.info("Sem dados de Q14/Q15 na amostra filtrada.")
@@ -274,6 +319,7 @@ with tab_economia:
         horizontal=False,
         altura=360,
       )
+      fig_esferas = _aplicar_padrao_labels_barra_vertical(fig_esferas, largura=16)
       mostrar_grafico(fig_esferas, "Esferas de recursos públicos (Q14.1)")
     else:
       st.info("Sem dados de desdobramento da Q14 na amostra filtrada.")
@@ -287,6 +333,7 @@ with tab_economia:
         horizontal=False,
         altura=360,
       )
+      fig_modalidade = _aplicar_padrao_labels_barra_vertical(fig_modalidade, largura=16)
       mostrar_grafico(fig_modalidade, "Tipo de financiamento (Q15)")
     else:
       st.info("Sem dados de modalidade de financiamento na amostra filtrada.")
@@ -294,12 +341,17 @@ with tab_economia:
   c5, c6 = st.columns(2)
   with c5:
     if not serie_privados.empty and int(serie_privados.sum()) > 0:
+      serie_privados_plot, labels_privados = _encurtar_serie_para_barra(serie_privados, limite=30)
       fig_privados = grafico_barras_series(
-        serie_privados,
+        serie_privados_plot,
         "Fontes de recursos financeiros privados (Q15.1)",
         cor=PALETA_CORES["principais"][2],
         horizontal=True,
         altura=430,
+      )
+      fig_privados.update_traces(
+        customdata=labels_privados,
+        hovertemplate="%{customdata}<br>Frequência: %{x}<extra></extra>",
       )
       mostrar_grafico(fig_privados, "Fontes de recursos financeiros privados (Q15.1)")
     else:
@@ -349,9 +401,10 @@ with tab_dificuldades:
       fig_q17 = grafico_donut(
         serie_q17.sort_values(ascending=False),
         "Mobilização não-monetária (Q17)",
-        altura=300,
+        altura=360,
       )
       fig_q17 = _aplicar_padrao_donut_pagina_a(fig_q17)
+      fig_q17 = _aplicar_cores_donut_sim_nao(fig_q17)
       mostrar_grafico(fig_q17, "Mobilização não-monetária (Q17)")
     else:
       st.info("Sem dados de Q17 na amostra filtrada.")
@@ -361,9 +414,10 @@ with tab_dificuldades:
       fig_q18 = grafico_donut(
         serie_q18.sort_values(ascending=False),
         "Acesso a crédito (Q18)",
-        altura=300,
+        altura=360,
       )
       fig_q18 = _aplicar_padrao_donut_pagina_a(fig_q18)
+      fig_q18 = _aplicar_cores_donut_sim_nao(fig_q18)
       mostrar_grafico(fig_q18, "Acesso a crédito (Q18)")
     else:
       st.info("Sem dados de Q18 na amostra filtrada.")
@@ -413,7 +467,7 @@ with tab_dificuldades:
         margin=dict(l=10, r=20, t=60, b=120),
         font=dict(family=FONTE_FAMILIA, size=FONTE_TAMANHOS["geral"]),
       )
-      fig_q19.update_xaxes(title="", tickangle=-40)
+      fig_q19.update_xaxes(title="", tickangle=45, automargin=True, tickfont=dict(size=10))
       fig_q19.update_yaxes(title="")
       mostrar_grafico(fig_q19, "Receita anual dos Pontos de Cultura em 2024 (Q19)")
     else:
@@ -422,7 +476,7 @@ with tab_dificuldades:
   r2c1, r2c2 = st.columns([1, 1], gap="small")
   with r2c1:
     if not serie_q16.empty and int(serie_q16.sum()) > 0:
-      serie_q16_plot, labels_q16 = _encurtar_serie_para_barra(serie_q16, limite=30)
+      serie_q16_plot, labels_q16 = _encurtar_serie_para_barra(serie_q16, limite=40)
       fig_q16 = grafico_barras_series(
         serie_q16_plot,
         "Principais dificuldades para acessar recursos públicos (Q16)",
@@ -444,7 +498,7 @@ with tab_dificuldades:
 
   with r2c2:
     if not serie_q18_motivos.empty and int(serie_q18_motivos.sum()) > 0:
-      serie_q18_plot, labels_q18 = _encurtar_serie_para_barra(serie_q18_motivos, limite=30)
+      serie_q18_plot, labels_q18 = _encurtar_serie_para_barra(serie_q18_motivos, limite=40)
       fig_q18_motivos = grafico_barras_series(
         serie_q18_plot,
         "Motivos para não acessar crédito (Q18.2)",

@@ -10,7 +10,7 @@ from filters import renderizar_painel_filtros
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title='Consultoria Cultura Viva - V2',
-    page_icon='assets/logo.png',
+    page_icon='assets/cor-cultura viva.svg',
     layout='wide',
     initial_sidebar_state='expanded'
 )
@@ -89,7 +89,8 @@ st.markdown(f"""
             border-radius: 10px 10px 0 0;
             border-bottom: none;
             color: #3b4a63;
-            font-weight: 600;
+            font-size: 1.05rem !important;
+            font-weight: 400 !important;
             padding: 0.46rem 0.98rem 0.42rem 0.98rem;
             transition: all 0.18s ease;
         }}
@@ -100,9 +101,18 @@ st.markdown(f"""
             border-radius: 10px 10px 0 0;
             border-bottom: none;
             color: #3b4a63;
-            font-weight: 600;
+            font-size: 1.05rem !important;
+            font-weight: 400 !important;
             padding: 0.46rem 0.98rem 0.42rem 0.98rem;
             transition: all 0.18s ease;
+        }}
+
+        [data-testid="stTabs"] [role="tab"] p,
+        [data-testid="stTabs"] [role="tab"] span,
+        [data-testid="stTabs"] [data-baseweb="tab"] p,
+        [data-testid="stTabs"] [data-baseweb="tab"] span {{
+            font-size: 1.05rem !important;
+            font-weight: 400 !important;
         }}
 
         [data-testid="stTabs"] [role="tab"]:hover {{
@@ -122,6 +132,7 @@ st.markdown(f"""
             border-color: var(--cv-blue);
             background: linear-gradient(135deg, var(--cv-tab-start) 0%, var(--cv-tab-end) 100%);
             box-shadow: 0 5px 12px rgba(7, 73, 171, 0.26);
+            font-weight: 750 !important;
         }}
 
         [data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"] {{
@@ -129,6 +140,7 @@ st.markdown(f"""
             border-color: var(--cv-blue);
             background: linear-gradient(135deg, var(--cv-tab-start) 0%, var(--cv-tab-end) 100%);
             box-shadow: 0 5px 12px rgba(7, 73, 171, 0.26);
+            font-weight: 750 !important;
         }}
 
         /* Metric cards */
@@ -180,9 +192,15 @@ st.markdown(f"""
         [data-testid="stExpander"] > details > summary {{
             background: linear-gradient(135deg, var(--cv-tab-start) 0%, var(--cv-tab-end) 100%) !important;
             color: #ffffff !important;
-            font-size: 1.12rem !important;
-            font-weight: 800 !important;
+            font-size: 1.10rem !important;
+            font-weight: 600 !important;
             padding: 0.82rem 1.02rem !important;
+        }}
+
+        [data-testid="stExpander"] > details > summary p,
+        [data-testid="stExpander"] > details > summary span {{
+            font-size: 1.10rem !important;
+            font-weight: 600 !important;
         }}
 
         [data-testid="stExpander"] > details > summary:hover {{
@@ -342,8 +360,8 @@ st.markdown(f"""
 # -----------------------------------------------------------------------------
 
 # Logo da barra lateral
-logo_path = os.path.join(os.path.dirname(__file__), 'assets', 'logo.png')
-st.logo(logo_path)
+logo_path = os.path.join(os.path.dirname(__file__), 'assets', 'cor-cultura viva.svg')
+st.logo(logo_path, size='large')
 
 # Dados para filtros globais (exceto Início)
 df = preparar_base()
@@ -373,7 +391,7 @@ is_home = pg.title == home_page.title
 
 # Cabeçalho global (somente páginas internas)
 if not is_home:
-    header_path = os.path.join(os.path.dirname(__file__), 'assets', 'cabeçalho.png')
+    header_path = os.path.join(os.path.dirname(__file__), 'assets', 'cor-completa.svg')
     col_sq1, col_sq2, col_sq3 = st.columns([1, 2, 1])
     with col_sq2:
         st.image(header_path, use_container_width=True)

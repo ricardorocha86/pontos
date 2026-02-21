@@ -1,5 +1,6 @@
 ﻿import os
 import pandas as pd
+import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
@@ -335,8 +336,8 @@ def mapa_regioes_matplotlib(df_contagem_regiao):
     fig, ax = plt.subplots(1, 1, figsize=(12, 12))
     ax.set_aspect('equal')
 
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='4%', pad=0.1)
+    # Barra de legenda curta e discreta (altura ~1/3 do mapa), padrão Estado
+    cax = ax.inset_axes([1.01, 0.33, 0.02, 0.34])
 
     mapa.plot(
         column='percentual', cmap=_CMAP_MAPA, ax=ax, cax=cax,
@@ -345,7 +346,7 @@ def mapa_regioes_matplotlib(df_contagem_regiao):
                      'format': FuncFormatter(lambda x, _: f'{x*100:.1f}%')}
     )
 
-    cax.tick_params(labelsize=12)
+    cax.tick_params(labelsize=10, length=2)
     _aplicar_titulo_mapa(ax, 'Distribuição dos Pontos de Cultura por Região')
     ax.axis('off')
 
@@ -398,8 +399,8 @@ def mapa_municipios_matplotlib(df_contagem_cidades):
     fig, ax = plt.subplots(1, 1, figsize=(12, 12))
     ax.set_aspect('equal')
 
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='5%', pad=0.1)
+    # Barra de legenda curta e discreta (altura ~1/3 do mapa), padrão Estado
+    cax = ax.inset_axes([1.01, 0.33, 0.02, 0.34])
 
     formatter = FuncFormatter(lambda x, _: f'{x*100:.2f}%')
 
@@ -411,13 +412,13 @@ def mapa_municipios_matplotlib(df_contagem_cidades):
     mapa_mun.plot(
         column='percentual', cmap=_CMAP_MAPA, ax=ax, cax=cax,
         legend=True, zorder=2,
-        linewidth=0.01, edgecolor='white',
+        linewidth=0.08, edgecolor='#b8c8dd',
         legend_kwds={'orientation': 'vertical', 'format': formatter},
-        missing_kwds={'color': 'white', 'edgecolor': 'black',
+        missing_kwds={'color': 'white', 'edgecolor': '#b8c8dd',
                       'label': 'Sem dados'}
     )
 
-    cax.tick_params(labelsize=14)
+    cax.tick_params(labelsize=10, length=2)
 
     # CAMADA 3 – bordas estaduais por cima
     gdf_estados.plot(ax=ax, facecolor='none', edgecolor='gray',
@@ -462,6 +463,13 @@ def mapa_pontos_matplotlib(df_pontos, titulo='Distribuição nacional dos Pontos
     else:
         df_valid = pd.DataFrame()
 
+    if not df_valid.empty:
+        rng = np.random.default_rng(42)
+        jitter_graus = 0.20
+        df_valid = df_valid.copy()
+        df_valid['longitude_plot'] = df_valid['longitude'] + rng.uniform(-jitter_graus, jitter_graus, len(df_valid))
+        df_valid['latitude_plot'] = df_valid['latitude'] + rng.uniform(-jitter_graus, jitter_graus, len(df_valid))
+
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
     ax.set_aspect('equal')
     ax.set_facecolor('#FBFDFF')
@@ -481,8 +489,8 @@ def mapa_pontos_matplotlib(df_pontos, titulo='Distribuição nacional dos Pontos
 
         if not df_ponto.empty:
             ax.scatter(
-                df_ponto['longitude'],
-                df_ponto['latitude'],
+                df_ponto['longitude_plot'],
+                df_ponto['latitude_plot'],
                 s=110,
                 c=cor_ponto,
                 alpha=0.18,
@@ -490,8 +498,8 @@ def mapa_pontos_matplotlib(df_pontos, titulo='Distribuição nacional dos Pontos
                 edgecolors='none'
             )
             ax.scatter(
-                df_ponto['longitude'],
-                df_ponto['latitude'],
+                df_ponto['longitude_plot'],
+                df_ponto['latitude_plot'],
                 s=26,
                 c=cor_ponto,
                 alpha=0.95,
@@ -502,22 +510,21 @@ def mapa_pontos_matplotlib(df_pontos, titulo='Distribuição nacional dos Pontos
 
         if not df_pontao.empty:
             ax.scatter(
-                df_pontao['longitude'],
-                df_pontao['latitude'],
-                s=150,
+                df_pontao['longitude_plot'],
+                df_pontao['latitude_plot'],
+                s=110,
                 c=cor_pontao,
                 alpha=0.18,
-                zorder=3,
+                zorder=2,
                 edgecolors='none'
             )
             ax.scatter(
-                df_pontao['longitude'],
-                df_pontao['latitude'],
-                s=78,
-                marker='*',
+                df_pontao['longitude_plot'],
+                df_pontao['latitude_plot'],
+                s=26,
                 c=cor_pontao,
-                alpha=0.98,
-                zorder=5,
+                alpha=0.95,
+                zorder=4,
                 edgecolors='white',
                 linewidths=0.9
             )
@@ -530,9 +537,9 @@ def mapa_pontos_matplotlib(df_pontos, titulo='Distribuição nacional dos Pontos
         Line2D([0], [0], marker='o', color='w', label='Ponto de Cultura',
                markerfacecolor=CORES_DINAMICAS['azul_principal'],
                markeredgecolor='white', markeredgewidth=1.0, markersize=9),
-        Line2D([0], [0], marker='*', color='w', label='Pontão de Cultura',
+        Line2D([0], [0], marker='o', color='w', label='Pontão de Cultura',
                markerfacecolor=CORES_DINAMICAS['vermelho_principal'],
-               markeredgecolor='white', markeredgewidth=1.0, markersize=12)
+               markeredgecolor='white', markeredgewidth=1.0, markersize=9)
     ]
     ax.legend(
         handles=legend_elements,
@@ -600,6 +607,7 @@ def mapa_pontos_cluster_folium(df_pontos):
         ).add_to(marker_cluster)
 
     return m
+
 
 
 

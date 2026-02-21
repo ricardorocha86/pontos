@@ -15,10 +15,11 @@ def _fmt_int(valor):
     return f'{int(valor):,}'.replace(',', '.')
 
 
-def _render_card_material(titulo, descricao, url):
+def _render_card_material(titulo, descricao, url, icone):
     st.markdown(
         f"""
         <article class='cv-home-card'>
+            <div class='cv-home-card-icon'>{icone}</div>
             <h4>{titulo}</h4>
             <p>{descricao}</p>
             <a class='cv-home-card-btn' href='{url}' target='_blank' rel='noopener noreferrer'>Acessar material completo</a>
@@ -32,32 +33,64 @@ st.markdown(
     """
     <style>
         .cv-home-card {
-            background: linear-gradient(165deg, #ffffff 0%, #f6f9ff 100%);
-            border: 1px solid #d5e0f0;
-            border-radius: 14px;
-            padding: 0.95rem 1rem 1rem 1rem;
-            box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08);
-            min-height: 198px;
+            background: linear-gradient(160deg, #ffffff 0%, #f3f7ff 55%, #eef4ff 100%);
+            border: 1px solid #cfdcf1;
+            border-radius: 18px;
+            padding: 1rem 1rem 1.05rem 1rem;
+            box-shadow: 0 14px 28px rgba(16, 24, 40, 0.10), 0 4px 8px rgba(16, 24, 40, 0.04);
+            min-height: 220px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 0.55rem;
+            gap: 0.6rem;
             margin-bottom: 0.85rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cv-home-card::before {
+            content: "";
+            position: absolute;
+            top: -26px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(7, 73, 171, 0.14) 0%, rgba(7, 73, 171, 0.0) 70%);
+            pointer-events: none;
+        }
+
+        .cv-home-card-icon {
+            font-size: 2rem;
+            line-height: 1;
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #0b4ca8 0%, #3f78bf 100%);
+            color: #fff;
+            box-shadow: 0 8px 16px rgba(7, 73, 171, 0.26);
+            margin-bottom: 0.15rem;
+            z-index: 1;
         }
 
         .cv-home-card h4 {
             margin: 0;
-            font-size: 1rem;
+            font-size: 1.03rem;
             color: #0f2f5a;
             font-weight: 800;
             line-height: 1.25;
+            z-index: 1;
         }
 
         .cv-home-card p {
             margin: 0;
-            color: #4c607b;
-            font-size: 0.92rem;
+            color: #4b5f7b;
+            font-size: 0.91rem;
             line-height: 1.42;
+            z-index: 1;
         }
 
         .cv-home-card-btn {
@@ -72,6 +105,7 @@ st.markdown(
             width: fit-content;
             box-shadow: 0 6px 14px rgba(7, 73, 171, 0.28);
             transition: transform 0.15s ease, filter 0.15s ease;
+            z-index: 1;
         }
 
         .cv-home-card-btn:hover {
@@ -158,21 +192,25 @@ with col_docs:
             'titulo': 'Consórcio Cultura Viva',
             'descricao': 'Portal oficial da pesquisa com publicações, notícias e materiais institucionais.',
             'url': 'https://pesquisaculturaviva.org/',
+            'icone': '🌐',
         },
         {
             'titulo': 'Projeto de Pesquisa',
             'descricao': 'Documento-base com justificativa, desenho metodológico e plano amostral.',
             'url': 'https://pesquisaculturaviva.org/wp-content/uploads/2025/08/Projeto-de-Pesquisa-Diagnostico-Economico-da-Cultura-Viva.pdf',
+            'icone': '📘',
         },
         {
             'titulo': 'Formulário de Diagnóstico',
             'descricao': 'Instrumento completo de coleta aplicado aos Pontos e Pontões de Cultura.',
             'url': 'https://pesquisaculturaviva.org/wp-content/uploads/2025/08/FORMULARIO-DE-DIAGNOSTICO-ECONOMICO-DA-CULTURA-VIVA.pdf',
+            'icone': '📝',
         },
         {
             'titulo': 'Relatório completo',
             'descricao': 'Relatório analítico completo da pesquisa, com visualizações e resultados detalhados.',
             'url': 'https://relatorio-pontos.netlify.app/',
+            'icone': '📊',
         },
     ]
 
@@ -183,12 +221,13 @@ with col_docs:
                 titulo=material['titulo'],
                 descricao=material['descricao'],
                 url=material['url'],
+                icone=material['icone'],
             )
 
 st.divider()
 
 # Cabeçalho institucional anterior movido para o final da página
-header_path = os.path.join(ASSETS_DIR, 'cabeçalho.png')
+header_path = os.path.join(ASSETS_DIR, 'cor-completa.svg')
 if os.path.exists(header_path):
     col_h1, col_h2, col_h3 = st.columns([1, 2, 1])
     with col_h2:

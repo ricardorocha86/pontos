@@ -1,5 +1,6 @@
 ﻿import os
 import sys
+import textwrap
 import unicodedata
 
 import pandas as pd
@@ -71,12 +72,51 @@ def _aplicar_padrao_donut(fig):
     return fig
 
 
-def _mostrar_legenda_donut(labels):
+def _ordenar_serie_sim_nao(serie):
+    if serie is None or serie.empty:
+        return serie
+
+    ordem_fixa = ["sim", "nao"]
+    serie_norm = pd.Series(
+        serie.values,
+        index=[_norm_local(idx) for idx in serie.index],
+        dtype=serie.dtype,
+    ).groupby(level=0).sum()
+
+    ordem = [chave for chave in ordem_fixa if chave in serie_norm.index]
+    ordem += [chave for chave in serie_norm.index if chave not in ordem]
+
+    nomes = {"sim": "Sim", "nao": "Não"}
+    serie_out = serie_norm.reindex(ordem).fillna(0)
+    serie_out.index = [nomes.get(idx, idx) for idx in serie_out.index]
+    return serie_out
+
+
+def _aplicar_cores_donut_sim_nao(fig):
+    mapa_cores = {
+        "sim": PALETA_CORES["principais"][1],
+        "nao": PALETA_CORES["principais"][0],
+        "nao sei": PALETA_CORES["principais"][2],
+    }
+    for trace in fig.data:
+        raw_labels = getattr(trace, "labels", None)
+        if raw_labels is None:
+            continue
+        labels = [str(lbl) for lbl in list(raw_labels)]
+        if len(labels) == 0:
+            continue
+        trace.sort = False
+        trace.marker.colors = [mapa_cores.get(_norm_local(lbl), PALETA_CORES["secundarias"][0]) for lbl in labels]
+    return fig
+
+
+def _mostrar_legenda_donut(labels, cores_por_label=None):
     if not labels:
         return
     itens = []
+    cores_por_label = cores_por_label or {}
     for i, label in enumerate(labels):
-        cor = CORES_GRAFICOS[i % len(CORES_GRAFICOS)]
+        cor = cores_por_label.get(_norm_local(label), CORES_GRAFICOS[i % len(CORES_GRAFICOS)])
         itens.append(
             f"<div style='display:inline-flex;align-items:center;gap:8px;'>"
             f"<span style='display:inline-block;width:12px;height:12px;background:{cor};'></span>"
@@ -173,6 +213,11 @@ def _encurtar_serie_labels(serie, limite=34):
     serie_plot = serie.copy()
     serie_plot.index = finais
     return serie_plot, labels_originais
+
+
+def _quebrar_linha_label(texto, largura=16):
+    partes = textwrap.wrap(str(texto), width=largura, break_long_words=False, break_on_hyphens=False)
+    return "<br>".join(partes) if partes else str(texto)
 
 
 def _aplicar_texto_com_base(fig, serie, base):
@@ -452,21 +497,36 @@ with tab1:
     r1c1, r1c2, r1c3 = st.columns([2, 3, 5], gap="small")
     with r1c1:
         if not serie_q21.empty and int(serie_q21.sum()) > 0:
-            fig_q21 = grafico_donut(serie_q21.sort_values(ascending=False), "Comercialização ativa (Q21)", altura=320)
+            serie_q21_plot = _ordenar_serie_sim_nao(serie_q21)
+            fig_q21 = grafico_donut(serie_q21_plot, "Comercialização ativa (Q21)", altura=370)
             fig_q21 = _aplicar_padrao_donut(fig_q21)
+            fig_q21 = _aplicar_cores_donut_sim_nao(fig_q21)
+            fig_q21.update_layout(
+                showlegend=True,
+                legend=dict(
+                    orientation="h",
+                    x=0.0,
+                    y=-0.18,
+                    xanchor="left",
+                    yanchor="top",
+                ),
+            )
             mostrar_grafico(fig_q21, "Comercialização ativa (Q21)")
         else:
             st.info("Sem dados de Q21 na amostra filtrada.")
 
     with r1c2:
         if int(serie_q20.sum()) > 0:
+            serie_q20_plot = serie_q20.copy()
+            serie_q20_plot.index = [_quebrar_linha_label(lbl, largura=16) for lbl in serie_q20_plot.index]
             fig_q20 = grafico_barras_series(
-                serie_q20,
+                serie_q20_plot,
                 "Modelo de acesso predominante das ações (Q20)",
                 cor=PALETA_CORES["principais"][1],
                 horizontal=False,
                 altura=370,
             )
+            fig_q20.update_xaxes(tickangle=0, automargin=True)
             mostrar_grafico(fig_q20, "Modelo de acesso predominante das ações (Q20)")
         else:
             st.info("Sem dados de Q20 na amostra filtrada.")
@@ -479,7 +539,7 @@ with tab1:
                 "Destinação dos recursos obtidos com a venda (Q21.2)",
                 cor=PALETA_CORES["secundarias"][1],
                 horizontal=True,
-                altura=320,
+                altura=370,
                 mostrar_percentual=False,
             )
             fig_uso = _aplicar_texto_com_base(fig_uso, serie_uso_plot, n_comercializa)
@@ -566,8 +626,16 @@ with tab2:
                 serie_q22_plot = serie_q22.sort_values(ascending=False)
                 fig_q22 = grafico_donut(serie_q22_plot, "Mercado justo e solidário (Q22)", altura=290)
                 fig_q22 = _aplicar_padrao_donut(fig_q22)
+                fig_q22 = _aplicar_cores_donut_sim_nao(fig_q22)
                 mostrar_grafico(fig_q22, "Mercado justo e solidário (Q22)")
-                _mostrar_legenda_donut(list(serie_q22_plot.index))
+                _mostrar_legenda_donut(
+                    list(serie_q22_plot.index),
+                    cores_por_label={
+                        "sim": PALETA_CORES["principais"][1],
+                        "nao": PALETA_CORES["principais"][0],
+                        "nao sei": PALETA_CORES["principais"][2],
+                    },
+                )
             else:
                 st.info("Sem dados de Q22 na amostra filtrada.")
 
@@ -578,8 +646,16 @@ with tab2:
                     serie_q24_plot_ord, "Práticas de base tradicional/popular (Q24)", altura=290
                 )
                 fig_q24 = _aplicar_padrao_donut(fig_q24)
+                fig_q24 = _aplicar_cores_donut_sim_nao(fig_q24)
                 mostrar_grafico(fig_q24, "Práticas de base tradicional/popular (Q24)")
-                _mostrar_legenda_donut(list(serie_q24_plot_ord.index))
+                _mostrar_legenda_donut(
+                    list(serie_q24_plot_ord.index),
+                    cores_por_label={
+                        "sim": PALETA_CORES["principais"][1],
+                        "nao": PALETA_CORES["principais"][0],
+                        "nao sei": PALETA_CORES["principais"][2],
+                    },
+                )
             else:
                 st.info("Sem dados de Q24 na amostra filtrada.")
 
@@ -589,7 +665,7 @@ with tab2:
             fig_q23 = grafico_barras_series(
                 serie_q23_plot,
                 "Top 8 Principais dificuldades para acesso a mercados (Q23)",
-                cor=PALETA_CORES["principais"][0],
+                cor=PALETA_CORES["secundarias"][1],
                 horizontal=True,
                 altura=650,
             )
@@ -624,4 +700,8 @@ with tab2:
                     st.info("Sem conteúdo textual suficiente em Q24.1 na amostra filtrada.")
         else:
             st.info("Sem dados textuais de Q24.1 na amostra filtrada.")
+
+
+
+
 

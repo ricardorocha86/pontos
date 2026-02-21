@@ -1,5 +1,6 @@
 ﻿import os
 import sys
+import textwrap
 import unicodedata
 
 import pandas as pd
@@ -84,6 +85,56 @@ def _encurtar_index_serie(serie, limite=36):
     serie_out = serie.copy()
     serie_out.index = novos
     return serie_out
+
+
+def _quebrar_linha_label(texto, largura=10):
+    partes = textwrap.wrap(str(texto), width=largura, break_long_words=False, break_on_hyphens=False)
+    return "<br>".join(partes) if partes else str(texto)
+
+
+def _aplicar_percentual_base(fig, serie, base):
+    base_segura = max(int(base), 1)
+    textos = [f"{int(v)}<br>({(int(v) / base_segura) * 100:.1f}%)" for v in serie.tolist()]
+    fig.update_traces(text=textos, textposition="outside", cliponaxis=False)
+    return fig
+
+
+def _ordenar_serie_sim_nao(serie):
+    if serie is None or serie.empty:
+        return serie
+
+    ordem_fixa = ["sim", "nao"]
+    serie_norm = pd.Series(
+        serie.values,
+        index=[_norm_local(idx) for idx in serie.index],
+        dtype=serie.dtype,
+    ).groupby(level=0).sum()
+
+    ordem = [chave for chave in ordem_fixa if chave in serie_norm.index]
+    ordem += [chave for chave in serie_norm.index if chave not in ordem]
+
+    nomes = {"sim": "Sim", "nao": "Não"}
+    serie_out = serie_norm.reindex(ordem).fillna(0)
+    serie_out.index = [nomes.get(idx, idx) for idx in serie_out.index]
+    return serie_out
+
+
+def _aplicar_cores_donut_sim_nao(fig):
+    mapa_cores = {
+        "sim": PALETA_CORES["principais"][1],
+        "nao": PALETA_CORES["principais"][0],
+    }
+    for trace in fig.data:
+        raw_labels = getattr(trace, "labels", None)
+        if raw_labels is None:
+            continue
+        labels = [str(lbl) for lbl in list(raw_labels)]
+        if len(labels) == 0:
+            continue
+        trace.sort = False
+        trace.marker.colors = [mapa_cores.get(_norm_local(lbl), PALETA_CORES["secundarias"][0]) for lbl in labels]
+    fig.update_layout(legend=dict(traceorder="normal"))
+    return fig
 
 
 def _serie_participacao_faixas(df, coluna):
@@ -272,24 +323,28 @@ aba1, aba2, aba3, aba4 = st.tabs(
 )
 
 with aba1:
-    col1, col2 = st.columns([3, 7])
+    col1, col2 = st.columns([4, 6])
 
     with col1:
         serie_q28 = _serie_multiescolha_por_prefixo(base, "28. A sede do Ponto de Cultura é")
         if serie_q28.empty:
             st.info("Sem dados de sede na amostra filtrada.")
         else:
-            fig_q28 = grafico_donut(
-                serie_q28.sort_values(ascending=False),
+            serie_q28_plot = serie_q28.sort_values(ascending=False)
+            serie_q28_plot_vis = _encurtar_index_serie(serie_q28_plot, limite=20)
+            serie_q28_plot_vis.index = [_quebrar_linha_label(lbl, largura=10) for lbl in serie_q28_plot_vis.index]
+            fig_q28 = grafico_barras_series(
+                serie_q28_plot_vis,
                 "Situação da sede do Ponto de Cultura (Q28)",
-                altura=420,
+                cor=PALETA_CORES["principais"][2],
+                horizontal=False,
+                altura=560,
             )
+            fig_q28 = _aplicar_percentual_base(fig_q28, serie_q28_plot_vis, len(base))
             fig_q28.update_layout(
-                showlegend=True,
-                legend=dict(orientation="h", y=-0.2, x=0.0),
-                margin=dict(l=8, r=8, t=52, b=8),
+                margin=dict(l=8, r=8, t=52, b=28),
             )
-            fig_q28.update_traces(textposition="inside", textinfo="percent")
+            fig_q28.update_xaxes(tickangle=0, automargin=True)
             mostrar_grafico(fig_q28, "Situação da sede do Ponto de Cultura (Q28)")
 
     with col2:
@@ -349,8 +404,9 @@ with aba3:
     with l1:
         col_q32 = _encontrar_coluna_local(base.columns, "31. O Ponto de Cultura elaborou alguma Análise de Viabilidade Econômica?")
         if col_q32 and col_q32 in base.columns:
-            serie_q32 = base[col_q32].value_counts()
-            fig_q32 = grafico_donut(serie_q32, "Análise de Viabilidade Econômica elaborada (Q32)", altura=320)
+            serie_q32 = _ordenar_serie_sim_nao(base[col_q32].value_counts())
+            fig_q32 = grafico_donut(serie_q32, "Análise de Viabilidade Econômica elaborada (Q32)", altura=360)
+            fig_q32 = _aplicar_cores_donut_sim_nao(fig_q32)
             fig_q32.update_layout(showlegend=True, legend=dict(orientation="h", y=-0.2, x=0.0))
             fig_q32.update_traces(textposition="inside", textinfo="percent")
             mostrar_grafico(fig_q32, "Análise de Viabilidade Econômica elaborada (Q32)")
@@ -363,13 +419,14 @@ with aba3:
             "32. 1. Se nunca a realizou, o Ponto de Cultura sente necessidade de elaborar uma Análise de Viabilidade Econômica?",
         )
         if col_q321 and col_q321 in base.columns:
-            serie_q321 = base[col_q321].dropna().value_counts()
+            serie_q321 = _ordenar_serie_sim_nao(base[col_q321].dropna().value_counts())
             if not serie_q321.empty:
                 fig_q321 = grafico_donut(
                     serie_q321,
                     "Necessidade de elaborar análise (Q32.1)",
-                    altura=320,
+                    altura=360,
                 )
+                fig_q321 = _aplicar_cores_donut_sim_nao(fig_q321)
                 fig_q321.update_layout(showlegend=True, legend=dict(orientation="h", y=-0.2, x=0.0))
                 fig_q321.update_traces(textposition="inside", textinfo="percent")
                 mostrar_grafico(fig_q321, "Necessidade de elaborar análise (Q32.1)")
@@ -453,7 +510,7 @@ with aba4:
             if textos.empty:
                 st.info("Sem conteúdo textual suficiente em Q33.1 na amostra filtrada.")
             else:
-                wc_q331 = gerar_wordcloud(textos, altura_plot=520, colormap="tab20")
+                wc_q331 = gerar_wordcloud(textos, altura_plot=414, colormap="tab20")
                 titulo_q331 = "Palavras mais frequentes em estratégias comerciais (Q33.1)"
                 if wc_q331["tipo"] == "image":
                     _mostrar_titulo_wordcloud(titulo_q331)
@@ -464,3 +521,4 @@ with aba4:
                     st.info("Sem conteúdo textual suficiente em Q33.1 na amostra filtrada.")
         else:
             st.info("Sem dados textuais de Q33.1 na amostra filtrada.")
+

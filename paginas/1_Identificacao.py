@@ -140,6 +140,7 @@ def _aplicar_layout_donut_identificacao(fig):
     return fig
 
 
+
 if _df.empty:
     st.warning('Sem dados para os filtros selecionados.')
 else:
@@ -155,30 +156,26 @@ else:
     col_mapa, col_lateral = st.columns([1.6, 1.4])
 
     with col_mapa:
-        if visao == 'Por Estado':
-            contagem_estado = _contagem_estado_para_mapa(_df)
-            if contagem_estado.empty:
-                st.info('Sem UFs válidas para renderizar o mapa estadual.')
+        with st.spinner('Montando mapa...', show_time=True):
+            if visao == 'Por Estado':
+                contagem_estado = _contagem_estado_para_mapa(_df)
+                if contagem_estado.empty:
+                    fig_mapa = None
+                else:
+                    fig_mapa = mapa_estados_matplotlib(contagem_estado)
+            elif visao == 'Por Região':
+                contagem_regiao = _df['regiao'].value_counts().reset_index()
+                contagem_regiao.columns = ['regiao', 'contagem']
+                fig_mapa = mapa_regioes_matplotlib(contagem_regiao)
             else:
-                fig_mapa = mapa_estados_matplotlib(contagem_estado)
-                st.pyplot(fig_mapa, use_container_width=True)
-                plt.close(fig_mapa)
-
-        elif visao == 'Por Região':
-            contagem_regiao = _df['regiao'].value_counts().reset_index()
-            contagem_regiao.columns = ['regiao', 'contagem']
-            fig_mapa = mapa_regioes_matplotlib(contagem_regiao)
-            st.pyplot(fig_mapa, use_container_width=True)
-            plt.close(fig_mapa)
-
-        else:
-            with st.spinner('Montando mapa municipal...', show_time=True):
                 contagem_cidades = _df['cidade'].value_counts().reset_index()
                 contagem_cidades.columns = ['cidade', 'contagem']
                 fig_mapa = mapa_municipios_matplotlib(contagem_cidades)
+        if fig_mapa is None:
+            st.info('Sem UFs válidas para renderizar o mapa estadual.')
+        else:
             st.pyplot(fig_mapa, use_container_width=True)
             plt.close(fig_mapa)
-
         st.radio(
             'Visualização territorial do mapa',
             opcoes_visao,
@@ -225,6 +222,8 @@ else:
                 st.info('Nenhuma rede social identificada nos filtros atuais.')
         else:
             st.info('Coluna de presença digital não encontrada na base.')
+
+
 
 
 
