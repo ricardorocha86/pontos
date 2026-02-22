@@ -18,6 +18,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from config import (CORES_GRAFICOS, PALETA_CORES, CORES_DINAMICAS,
                     FONTE_FAMILIA, FONTE_TAMANHOS, REGIOES_POR_UF)
+import relatorio_pagina
 
 # ---------------------------------------------------------------------------
 # Layout-base global que é aplicado em TODOS os gráficos
@@ -33,11 +34,13 @@ _TITLE_COLOR = '#2E435F'
 def _aplicar_titulo_mapa(ax, titulo):
     ax.set_title(
         titulo,
-        fontsize=FONTE_TAMANHOS['titulo'],
-        fontweight='bold',
+        fontsize=int(round(FONTE_TAMANHOS['titulo'] * 1.10)),
+        fontweight=600,
         color=_TITLE_COLOR,
         pad=10,
-        loc='center',
+        loc='left',
+        x=0.0,
+        ha='left',
     )
 
 
@@ -88,6 +91,7 @@ def mostrar_grafico(fig, subtitulo, config_extra=None, nota_rodape=None):
         config.update(config_extra)
 
     st.plotly_chart(fig, use_container_width=True, config=config)
+    relatorio_pagina.registrar_grafico_plotly(fig, subtitulo)
 
     if nota_rodape:
         st.caption(nota_rodape)
@@ -187,7 +191,7 @@ def grafico_donut(serie, titulo, altura=400):
 _CAMINHO_GEOJSON = os.path.join(os.path.dirname(__file__), 'assets', 'br_states.json')
 
 _CMAP_MAPA = LinearSegmentedColormap.from_list(
-    'gradiente_mapa', ['#D6EAF8', '#042A68']
+    'gradiente_mapa', ['#7FB2E6', '#002B73']
 )
 
 # UF para FK_macro  (mesmo esquema do GeoJSON)
@@ -390,11 +394,20 @@ def mapa_municipios_matplotlib(df_contagem_cidades):
     df_contagem_cidades = df_contagem_cidades.copy()
     df_contagem_cidades['percentual'] = df_contagem_cidades['contagem'] / total
 
-    mapa_mun = gdf_mun.merge(
-        df_contagem_cidades,
-        left_on='name_muni', right_on='cidade',
-        how='left'
-    )
+    if 'uf' in df_contagem_cidades.columns:
+        df_contagem_cidades['uf'] = df_contagem_cidades['uf'].astype(str).str.upper().str.strip()
+        mapa_mun = gdf_mun.merge(
+            df_contagem_cidades,
+            left_on=['name_muni', 'abbrev_state'], right_on=['cidade', 'uf'],
+            how='left'
+        )
+    else:
+        mapa_mun = gdf_mun.merge(
+            df_contagem_cidades,
+            left_on='name_muni', right_on='cidade',
+            how='left'
+        )
+    mapa_mun_com_dado = mapa_mun[mapa_mun['percentual'].notna() & (mapa_mun['percentual'] > 0)].copy()
 
     fig, ax = plt.subplots(1, 1, figsize=(12, 12))
     ax.set_aspect('equal')
@@ -412,9 +425,9 @@ def mapa_municipios_matplotlib(df_contagem_cidades):
     mapa_mun.plot(
         column='percentual', cmap=_CMAP_MAPA, ax=ax, cax=cax,
         legend=True, zorder=2,
-        linewidth=0.08, edgecolor='#b8c8dd',
+        linewidth=0.30, edgecolor='gray',
         legend_kwds={'orientation': 'vertical', 'format': formatter},
-        missing_kwds={'color': 'white', 'edgecolor': '#b8c8dd',
+        missing_kwds={'color': 'white', 'edgecolor': 'gray',
                       'label': 'Sem dados'}
     )
 
@@ -423,6 +436,16 @@ def mapa_municipios_matplotlib(df_contagem_cidades):
     # CAMADA 3 – bordas estaduais por cima
     gdf_estados.plot(ax=ax, facecolor='none', edgecolor='gray',
                      linewidth=1.0, zorder=3)
+
+    # Auto-zoom: enquadra apenas a área com municípios filtrados (com padding suave).
+    if not mapa_mun_com_dado.empty:
+        minx, miny, maxx, maxy = mapa_mun_com_dado.total_bounds
+        dx = maxx - minx
+        dy = maxy - miny
+        pad_x = max(dx * 0.10, 0.25)
+        pad_y = max(dy * 0.10, 0.25)
+        ax.set_xlim(minx - pad_x, maxx + pad_x)
+        ax.set_ylim(miny - pad_y, maxy + pad_y)
 
     _aplicar_titulo_mapa(ax, 'Pontos de Cultura por Município')
     ax.axis('off')
@@ -467,8 +490,8 @@ def mapa_pontos_matplotlib(df_pontos, titulo='Distribuição nacional dos Pontos
         rng = np.random.default_rng(42)
         jitter_graus = 0.20
         df_valid = df_valid.copy()
-        df_valid['longitude_plot'] = df_valid['longitude'] + rng.uniform(-jitter_graus, jitter_graus, len(df_valid))
-        df_valid['latitude_plot'] = df_valid['latitude'] + rng.uniform(-jitter_graus, jitter_graus, len(df_valid))
+        df_valid['longitude_plot'] = df_valid['longitude'] + rng.normal(0.0, jitter_graus, len(df_valid))
+        df_valid['latitude_plot'] = df_valid['latitude'] + rng.normal(0.0, jitter_graus, len(df_valid))
 
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
     ax.set_aspect('equal')

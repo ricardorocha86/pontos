@@ -1,0 +1,864 @@
+
+===== A | ## Distribui??o Territorial e Regional | line 659 =====
+651: - Análise de outliers e erros de digitação: Foi realizada uma inspeção para identificar valores extremos. Diferenciou-se o que eram dados reais de grandes instituições (que justificavam valores altos) do que eram erros de preenchimento (ex: número de funcionários na casa dos milhões). A maioria das inconsistências detectadas foi oriunda de erros de digitação, com baixa representatividade estatística, não impactando a integridade final da amostra.
+652: 
+653: - Padronização: Renomeação de colunas e categorias para facilitar a leitura e interpretação nos gráficos.
+654: 
+655: 3. **Enriquecimento da base e validação geográfica**
+656: 
+657: Para permitir a análise espacial, novas variáveis foram derivadas dos dados originais. Foi criada a coluna de Regiões (Norte, Nordeste, etc.) com base nos Estados declarados. Além disso, para garantir a qualidade dos mapas, foi implementada uma rotina em Python integrada à API ViaCEP. Essa função validou os CEPs informados e retornou os nomes oficiais dos municípios em formato JSON, corrigindo grafias incorretas e garantindo a geolocalização precisa dos Pontos de Cultura. Adicionalmente, a API da Google (Google Maps) foi utilizada para capturar as coordenadas geográficas exatas de cada Ponto, considerando os endereços de correspondência formais disponibilizados no momento da pesquisa.
+658: 
+659: # Perfil Institucional e Identidade
+660: 
+661: ## Distribuição Territorial e Regional
+662: """
+663: 
+664: import geopandas as gpd
+665: 
+666: estado = data['Estado'].value_counts().reset_index()
+667: estado.columns = ['estado', 'contagem']
+668: total_pontos = estado['contagem'].sum()
+669: 
+670: estado['percentual'] = estado['contagem'] / total_pontos
+671: 
+672: # URL para conectar com a base de dados das geometrias
+673: url_geojson_brasil_estados = "https://raw.githubusercontent.com/giuliano-macedo/geodata-br-states/master/geojson/br_states.json"
+674: gdf_estados = gpd.read_file(url_geojson_brasil_estados)
+675: 
+676: mapa_estados = gdf_estados.merge(estado, left_on='Estado', right_on='estado')
+677: 
+678: import pandas as pd
+679: import matplotlib.pyplot as plt
+680: import geopandas as gpd
+681: from matplotlib.colors import LinearSegmentedColormap
+682: from matplotlib.ticker import FuncFormatter
+683: from mpl_toolkits.axes_grid1 import make_axes_locatable
+684: 
+685: # 1. PREPARAÇÃO DOS DADOS
+686: data_estados = {
+687:     'Estado': [
+688:         'Bahia', 'São Paulo', 'Rio de Janeiro', 'Pernambuco', 'Rio Grande do Sul',
+689:         'Ceará', 'Minas Gerais', 'Santa Catarina', 'Goiás', 'Paraná',
+690:         'Rio Grande do Norte', 'Pará', 'Espírito Santo', 'Paraíba', 'Maranhão',
+691:         'Mato Grosso do Sul', 'Alagoas', 'Piauí', 'Amazonas', 'Rondônia',
+692:         'Amapá', 'Mato Grosso', 'Sergipe', 'Distrito Federal', 'Tocantins',
+693:         'Roraima', 'Acre'
+694:     ],
+695:     'Sigla': [
+696:         'BA', 'SP', 'RJ', 'PE', 'RS', 'CE', 'MG', 'SC', 'GO', 'PR', 'RN', 'PA',
+
+===== A2 | ## Personalidade Jur?dica | line 1058 =====
+1050: plt.show()
+1051: 
+1052: """Ao aprofundar para o nível municipal, observa-se um fenômeno claro de concentração metropolitana e litorânea: as manchas mais escuras correspondem às grandes capitais e regiões adjacentes, especificamente Rio de Janeiro, São Paulo e Salvador.
+1053: 
+1054: De forma geral, a abrangência territorial confirma a característica da amostra por conveniência. Onde há mais aderência, há maior densidade de redes culturais consolidadas e melhor acesso à internet. A captação de dados foi majoritariamente urbana, refletindo a dinâmica dos Pontos de Cultura nos grandes centros em detrimento das cidades de interior.
+1055: 
+1056: Vale destacar que a concentração de respostas nas regiões, Estados e municípios citados não se deve a um erro de amostragem, mas retrata a variabilidade natural da rede Cultura Viva, decorrente tanto da densidade de Pontos nesses locais quanto da adesão voluntária ao formulário. Todavia, faz-se necessária uma análise criteriosa da diferença percentual entre a amostra prevista e a coletada. Tal exame é fundamental para assegurar o rigor estatístico e compreender as motivações por trás das discrepâncias observadas.
+1057: 
+1058: ## Personalidade Jurídica
+1059: 
+1060: Nota-se que dos Pontos e Pontões de Cultura registrados, 62.29 % (1510) deles estão cadastrados como pessoa jurídica, enquanto 37.71 % (914) são grupos coletivos associados a um CPF único.
+1061: 
+1062: ## Presença Digital e Canais de Comunicação
+1063: 
+1064: | Rede Social | Frequência | Percentual (%) |
+1065: | --- | --- | ---|
+1066: | Instagram | 1182 | 48,8% |
+1067: | Menções a "@" | 431 | 17,8% |
+1068: | Facebook | 427 | 17,6% |
+1069: | Endereços Físicos | 392 | 16,2% |
+1070: | Respostas Adversas | 229 | 9,4% |
+1071: | YouTube | 177 | 7,3% |
+1072: | TikTok | 22 | 0,9%|
+1073: | Twitter/X | 8 | 0,3% |
+1074: 
+1075: 
+1076: A análise da presença digital e dos canais de comunicação mais frequentes revela a predominância do Instagram, mencionado por 48,8% dos Pontos de Cultura. O Facebook e o YouTube seguem como as redes complementares mais relevantes, com 17,6% e 7,3% das citações, respectivamente.
+1077: 
+1078: Contudo, por se tratar de uma questão de preenchimento opcional e aberto, a tabulação dos dados exigiu um alinhamento metodológico rigoroso para categorizar respostas heterogêneas. Esse processo permitiu identificar que 16,2% dos respondentes confundiram o termo "endereço eletrônico" com o da sede física. Da mesma forma, o tratamento dos dados revelou que 17,8% dos grupos incluíram apenas seus identificadores (os "arrobas"), sem especificar formalmente a qual rede social pertenciam.
+1079: 
+1080: **Nota metodológica: Processamento e Captura dos Dados**
+1081: 
+1082: Para garantir a integridade estatística, utilizamos técnicas baseadas em Expressões Regulares (Regex). A lógica de captura foi estruturada da seguinte forma:
+1083: 
+1084: - *Filtragem de ruído*: Devido à ambiguidade do termo "endereço", foi aplicado um filtro para detectar e isolar menções a logradouros físicos. Utilizou-se termos típicos para identificação (Alameda, travessa, rodovia, estrada, praça, bloco, casa, edifício, distrito, zona rural, andar, fundos, apartamento e vila). Se a resposta continha qualquer um desses termos em isolado, era classificada como endereço físico.
+1085: 
+1086: - *Classificação por redes específicas*: Para as redes sociais, prosseguiu-se com a lógica do "conter". Se o trecho de resposta apresentasse termos padrão ou domínios específicos (ex: facebook.com, fb.me, insta, yt, canal, tiktok), o código atribuía a contagem à respectiva categoria, independentemente da formatação (maiúsculas, minúsculas ou uso de símbolos).
+1087: 
+1088: - *Captura de "arrobas" isolados*: Um ponto crítico do procedimento foi a identificação de usuários que inseriram apenas o "@nome". Para evitar falsos positivos, aplicamos os chamados filtros de vizinhança.
+1089: 
+1090: À esquerda das palavras, foi garantido que o "@" estivesse isolado (como no início de frase ou após espaço), bloqueando por exemplo a captura de e-mails. À direita, delimitou-se exatamente onde o nome de usuário terminava, impedindo que pontuações ou caracteres especiais alterem o dado. Além disso, o registro só foi contabilizado se não tivesse sido registrado previamente pelas lógicas das redes específicas.
+1091: 
+1092: - *Respostas adversas*: Esta categoria retrata as observações que não se enquadraram em nenhum dos filtros lógicos anteriores. Entre as situações consideradas para esse grupo, citam-se as respostas de texto livre sem nexo com comunicação, caracteres aleatórios ou preenchimentos que não indicavam presença digital.
+1093: 
+1094: ## Abrangência Territorial de Atuação
+1095: """
+
+===== A3 | ## Presen?a Digital e Canais de Comunica??o | line 1062 =====
+1054: De forma geral, a abrangência territorial confirma a característica da amostra por conveniência. Onde há mais aderência, há maior densidade de redes culturais consolidadas e melhor acesso à internet. A captação de dados foi majoritariamente urbana, refletindo a dinâmica dos Pontos de Cultura nos grandes centros em detrimento das cidades de interior.
+1055: 
+1056: Vale destacar que a concentração de respostas nas regiões, Estados e municípios citados não se deve a um erro de amostragem, mas retrata a variabilidade natural da rede Cultura Viva, decorrente tanto da densidade de Pontos nesses locais quanto da adesão voluntária ao formulário. Todavia, faz-se necessária uma análise criteriosa da diferença percentual entre a amostra prevista e a coletada. Tal exame é fundamental para assegurar o rigor estatístico e compreender as motivações por trás das discrepâncias observadas.
+1057: 
+1058: ## Personalidade Jurídica
+1059: 
+1060: Nota-se que dos Pontos e Pontões de Cultura registrados, 62.29 % (1510) deles estão cadastrados como pessoa jurídica, enquanto 37.71 % (914) são grupos coletivos associados a um CPF único.
+1061: 
+1062: ## Presença Digital e Canais de Comunicação
+1063: 
+1064: | Rede Social | Frequência | Percentual (%) |
+1065: | --- | --- | ---|
+1066: | Instagram | 1182 | 48,8% |
+1067: | Menções a "@" | 431 | 17,8% |
+1068: | Facebook | 427 | 17,6% |
+1069: | Endereços Físicos | 392 | 16,2% |
+1070: | Respostas Adversas | 229 | 9,4% |
+1071: | YouTube | 177 | 7,3% |
+1072: | TikTok | 22 | 0,9%|
+1073: | Twitter/X | 8 | 0,3% |
+1074: 
+1075: 
+1076: A análise da presença digital e dos canais de comunicação mais frequentes revela a predominância do Instagram, mencionado por 48,8% dos Pontos de Cultura. O Facebook e o YouTube seguem como as redes complementares mais relevantes, com 17,6% e 7,3% das citações, respectivamente.
+1077: 
+1078: Contudo, por se tratar de uma questão de preenchimento opcional e aberto, a tabulação dos dados exigiu um alinhamento metodológico rigoroso para categorizar respostas heterogêneas. Esse processo permitiu identificar que 16,2% dos respondentes confundiram o termo "endereço eletrônico" com o da sede física. Da mesma forma, o tratamento dos dados revelou que 17,8% dos grupos incluíram apenas seus identificadores (os "arrobas"), sem especificar formalmente a qual rede social pertenciam.
+1079: 
+1080: **Nota metodológica: Processamento e Captura dos Dados**
+1081: 
+1082: Para garantir a integridade estatística, utilizamos técnicas baseadas em Expressões Regulares (Regex). A lógica de captura foi estruturada da seguinte forma:
+1083: 
+1084: - *Filtragem de ruído*: Devido à ambiguidade do termo "endereço", foi aplicado um filtro para detectar e isolar menções a logradouros físicos. Utilizou-se termos típicos para identificação (Alameda, travessa, rodovia, estrada, praça, bloco, casa, edifício, distrito, zona rural, andar, fundos, apartamento e vila). Se a resposta continha qualquer um desses termos em isolado, era classificada como endereço físico.
+1085: 
+1086: - *Classificação por redes específicas*: Para as redes sociais, prosseguiu-se com a lógica do "conter". Se o trecho de resposta apresentasse termos padrão ou domínios específicos (ex: facebook.com, fb.me, insta, yt, canal, tiktok), o código atribuía a contagem à respectiva categoria, independentemente da formatação (maiúsculas, minúsculas ou uso de símbolos).
+1087: 
+1088: - *Captura de "arrobas" isolados*: Um ponto crítico do procedimento foi a identificação de usuários que inseriram apenas o "@nome". Para evitar falsos positivos, aplicamos os chamados filtros de vizinhança.
+1089: 
+1090: À esquerda das palavras, foi garantido que o "@" estivesse isolado (como no início de frase ou após espaço), bloqueando por exemplo a captura de e-mails. À direita, delimitou-se exatamente onde o nome de usuário terminava, impedindo que pontuações ou caracteres especiais alterem o dado. Além disso, o registro só foi contabilizado se não tivesse sido registrado previamente pelas lógicas das redes específicas.
+1091: 
+1092: - *Respostas adversas*: Esta categoria retrata as observações que não se enquadraram em nenhum dos filtros lógicos anteriores. Entre as situações consideradas para esse grupo, citam-se as respostas de texto livre sem nexo com comunicação, caracteres aleatórios ou preenchimentos que não indicavam presença digital.
+1093: 
+1094: ## Abrangência Territorial de Atuação
+1095: """
+1096: 
+1097: from matplotlib.colors import LinearSegmentedColormap
+1098: # Proporção de Pontos segundo a abrangência territorial prioritária de atuação (local, municipal, regional, nacional, virtual)
+1099: dicionario = {'9. Municipal':'Municipal',
+
+===== B | ## Abrang?ncia Territorial de Atua??o | line 1094 =====
+1086: - *Classificação por redes específicas*: Para as redes sociais, prosseguiu-se com a lógica do "conter". Se o trecho de resposta apresentasse termos padrão ou domínios específicos (ex: facebook.com, fb.me, insta, yt, canal, tiktok), o código atribuía a contagem à respectiva categoria, independentemente da formatação (maiúsculas, minúsculas ou uso de símbolos).
+1087: 
+1088: - *Captura de "arrobas" isolados*: Um ponto crítico do procedimento foi a identificação de usuários que inseriram apenas o "@nome". Para evitar falsos positivos, aplicamos os chamados filtros de vizinhança.
+1089: 
+1090: À esquerda das palavras, foi garantido que o "@" estivesse isolado (como no início de frase ou após espaço), bloqueando por exemplo a captura de e-mails. À direita, delimitou-se exatamente onde o nome de usuário terminava, impedindo que pontuações ou caracteres especiais alterem o dado. Além disso, o registro só foi contabilizado se não tivesse sido registrado previamente pelas lógicas das redes específicas.
+1091: 
+1092: - *Respostas adversas*: Esta categoria retrata as observações que não se enquadraram em nenhum dos filtros lógicos anteriores. Entre as situações consideradas para esse grupo, citam-se as respostas de texto livre sem nexo com comunicação, caracteres aleatórios ou preenchimentos que não indicavam presença digital.
+1093: 
+1094: ## Abrangência Territorial de Atuação
+1095: """
+1096: 
+1097: from matplotlib.colors import LinearSegmentedColormap
+1098: # Proporção de Pontos segundo a abrangência territorial prioritária de atuação (local, municipal, regional, nacional, virtual)
+1099: dicionario = {'9. Municipal':'Municipal',
+1100:               '9. Regional intermunicipal':'Regional intermunicipal',
+1101:               '9. Regional interestadual':'Regional interestadual',
+1102:               '9. Estadual': 'Estadual',
+1103:               '9. Nacional':'Nacional',
+1104:               '9. Virtual/Online':'Virtual/Online'}
+1105: data = data.rename(columns=dicionario)
+1106: 
+1107: variaveis = ['Municipal', 'Regional intermunicipal', 'Regional interestadual', 'Estadual', 'Nacional', 'Virtual/Online']
+1108: 
+1109: # separando e juntando em um data frame
+1110: ordem_categorias = ['Sempre', 'Regularmente', 'Raramente', 'Nunca']
+1111: 
+1112: municipal = data['Municipal'].value_counts().reindex(ordem_categorias, fill_value=0).to_list()
+1113: reg_interm = data['Regional intermunicipal'].value_counts().reindex(ordem_categorias, fill_value=0).to_list()
+1114: reg_intere = data['Regional interestadual'].value_counts().reindex(ordem_categorias, fill_value=0).to_list()
+1115: estadual = data['Estadual'].value_counts().reindex(ordem_categorias, fill_value=0).to_list()
+1116: nacional = data['Nacional'].value_counts().reindex(ordem_categorias, fill_value=0).to_list()
+1117: virtual = data['Virtual/Online'].value_counts().reindex(ordem_categorias, fill_value=0).to_list()
+1118: # 3. Crie o DataFrame final com todas as contagens
+1119: df_final = pd.DataFrame({
+1120:     'Frequência': ordem_categorias,
+1121:     'Municipal': municipal,
+1122:     'Regional intermunicipal': reg_interm,
+1123:     'Regional interestadual': reg_intere,
+1124:     'Estadual': estadual,
+1125:     'Nacional': nacional,
+1126:     'Virtual/Online': virtual,
+1127: })
+1128: 
+1129: ordem_categorias_freq = ['Sempre', 'Regularmente', 'Raramente', 'Nunca']
+1130: 
+1131: # Coloque a coluna 'Frequência' como índice e reindexe para garantir a ordem
+
+===== B2 | ## Linguagens Art?sticas e Express?es Culturais | line 1225 =====
+1217: - Regional intermunicipal: 23,0% (558)
+1218: 
+1219: - Estadual: 16,6% (402)
+1220: 
+1221: - Regional interestadual: 10,8% (263)
+1222: 
+1223: - Nacional: 7,6% (185)
+1224: 
+1225: ## Linguagens Artísticas e Expressões Culturais
+1226: 
+1227: ## Visão Macro
+1228: """
+1229: 
+1230: # Gráfico geral para as linguagens artísticas predominantes
+1231: 
+1232: freq_artes_visuais = data['categorias artes visuais'].notna().sum()
+1233: freq_audiovisual = data['Audiovisual'].notna().sum()
+1234: freq_danca = data['Dança'].notna().sum()
+1235: freq_teatro = data['Teatro'].notna().sum()
+1236: freq_musica = data['Música'].notna().sum()
+1237: freq_literatura = data['Literatura'].notna().sum()
+1238: freq_circo = data['Circo'].notna().sum()
+1239: freq_hip_hop = data['Hip Hop'].notna().sum()
+1240: outras_quais = data['Outras linguagens artísticas'].notna().sum()
+1241: 
+1242: # Passo 1: Estruturar os dados para o gráfico
+1243: dados_grafico = {
+1244:     'Artes Visuais': freq_artes_visuais,
+1245:     'Audiovisual': freq_audiovisual,
+1246:     'Dança': freq_danca,
+1247:     'Teatro': freq_teatro,
+1248:     'Música': freq_musica,
+1249:     'Literatura': freq_literatura,
+1250:     'Circo': freq_circo,
+1251:     'Hip Hop': freq_hip_hop,
+1252:     'Outras linguagens artísticas': outras_quais
+1253: }
+1254: 
+1255: # Criar uma Série do Pandas para facilitar a ordenação e plotagem
+1256: freq_series = pd.DataFrame([dados_grafico])
+1257: 
+1258: total_freq = data.shape[0]
+1259: 
+1260: gerar_grafico_barras(
+1261:     base_de_dados = freq_series,
+1262:     lista_variaveis = list(freq_series.keys()), # Passa os nomes das colunas
+
+===== C | ## Faixa de Receita Anual dos Pontos de Cultura | line 3286 =====
+3278: Uma investigação sobre essa quantidade exorbitante decreta a sua origem na influência de um único Ponto de Cultura, a "Fundição Progresso", que se define como o "maior centro cultural independente do país". Portanto, o valor é fiel ao esperado e foi mantido na amostra, pois representa a diversidade de escala dos Pontos, não um erro de registro.
+3279: 
+3280: A presença desse valor extremo é a principal causa da alta dispersão dos dados. Por isso, para compreender o cenário da maioria, os quantis são mais informativos. Assim, 75% dos Pontos de Cultura relataram uma participação direta que varia de 20 a 125 pessoas por mês. Na participação indireta, essa faixa central é maior, situando-se entre 30 e 200 pessoas por mês.
+3281: 
+3282: Em resumo, embora a média indique um alcance massivo (impulsionado por casos atípicos), a mediana e os quantis provam que a participação indireta (Mediana = 80) é consistentemente maior que a direta (Mediana = 50) para a grande maioria dos Pontos de Cultura.
+3283: 
+3284: # Sustentabilidade Econômica: Receitas e Financiamento
+3285: 
+3286: ## Faixa de Receita Anual dos Pontos de Cultura
+3287: """
+3288: 
+3289: dicionario_receita_anual = {
+3290:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (Menor que 15.000)': 'Menor que 15.000',
+3291:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (15.001 a 50.000)': '15.001 a 50.000',
+3292:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (50.001 a 100.000)': '50.001 a 100.000',
+3293:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (100.001 a 150.000)': '100.001 a 150.000',
+3294:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (150.001 a 200.000)': '150.001 a 200.000',
+3295:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (200.001 a 250.000)': '200.001 a 250.000',
+3296:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (O Ponto de Cultura não teve receita em 2024)': 'Sem receita',
+3297:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (250.001 a 300.000)': '250.001 a 300.000',
+3298:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (300.001 a 350.000)': '300.001 a 350.000',
+3299:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (350.001 a 400.000)': '350.001 a 400.000',
+3300:     '19. Qual foi a receita anual do Ponto de Cultura em 2024? (Maior que 400.000)': 'Maior que 400.000'
+3301: }
+3302: 
+3303: data = data.rename(columns=dicionario_receita_anual)
+3304: 
+3305: ordem_receita_anual = [
+3306:     'Sem receita',
+3307:     'Menor que 15.000',
+3308:     '15.001 a 50.000',
+3309:     '50.001 a 100.000',
+3310:     '100.001 a 150.000',
+3311:     '150.001 a 200.000',
+3312:     '200.001 a 250.000',
+3313:     '250.001 a 300.000',
+3314:     '300.001 a 350.000',
+3315:     '350.001 a 400.000',
+3316:     'Maior que 400.000'
+3317: ]
+3318: 
+3319: 
+3320: contagem = data[ordem_receita_anual].sum().reindex(ordem_receita_anual)
+3321: percentual = np.round((contagem/data.shape[0]) * 100, 1)
+3322: 
+3323: plt.style.use('seaborn-v0_8-whitegrid')
+
+===== C2 | ## Grau de Depend?ncia Financeira da Pol?tica Cultura Viva | line 3442 =====
+3434: 
+3435: plt.tight_layout(rect=[0, 0, 0.85, 1])
+3436: plt.show()
+3437: 
+3438: """De acordo com o gráfico acima, não há mudanças visuais acentuadas na proporção de Pontos que utilizam o projeto Cultura Viva como principal fonte de renda, quando analisamos por faixa de receita. Para os Pontos com menor faturamento (até 100 mil), menos da metade declarou o projeto como sua fonte monetária essencial. As únicas exceções aparentes a essa regra ocorrem nas faixas de 150-200 mil e 250-300 mil reais, onde essa dependência ultrapassa os 50%.
+3439: 
+3440: Contudo, é importante ressaltar que a análise visual não é suficiente para afirmar que essa proporção é a mesma em todas as faixas. Para verificar formalmente essa aparente estabilidade, a realização de um teste de hipótese Qui-quadrado, sob um nível de significância pré-estabelecido, seria a abordagem mais adequada. Devido à natureza não probabilística da amostra, porém, o resultado não seria preciso.
+3441: 
+3442: ## Grau de Dependência Financeira da Política Cultura Viva
+3443: 
+3444: **O projeto Cultura Viva é a principal fonte de renda do Ponto de Cultura?**
+3445: 
+3446: | Resposta | Frequência | Percentual |
+3447: | --- | --- | --- |
+3448: | Sim | 1045 | 43,1% |
+3449: | Não | 1379 | 56,9% |
+3450: 
+3451: Aponta-se que o projeto de Cultura Viva não é a principal fonte de renda dos Pontos de Cultura da amostra. No entanto, para uma parcela considerável de 43,1%, o projeto é financeiramente necessário, representando sua maior fonte de sustento.
+3452: 
+3453: **Perfil Jurídico dos Pontos que utilizam o projeto Cultura Viva como principal fonte de renda**
+3454: 
+3455: | Perfil Jurídico | Frequência | Percentual |
+3456: | --- | --- | --- |
+3457: | CNPJ (como entidade) | 652 | 62,4% |
+3458: | CPF (como coletivo ou grupo) | 393 | 37,6% |
+3459: 
+3460: Dentre os Pontos de Cultura que utilizam como principal fonte de renda o projeto da Cultura Viva, o perfil jurídico como entidade (CNPJ) é mais frequente, com um percentual de 62,4%, enquanto aqueles que se organizam como coletivo ou grupo vinculados a um CPF único compõem 37,6% da categoria.
+3461: 
+3462: ## Acesso a Recursos Públicos (Federais, Estaduais, Municipais)
+3463: 
+3464: **O Ponto de Cultura acessou recursos públicos nos últimos 24 meses?**
+3465: 
+3466: | Resposta | Frequência | Percentual (%) |
+3467: | --- | --- | --- |
+3468: | Sim | 1853 | 76,4% |
+3469: | Não | 561 | 23,6% |
+3470: 
+3471: Verifica-se que uma parcela considerável dos Pontos de Cultura acessaram recursos públicos nos últimos 24 meses, com um percentual de 76,4% da amostra total.
+3472: """
+3473: 
+3474: dicionario_recursos = {'14. 1. Se sim, quais? (Recursos Municipais)': 'Rec. Municipais',
+3475:                        '14. 1. Se sim, quais? (Recursos Estaduais)': 'Rec. Estaduais',
+3476:              '14. 1. Se sim, quais? (Recursos Federais)': 'Rec. Federais'}
+3477: 
+3478: data = data.rename(columns=dicionario_recursos)
+3479: 
+
+===== C3 | ## Acesso a Recursos P?blicos (Federais, Estaduais, Municipais) | line 3462 =====
+3454: 
+3455: | Perfil Jurídico | Frequência | Percentual |
+3456: | --- | --- | --- |
+3457: | CNPJ (como entidade) | 652 | 62,4% |
+3458: | CPF (como coletivo ou grupo) | 393 | 37,6% |
+3459: 
+3460: Dentre os Pontos de Cultura que utilizam como principal fonte de renda o projeto da Cultura Viva, o perfil jurídico como entidade (CNPJ) é mais frequente, com um percentual de 62,4%, enquanto aqueles que se organizam como coletivo ou grupo vinculados a um CPF único compõem 37,6% da categoria.
+3461: 
+3462: ## Acesso a Recursos Públicos (Federais, Estaduais, Municipais)
+3463: 
+3464: **O Ponto de Cultura acessou recursos públicos nos últimos 24 meses?**
+3465: 
+3466: | Resposta | Frequência | Percentual (%) |
+3467: | --- | --- | --- |
+3468: | Sim | 1853 | 76,4% |
+3469: | Não | 561 | 23,6% |
+3470: 
+3471: Verifica-se que uma parcela considerável dos Pontos de Cultura acessaram recursos públicos nos últimos 24 meses, com um percentual de 76,4% da amostra total.
+3472: """
+3473: 
+3474: dicionario_recursos = {'14. 1. Se sim, quais? (Recursos Municipais)': 'Rec. Municipais',
+3475:                        '14. 1. Se sim, quais? (Recursos Estaduais)': 'Rec. Estaduais',
+3476:              '14. 1. Se sim, quais? (Recursos Federais)': 'Rec. Federais'}
+3477: 
+3478: data = data.rename(columns=dicionario_recursos)
+3479: 
+3480: variaveis_recursos = ['Rec. Municipais', 'Rec. Estaduais', 'Rec. Federais']
+3481: 
+3482: # Loop para limpar e converter cada coluna
+3483: for coluna in variaveis_recursos:
+3484:     # Passo 1: Preenche os valores 'NaN' (ausentes) com 'False'.
+3485:     # Agora a coluna só tem True e False.
+3486:     data[coluna] = data[coluna].fillna(False)
+3487: 
+3488:     # Passo 2: Converte a coluna inteira para o tipo inteiro.
+3489:     # O Pandas automaticamente transforma True -> 1 e False -> 0.
+3490:     data[coluna] = data[coluna].astype(int)
+3491: 
+3492: gerar_grafico_barras(base_de_dados=data, lista_variaveis = variaveis_recursos, cor = cor_secundaria_verde_forte, posicao='horizontal',
+3493:                      incluir_percentual=True, tipo_percentual='total',
+3494:                      titulo = 'Distribuição das esferas de recursos públicos acessados pelos Pontos de Cultura',
+3495:                      variavel_booleana=True, xlabel=' ', ylabel= ' ', tamanho_fonte = 'grande')
+3496: 
+3497: """A distribuição dos recursos públicos demonstra que a esfera Municipal é a mais procurada, alcançando 41,2% do total de Pontos de Cultura. Os recursos Federais (35,3%) e Estaduais (32,7%) também representam fontes de financiamento cruciais. Os resultados indicam que, embora o fomento local seja o mais disseminado, há uma busca ativa e relevante por apoio nas três esferas de governo."""
+3498: 
+3499: # Renomear os nomes dos recursos públicos para facilitar visualização gráfica
+
+===== C4 | ## Acesso a Recursos Privados e Patroc?nios | line 4195 =====
+4187: 
+4188: | Resposta | Frequência | Percentual (%) |
+4189: | --- | --- | --- |
+4190: | Sim | 11 | 0,46% |
+4191: | Não | 2394 | 99,54% |
+4192: 
+4193: O uso de recurso público de governos estrangeiros não é pertinente para os Pontos Culturais, uma vez que apenas 11 destes, que representa 0,46% do total da amostra, afirmaram utilizar de tais recursos.
+4194: 
+4195: ## Acesso a Recursos Privados e Patrocínios
+4196: 
+4197: **O Ponto de cultura acessou recurso financeiro privado?**
+4198: 
+4199: | Resposta? | Frequência | Percentual (%) |
+4200: | --- | --- | --- |
+4201: | Sim | 612 | 25,24% |
+4202: | Não | 1812 | 74,76% |
+4203: 
+4204: Em contraste com o fomento público, o financiamento privado tem uma participação minoritária no ecossistema dos Pontos de Cultura. A grande maioria (74,89%) não acessou recursos de origem privada nos últimos 24 meses.
+4205: 
+4206: **Tipo de Recurso Privado acessado**
+4207: 
+4208: | Fonte de Recurso Privado | Acessaram (Freq.) | Acessaram (%) | Não Acessaram (Freq.) | Não Acessaram (%) |
+4209: | --- | --- | --- | --- | --- |
+4210: | Recursos de Empresas Privadas | 243 | 10.02% | 2181 | 89.98% |
+4211: | Festas para arrecadação de recursos | 205 | 8.46% | 2219 | 91.54% |
+4212: | Doações via campanhas de pessoas físicas (vaquinha) | 182 | 7.51% | 2242 | 92.49% |
+4213: | Rifas ou bingos | 151 | 6.23% | 2273 | 93.77% |
+4214: | Outros rec. de meio privado | 136 | 5.61% | 2288 | 94.39% |
+4215: | Organizações da Sociedade Civil - OSC brasileiras | 86 | 3.55% | 2338 | 96.45% |
+4216: | Sistema S (Sebrae, Senai, Sesi, Senac, Sesc) | 39 | 1.61% | 2385 | 98.39% |
+4217: | Campanhas em plataforma virtuais: | 34 | 1.40% | 2390 | 98.60% |
+4218: | Editais de Organizações Internacionais | 30 | 1.24% | 2394 | 98.76% |
+4219: | Bancos de fomento nacional (BNDES, BNB, Banco do Brasil, Caixa) | 19 | 0.78% | 2405 | 99.22% |
+4220: | Organismo de fomento internacional (ONU, Bird, Banco Mundial, etc) | 5 | 0.21% | 2419 | 99.79% |
+4221: 
+4222: A distribuição das fontes de recurso privado detalha o acesso minoritário a este tipo de fomento. A modalidade mais frequente são os "Recursos de Empresas Privadas", alcançando 10,02% dos Pontos de Cultura. Um segundo grupo relevante de atividades é formado por estratégias de arrecadação local, como "Festas" (8,46%), "Doações/vaquinhas" (7,51%) e "Rifas ou bingos" (6,23%).
+4223: 
+4224: As demais fontes de financiamento estruturado apresentam frequências residuais. O apoio de OSCs brasileiras (3,55%) e do Sistema S (1,61%) é acessado por uma pequena fração, enquanto o fomento via bancos nacionais ou organismos internacionais é praticamente nulo na amostra.
+4225: 
+4226: **Modalidade de Finaciamento acessada**
+4227: 
+4228: | Tipo de Financiamento | Frequência | Percentual (%) |
+4229: | --- | --- | --- |
+4230: | Patrocínio | 126 | 5.20% |
+4231: | Doação | 100 | 4.13% |
+4232: | Financiamento Direto | 50 | 2.06% |
+
+===== C5 | ## Acesso a Cr?dito e Financiamento Banc?rio | line 4425 =====
+4417: | Realização de Eventos (Bazares, Festivais, etc.) | 7 | 5,1% |
+4418: | Locação e Comercialização de Espaço | 4 | 2,9% |
+4419: | Programas de Incentivo Fiscal (Não listados) | 3 | 2,2% |
+4420: | Parcerias (Universidades, Escolas) | 3 | 2,2% |
+4421: | **Total de Citações Válidas** | **144** | *105,9%* |
+4422: 
+4423: *Nota: o número total de citações (144) é maior que o de respondentes (136) que marcaram "Outros", e os percentuais somam mais de 100%, pois alguns respondentes indicaram mais de uma fonte de recurso.*
+4424: 
+4425: ## Acesso a Crédito e Financiamento Bancário
+4426: 
+4427: **O Ponto de Cultura acessou linha de crédito?**
+4428: 
+4429: | Resposta | Frequência | Percentual (%) |
+4430: | --- | --- | --- |
+4431: | Sim | 48 | 2% |
+4432: | Não | 2348 | 96,9% |
+4433: 
+4434: Nota-se que o acesso a linhas de crédito é raramente usado pelos Pontos de Cultura. A esmagadora maioria (96,9%) declarou não utilizar esse recurso, enquanto uma parcela mínima de 2% (48) afirmou tê-lo acessado.
+4435: 
+4436: **Linhas de crédito específicas acessadas antes da normalização**
+4437: 
+4438: | Respostas (A-C) | Respostas (D-E) | Respostas (E-E) | Respostas (E-J) | Respostas (L-P) | Respostas (P-E) |
+4439: | --- | --- | --- | --- | --- | --- |
+4440: | Aulas tecnica vocal | Doações e projeto municipal | Empréstimo Bancário | EMPRESTIMOS DE DIRETORES | Lei Aldir Banc | Pronampe |
+4441: | Banco do Nordeste e Banco do Brasil | doação entre os voluntários | Empréstimo em banco | Empréstimos de pessoas físicas. | Ministério das mulheres | Pronanp |
+4442: | capacitacao da equipe | edital do carnaval do estado de Goias | Empréstimo pessoal | Empréstimos pessoais | Palestra oficinas de Dj | Recurso próprio |
+4443: | Cartão de crédito | Editais | Empréstimo pessoal de amigos- para pagar aos poucos ! | Enprestimo | Participações em editais | Recursos Municipais |
+4444: | Cartão de crédito do banco | Editais públicos | Empréstimo pessoa física | financiamento bancário | PNAB | Sicredi |
+4445: | cartão de credito | EMPRESTIMO PESSOAL | Emprestimo Banco do Brasil | Fomento Paraná | Prefeitura | Somente edital estadual e municipal PNAB |
+4446: | Crediamigo | Empréstimo | Emprestimos | Julho das Pretas | Programa ACREDITAR | empréstimo BB |
+4447: | Crédito direto particular do proponente | Empréstimo | Emprestimos, cartoes de credito | | | |
+4448: 
+4449: **Linhas de crédito específicas acessadas após a normalização**
+4450: 
+4451: | Respostas (B-C) | Respostas (E-S) |
+4452: | --- | --- |
+4453: | Banco do Brasil | Empréstimo bancário (genérico) |
+4454: | Banco do Nordeste | Empréstimo informal (pessoa física) |
+4455: | Cartão de crédito | Fomento Paraná |
+4456: | Crediamigo | Pronampe |
+4457: | Crédito particular do proponente | Sicredi |
+4458: 
+4459: A análise das respostas abertas revela uma confusão conceitual entre os respondentes. Ao serem perguntados sobre 'linhas de crédito', muitos Pontos de Cultura citaram fontes de fomento público (como editais e a Lei Aldir Blanc), doações e até mesmo as despesas onde o recurso seria aplicado (como 'aulas' ou 'capacitação'). Isso indica que o termo 'linha de crédito' não é de domínio comum, sendo frequentemente confundido com qualquer tipo de captação de recurso.
+4460: 
+4461: **Frequências**
+4462: 
+
+===== D1 | ### Atividades Comerciais | line 3160 =====
+3152:                      lista_variaveis = variaveis_dimensoes_especificos,
+3153:                      cor = cor_principal_amarelo, posicao='horizontal', titulo= 'Atividades culturais prioritárias dos Pontos de Cultura',
+3154:                      xlabel= ' ', ylabel = ' ', incluir_percentual = True, tipo_percentual = 'total')
+3155: 
+3156: """Com grande expressividade, a análise das atividades prioritárias mostra que o núcleo de atuação dos Pontos de Cultura está na "Formação, Capacitação e Educação Cultural" e na "Produção e Realização". Isso é evidenciado pela liderança isolada de "Oficinas, cursos e formação artística e técnica" (1654) e "Realização de obras e produtos culturais" (1370). O domínio da dimensão formativa é reforçado pela presença de outras três atividades relacionadas entre as dez mais frequentes: "Formação de público e de plateia/leitores" (775), "Capacitação de produtores e gestores culturais" (662) e "Educação patrimonial, comunitária e cidadã" (650).
+3157: 
+3158: Complementando esse foco principal, atividades vitais para a sustentabilidade e visibilidade dos Pontos também figuram com destaque. A "Gestão e produção de festivais" (784), da dimensão de Curadoria, e a "Captação de recursos públicos e privados" (607), da dimensão de Financiamento, aparecem como práticas fundamentais, seguidas de perto pela "Divulgação de atividades culturais" (593) e pela "Ideação artística" (588), esta última da dimensão de Concepção e Criação.
+3159: 
+3160: ### Atividades Comerciais
+3161: 
+3162: **Distribuição da Comercialização dos Pontos de Cultura**
+3163: 
+3164: | Comercialização | Frequência | Percentual (%)|
+3165: |---|---|---|
+3166: | Comercialização e Economia da Cultura (Total Geral) | 531 | 22,1% |
+3167: | Comercialização direta e indireta | 441 | 18,3% |
+3168: | Redes econômicas sustentáveis e solidárias | 279 | 11,6% |
+3169: | Inserção em mercados culturais locais, regionais e internacionais | 173 | 7,2% |
+3170: 
+3171: A atividade de comercialização é praticada por 22,1% dos Pontos de Cultura. O dado mais relevante é que a grande maioria desse esforço se concentra na venda direta e indireta (18,3%). As demais estratégias, como a busca por redes sustentáveis (11,6%), possuem uma adesão menor.
+3172: """
+3173: 
+3174: var_dim = ['Concepção e Criação','Formação, Capacitação e Educação Cultural','Produção e Realização',
+3175:              'Curadoria, Programação e Organização de Eventos','Registro, Documentação e Preservação',
+3176:              'Comunicação e Divulgação Cultura', 'Circulação e Distribuição', 'Consumo, Fruição e Participação',
+3177:              'Propriedade Intelectual e Direitos Culturais', 'Captação e Financiamento',
+3178:              'Articulação Institucional, Intersetorialidade e Governança',
+3179:              'Avaliação, Monitoramento e Pesquisa Cultural']
+3180: 
+3181: direta_indireta = data[data['Comercialização direta (feiras, festivais, eventos culturais) e indireta (plataformas digitais, lojas, livrarias)'] == True].copy()
+3182: 
+3183: gerar_grafico_barras(base_de_dados=direta_indireta, lista_variaveis = var_dim,
+3184:                      posicao = 'horizontal', incluir_percentual=True, variavel_booleana=False,
+3185:                      tipo_percentual = 'total',
+3186:                      titulo = 'Dimensões do ecossistema cultural de atuação dos Pontos\n que praticam comercialização direta/indireta',
+3187:                      xlabel = ' ', ylabel = ' ', cor = cor_principal_amarelo)
+3188: 
+3189: """Ao observarmos o recorte específico dos Pontos que praticam comercialização, nota-se uma forte manutenção da hierarquia estrutural vista no cenário geral. As dimensões de "Formação, Capacitação e Educação Cultural" (76,4%) e "Produção e Realização" (61,9%) lideram com ampla margem, confirmando que a geração de receita não substitui, mas se apoia na vocação pedagógica e produtiva dessas entidades. A "Curadoria e Organização de Eventos" (42,6%) consolida-se como a terceira força, sugerindo que festivais e mostras são os canais vitais para essa comercialização.
+3190: 
+3191: Na sequência, a "Captação e Financiamento" (31,7%) e a "Comunicação e Divulgação" (28,8%) reafirmam-se como pilares de sustentabilidade. Um destaque sutil deste grupo é que a dimensão de "Consumo, Fruição e Participação" (23,6%) ganha relevância relativa, superando ligeiramente a "Concepção e Criação" (22,7%) e a "Circulação" (21,8%), o que indica uma dinâmica onde a venda e o engajamento direto com o público possuem um peso estratégico superior à etapa puramente criativa ou logística.
+3192: """
+3193: 
+3194: texto = 'Comercialização direta (feiras, festivais, eventos culturais) e indireta (plataformas digitais, lojas, livrarias)'
+3195: lista = list(dicionario_dimensoes.values())
+3196: lista.remove(texto)
+3197: 
+
+===== D2 | ### Redes Econ?micas Sustent?veis e Solid?rias | line 3216 =====
+3208: """No que tange as 10 atividades culturais prioritárias, nota-se, também, uma manutenção da base estrutural, mas com um certo deslocamento estratégico evidente.
+3209: 
+3210: A vocação pedagógica e produtiva permanece soberana: assim como anteriormente, as "Oficinas e formação artística" (72,1%) e a "Realização de obras" (58,7%) lideram isoladamente. Isso confirma que a comercialização nestes espaços é, majoritariamente, fruto direto de seus processos educativos e criativos, e não de uma mudança de finalidade.
+3211: 
+3212: A grande distinção, contudo, reside na terceira prioridade. Enquanto no cenário geral a "Gestão de festivais" ocupava esse posto, neste grupo emergem com força as "Redes econômicas sustentáveis e solidárias" (47,8%). Isso sugere que, para quem comercializa, a articulação em rede deixa de ser apenas política ou artística para se tornar uma infraestrutura vital de escoamento e viabilidade econômica.
+3213: 
+3214: Esse perfil mais voltado à sustentabilidade financeira é reforçado pela presença da "Inserção em mercados culturais" (32,4%) entre as principais atividades, superando até mesmo a Captação de Recursos tradicional (29,0%). Conclui-se, portanto, que este grupo converte sua potência de formação em recursos através da força coletiva das redes solidárias.
+3215: 
+3216: ### Redes Econômicas Sustentáveis e Solidárias
+3217: """
+3218: 
+3219: redes_sustentaveis = data[data['Redes econômicas sustentáveis e solidárias para comercialização de produtos e serviços culturais'] == True].copy()
+3220: 
+3221: var_dim = ['Concepção e Criação','Formação, Capacitação e Educação Cultural','Produção e Realização',
+3222:              'Curadoria, Programação e Organização de Eventos','Registro, Documentação e Preservação',
+3223:              'Comunicação e Divulgação Cultura', 'Circulação e Distribuição', 'Consumo, Fruição e Participação',
+3224:              'Propriedade Intelectual e Direitos Culturais', 'Captação e Financiamento',
+3225:              'Articulação Institucional, Intersetorialidade e Governança',
+3226:              'Avaliação, Monitoramento e Pesquisa Cultural']
+3227: 
+3228: gerar_grafico_barras(base_de_dados=redes_sustentaveis, lista_variaveis = var_dim,
+3229:                      posicao = 'horizontal', incluir_percentual=True, variavel_booleana=False,
+3230:                      tipo_percentual = 'total',
+3231:                      titulo = 'Dimensões do ecossistema cultural de atuação dos Pontos\n que fazem parte de redes econômicas sustentáveis e solidárias',
+3232:                      xlabel = ' ', ylabel = ' ', cor = cor_principal_amarelo)
+3233: 
+3234: """Ao analisarmos os Pontos de Cultura inseridos em redes econômicas sustentáveis e solidárias, observa-se um fenômeno interessante: a vocação pedagógica não apenas se mantém, mas se intensifica. A dimensão de "Formação, Capacitação e Educação Cultural" atinge expressivos 78,9%, sugerindo que, neste ecossistema, a troca de saberes e o ensino de ofícios são as principais moedas de troca e fortalecimento da rede. A estrutura de sustentação segue com a "Produção e Realização" (50,5%) e a "Curadoria e Organização de Eventos" (40,1%).
+3235: 
+3236: Um diferencial importante deste grupo é a relevância da "Captação e Financiamento" (35,1%) e do "Consumo, Fruição e Participação" (26,9%). O fato desta última dimensão superar a "Concepção e Criação" (21,1%) e a "Circulação" (18,3%) revela uma característica típica da economia solidária: o foco está menos na distribuição em massa e mais no engajamento comunitário direto e no consumo local.
+3237: 
+3238: 
+3239: """
+3240: 
+3241: text = 'Redes econômicas sustentáveis e solidárias para comercialização de produtos e serviços culturais'
+3242: 
+3243: lista_redes = list(dicionario_dimensoes.values())
+3244: lista_redes.remove(text)
+3245: 
+3246: b = pd.DataFrame(redes_sustentaveis[lista_redes].sum().sort_values(ascending=False).head(10),).reset_index()
+3247: 
+3248: nomes_redes = list(b['index'].unique())
+3249: 
+3250: gerar_grafico_barras(base_de_dados = redes_sustentaveis,
+3251:   lista_variaveis = nomes_redes, cor = cor_principal_amarelo, posicao='horizontal',
+3252:   titulo= '10 Atividades culturais prioritárias dos Pontos que fazem parte de redes econômicas e solidárias',
+3253:   xlabel= ' ', ylabel = ' ', incluir_percentual = True, tipo_percentual = 'total')
+
+===== E1 | # Capacidade de Atendimento e Infraestrutura | line 2233 =====
+2225: | Residência de Membro / Líder | 26 | 19,5% |
+2226: | Ocupação Cultural e Social | 11 | 8,3% |
+2227: | Própria | 7 | 5,3% |
+2228: | Alugada | 6 | 4,5% |
+2229: | Em Construção ou Reforma | 6 | 4,5% |
+2230: | Espaço Religioso / Terreiro | 5 | 3,7% |
+2231: | **Total** | **133** | **100,0%** |
+2232: 
+2233: # Capacidade de Atendimento e Infraestrutura
+2234: 
+2235: ## Infraestrutura Disponível para a Comunidade
+2236: """
+2237: 
+2238: dicionario_infraestrutura = {
+2239:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (O Ponto de Cultura não disponibiliza espaço/infraestrutura para a comunidade)': 'Sem espaço/infraestrutura para comunidade',
+2240:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Biblioteca)': 'Biblioteca',
+2241:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Cineclube)': 'Cineclube',
+2242:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Cozinha)': 'Cozinha',
+2243:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Equipamentos de som e audiovisual (microfone, câmeras, ﬁlmadoras, caixas de som, mesa de som, mesa de iluminação))': 'Equipamentos de som e audiovisual', # Corrigido 'ﬁ'
+2244:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Espaço para apresentações (auditório, teatro de bolso, lona de circo e outros))': 'Espaço para apresentações',
+2245:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Espaço para armazenamento de conteúdos digitais (discos e drives virtuais))': 'Espaço para armazenamento de conteúdos digitais',
+2246:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Estúdio de gravação e ensaio)': 'Estúdio de gravação e ensaio',
+2247:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Horta Comunitária)': 'Horta Comunitária',
+2248:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Lona pré-moldada)': 'Lona pré-moldada',
+2249:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de exposição (galeria))': 'Sala de exposição (galeria)',
+2250:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala para oﬁcinas artísticas e culturais (trabalhos com corpo, artes, leitura e outros))': 'Sala para oficinas artísticas e culturais', # Corrigido 'ﬁ'
+2251:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Rádio comunitária)': 'Rádio comunitária',
+2252:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de Informática)': 'Sala de Informática',
+2253:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de reuniões (espaço com cadeiras e mesas))': 'Sala de reuniões',
+2254:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Software/Plataforma pagos (Google, Zoom, Microsoft e outros))': 'Software/Plataforma pagos',
+2255:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Outros)': 'Outros tipos de infraestrutura'
+2256: }
+2257: 
+2258: data = data.rename(columns=dicionario_infraestrutura)
+2259: 
+2260: lista_infraestrutura = list(dicionario_infraestrutura.values())
+2261: 
+2262: gerar_grafico_barras(base_de_dados = data, lista_variaveis = lista_infraestrutura, incluir_percentual = True, tipo_percentual = 'total',
+2263:                      variavel_booleana = True, titulo = 'Infraestruturas disponíveis para uso público/comunitário nos Pontos de Cultura',cor= cor_secundaria_verde_fraco,
+2264:                      ylabel = ' ', xlabel=' ', tamanho_fonte = 'grande')
+2265: 
+2266: """A infraestrutura disponível mais comum nos Pontos de Cultura é voltada a espaços de atividade e suporte técnico/logístico. Salas para oficinas (44,3%), equipamentos sonoros e audiovisuais (41,7%) e salas de reuniões (40%) lideram a frequência. Contrastando com isso, 27,6% dos Pontos afirmaram não possuir infraestrutura para uso comunitário. Espaços para apresentações (29,6%) e as cozinhas (28,4%) completam o grupo das infraestruturas mais citadas.
+2267: 
+2268: 
+2269: **Listagem dos outros tipos de infraestrutura**
+2270: 
+
+===== E2 | ## Infraestrutura Dispon?vel para a Comunidade | line 2235 =====
+2227: | Própria | 7 | 5,3% |
+2228: | Alugada | 6 | 4,5% |
+2229: | Em Construção ou Reforma | 6 | 4,5% |
+2230: | Espaço Religioso / Terreiro | 5 | 3,7% |
+2231: | **Total** | **133** | **100,0%** |
+2232: 
+2233: # Capacidade de Atendimento e Infraestrutura
+2234: 
+2235: ## Infraestrutura Disponível para a Comunidade
+2236: """
+2237: 
+2238: dicionario_infraestrutura = {
+2239:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (O Ponto de Cultura não disponibiliza espaço/infraestrutura para a comunidade)': 'Sem espaço/infraestrutura para comunidade',
+2240:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Biblioteca)': 'Biblioteca',
+2241:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Cineclube)': 'Cineclube',
+2242:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Cozinha)': 'Cozinha',
+2243:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Equipamentos de som e audiovisual (microfone, câmeras, ﬁlmadoras, caixas de som, mesa de som, mesa de iluminação))': 'Equipamentos de som e audiovisual', # Corrigido 'ﬁ'
+2244:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Espaço para apresentações (auditório, teatro de bolso, lona de circo e outros))': 'Espaço para apresentações',
+2245:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Espaço para armazenamento de conteúdos digitais (discos e drives virtuais))': 'Espaço para armazenamento de conteúdos digitais',
+2246:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Estúdio de gravação e ensaio)': 'Estúdio de gravação e ensaio',
+2247:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Horta Comunitária)': 'Horta Comunitária',
+2248:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Lona pré-moldada)': 'Lona pré-moldada',
+2249:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de exposição (galeria))': 'Sala de exposição (galeria)',
+2250:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala para oﬁcinas artísticas e culturais (trabalhos com corpo, artes, leitura e outros))': 'Sala para oficinas artísticas e culturais', # Corrigido 'ﬁ'
+2251:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Rádio comunitária)': 'Rádio comunitária',
+2252:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de Informática)': 'Sala de Informática',
+2253:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Sala de reuniões (espaço com cadeiras e mesas))': 'Sala de reuniões',
+2254:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Software/Plataforma pagos (Google, Zoom, Microsoft e outros))': 'Software/Plataforma pagos',
+2255:     '25. Indique se o Ponto de Cultura tem infraestrutura disponível para uso público/comunitário (Outros)': 'Outros tipos de infraestrutura'
+2256: }
+2257: 
+2258: data = data.rename(columns=dicionario_infraestrutura)
+2259: 
+2260: lista_infraestrutura = list(dicionario_infraestrutura.values())
+2261: 
+2262: gerar_grafico_barras(base_de_dados = data, lista_variaveis = lista_infraestrutura, incluir_percentual = True, tipo_percentual = 'total',
+2263:                      variavel_booleana = True, titulo = 'Infraestruturas disponíveis para uso público/comunitário nos Pontos de Cultura',cor= cor_secundaria_verde_fraco,
+2264:                      ylabel = ' ', xlabel=' ', tamanho_fonte = 'grande')
+2265: 
+2266: """A infraestrutura disponível mais comum nos Pontos de Cultura é voltada a espaços de atividade e suporte técnico/logístico. Salas para oficinas (44,3%), equipamentos sonoros e audiovisuais (41,7%) e salas de reuniões (40%) lideram a frequência. Contrastando com isso, 27,6% dos Pontos afirmaram não possuir infraestrutura para uso comunitário. Espaços para apresentações (29,6%) e as cozinhas (28,4%) completam o grupo das infraestruturas mais citadas.
+2267: 
+2268: 
+2269: **Listagem dos outros tipos de infraestrutura**
+2270: 
+2271: **Agrupamento de Respostas**
+2272: 
+
+===== E3 | ## Principais Servi?os Prestados | line 2360 =====
+2352: | Infraestrutura Digital e Mídia | 20 | 8,2% |
+2353: | Espaços de Memória e Comercialização | 18 | 7,4% |
+2354: | Terreiros e Espaços Ritualísticos | 11 | 4,5% |
+2355: | Alojamento e Suporte ao Artista | 8 | 3,3% |
+2356: | **Total de Respondentes** | **244** | **-** |
+2357: 
+2358: *Nota: O total de menções excede a base de respondentes (244) porque algumas observações continham múltiplos elementos que foram categorizados individualmente.*
+2359: 
+2360: ## Principais Serviços Prestados
+2361: """
+2362: 
+2363: dicionario_servicos_comunidade = {
+2364:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Ações de assistência social)': 'Ações de assistência social',
+2365:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Ações de promoção à saúde e ao bem-estar)': 'Ações de promoção à saúde e ao bem-estar',
+2366:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Ações culturais de fortalecimento dos laços de pertencimento da população)': 'Ações culturais de fortalecimento dos laços de pertencimento da população',
+2367:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Ajuda emergencial (arrecadação de recursos, doação de cestas básicas, kit segurança, etc))': 'Ajuda emergencial',
+2368:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Educação artística nas escolas)': 'Educação artística nas escolas',
+2369:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Educação patrimonial)': 'Educação patrimonial',
+2370:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Espiritualidade)': 'Espiritualidade',
+2371:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Formação artística e cultural)': 'Formação artística e cultural',
+2372:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Formação cidadã)': 'Formação cidadã',
+2373:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Iniciativas de promoção da qualidade de vida da população)': 'Iniciativas de promoção da qualidade de vida da população',
+2374:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Inserção produtiva de jovens)': 'Inserção produtiva de jovens',
+2375:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Mediação de leitura e formação de leitores)': 'Mediação de leitura e formação de leitores',
+2376:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Preservação e valorização das memórias e identidades do território)': 'Preservação e valorização das memórias e identidades do território',
+2377:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Preservação e responsabilidade ambiental)': 'Preservação e responsabilidade ambiental',
+2378:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Projetos voltados ao desenvolvimento local)': 'Projetos voltados ao desenvolvimento local',
+2379:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Promoção à participação de grupos em feiras, festivais e outros eventos.)': 'Promoção à participação de grupos em feiras, festivais e outros eventos.',
+2380:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Promoção do turismo de base comunitária)': 'Promoção do turismo de base comunitária',
+2381:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (Outros)': 'Outros',
+2382:     '26. Quais serviços são prestados pelo Ponto de Cultura à comunidade? (O Ponto de Cultura não presta serviços à comunidade)': 'O Ponto de Cultura não presta serviços à comunidade'
+2383: }
+2384: 
+2385: 
+2386: data = data.rename(columns=dicionario_servicos_comunidade)
+2387: 
+2388: lista_servicos_comunidade = list(dicionario_servicos_comunidade.values())
+2389: gerar_grafico_barras(base_de_dados = data, lista_variaveis = lista_servicos_comunidade,
+2390:                     cor = cor_secundaria_verde_fraco, incluir_percentual = True, tipo_percentual = 'total',
+2391:                      titulo = 'Serviços prestados à comunidade pelos Pontos de Cultura',
+2392:                      ylabel = ' ', tamanho_fonte = 'medio',
+2393:                      xlabel = ' ')
+2394: 
+2395: """A representação gráfica dos serviços prestados pelos Pontos de Cultura à comunidade indica um foco predominante em atividades de formação artística e cultural, citadas por 61,8% (1499) da amostra, e em ações culturais de fortalecimento dos laços de pertencimento, mencionadas por 60,9% (1476). Estas duas categorias se destacam e, por consequência, consolidam o papel central dos Pontos como espaços de educação cultural e coesão social.
+2396: 
+2397: Um segundo grupo de serviços relevantes inclui a promoção à participação de grupos em eventos (35,1%), a preservação da memória e identidades do território (31,5%) e a educação artística nas escolas (25%), o que evidencia a atuação dos Pontos na articulação cultural e na interface com a educação formal e o patrimônio.
+
+===== F1 | # Articula??o em Rede | line 5502 =====
+5494: Analisa-se que os Eventos predominam dentre os Pontos de Cultura que possuem estratégias comerciais, alcançando quase 70% deste subgrupo. Esta categoria se caracteriza como um motor econômico e social destes Pontos. Festivas, festas, mostras e saraus, observadas na categorização, são as formas mais comuns de atrair público.
+5495: 
+5496: As Feiras (37,8%) e Vendas Diretas (25,9%) vêm logo a seguir, completando o pódio das três maiores estratégias comerciais. Neste sentido, podemos identificar que o modelo de negócio da vasta maioria dos Pontos é presencial, territorial e focado em interações diretas. A economia deles se movimenta quando há aglomeração de pessoas, vendas de produtos (artesanato, alimentos) e circulação da cultura local.
+5497: 
+5498: Após as três maiores, a próxima estratégia (Redes de comercialização/consumo) cai para 8%. Aqueles associados para além do território físico também apresentam baixas frequências: vendas online (3,9%), mídias / marketing (3,5%) e rodada de negócios (1,2%).
+5499: 
+5500: De forma geral, há uma dependência enorme no esquema presencial e uma oportunidade quase inexplorada no meio digital. Outro dado interessante é a baixa adesão à venda de serviços/cursos (2,5%) e locação de espaço (1,9%). Sugere-se que a mentalidade comercial está mais voltada para a venda de produtos físicos, ao invés da venda de serviços.
+5501: 
+5502: # Articulação em Rede
+5503: 
+5504: ## Participação em Fóruns, Redes e Conselhos
+5505: 
+5506: **O Ponto de Cultura é integrado a algum espaço de participação social?**
+5507: 
+5508: | Resposta |Frequência| Percentual (%) |
+5509: | --- | --- | --- |
+5510: | Sim | 1160 | 47,9% |
+5511: | Não | 1264 | 52,1% |
+5512: 
+5513: A integração dos Pontos de Cultura com espaços de participação social é evidente, mas ainda está além do ideal. Verifica-se que 47,9% dos Pontos utilizam esses espaços, mostrando que, embora seja uma prática relevante, há um grande potencial para ampliar a participação e o alcance dessas iniciativas.
+5514: 
+5515: ### Participação Social nas Diferentes Esferas Regionais
+5516: """
+5517: 
+5518: import matplotlib.pyplot as plt
+5519: import seaborn as sns
+5520: 
+5521: participa_social = data[data['34. O Ponto de Cultura é integrado a algum espaço de participação social?'] == 'Sim']
+5522: tamanho = len(participa_social) # Este é o N total (100%)
+5523: 
+5524: # value_counts() em colunas booleanas (True/False)
+5525: np_nacional = participa_social['Esfera Nacional (Não participa)'].value_counts()
+5526: np_estadual = participa_social['Esfera Estadual (Não participa)'].value_counts()
+5527: np_municipal = participa_social['Esfera Municipal (Não participa)'].value_counts()
+5528: 
+5529: # --- 1. Calcular Frequências e Percentuais ---
+5530: n_nao_participa_nacional = np_nacional.get(True, 0)
+5531: n_nao_participa_estadual = np_estadual.get(True, 0)
+5532: n_nao_participa_municipal = np_municipal.get(True, 0)
+5533: 
+5534: n_participa_nacional = tamanho - n_nao_participa_nacional
+5535: n_participa_estadual = tamanho - n_nao_participa_estadual
+5536: n_participa_municipal = tamanho - n_nao_participa_municipal
+5537: 
+5538: pct_participa_nacional = (n_participa_nacional / tamanho) * 100
+5539: pct_nao_participa_nacional = (n_nao_participa_nacional / tamanho) * 100
+
+===== F2 | ### Redes de Articula??o Setorial e Participa??es | line 5943 =====
+5935: | Articulação com Instituições Públicas (Escolas, CRAS, etc.) | 28 | 17,1% |
+5936: | Respostas Genéricas, de Plataforma ou Atividade | 18 | 11,0% |
+5937: | Redes e Articulações Setoriais (por linguagem ou tema) | 15 | 9,1% |
+5938: | Associações Comunitárias, Coletivos Específicos e Grupos Locais | 15 | 9,1% |
+5939: | Respostas sobre Ausência de Espaços | 1 | 0,6% |
+5940: | Respostas de Outras Esferas | 1 | 0,6% |
+5941: | **Total** | **164** | **100,0%** |
+5942: 
+5943: ### Redes de Articulação Setorial e Participações
+5944: """
+5945: 
+5946: dicionario_setorial = {
+5947:     'Redes de articulação setorial (Rede de Artesanato)': 'Rede de Artesanato',
+5948:     'Redes de articulação setorial (Rede de Audiovisual)': 'Rede de Audiovisual',
+5949:     'Redes de articulação setorial (Rede de Culturas Populares)': 'Rede de Culturas Populares',
+5950:     'Redes de articulação setorial (Rede de Museus)': 'Rede de Museus',
+5951:     'Redes de articulação setorial (Rede de Terreiros)': 'Rede de Terreiros',
+5952:     'Redes de articulação setorial (Outros espaços municipais de participação social:)': 'Outros espaços municipais de participação social'
+5953: }
+5954: 
+5955: data = data.rename(columns=dicionario_setorial)
+5956: 
+5957: lista_redes = list(dicionario_setorial.values())
+5958: 
+5959: gerar_grafico_barras(base_de_dados=data, lista_variaveis = lista_redes,
+5960:                      cor = '#0749AB', incluir_percentual = True,
+5961:                      tipo_percentual = 1160,
+5962:                      titulo = 'Redes de articulação por setor\ndos Pontos que integram espaços de participação social',
+5963:                      ylabel = ' ',
+5964:                      xlabel = ' ', tamanho_fonte = 'grande')
+5965: 
+5966: """A participação em Redes de Articulação por Setor mostra um domínio claro da Rede de Culturas Populares, que é integrada por mais da metade (54,2%) dos Pontos de Cultura que participam socialmente.
+5967: 
+5968: Verifica-se também que Outros espaços municipais de participação social acumula 30,7% (356 respostas). Este alto percentual demonstra que as opções pré-definidas no questionário não foram suficientes para cobrir a diversidade de articulações setoriais existentes.
+5969: 
+5970: Recorrendo à nossa tabulação anterior, que analisou o conteúdo textual dessas 356 respostas "Outras", com 309 preenchidas, fica claro o que compõe essa barra:
+5971: 
+5972: A maior parte é formada por redes de Artes Cênicas (Teatro, Dança e Circo), que somaram 45 menções.
+5973: 
+5974: Em seguida, vêm as redes de Música (incluindo Hip Hop), com 23 menções.
+5975: 
+5976: Logo após, Livro, Leitura e Literatura (LLL), com 21 menções.
+5977: 
+5978: As demais opções pré-definidas do gráfico, como Rede de Artesanato (20,5%), Rede de Audiovisual (16,6%), Rede de Terreiros (14,1%) e Rede de Museus (10,8%), aparecem na sequência, com participações mais focadas.
+5979: 
+5980: ---
+
+===== G | # Cruzamentos Estrat?gicos e An?lises Bivariadas | line 6322 =====
+6314: | Demanda por Capacitação e Formação | 3 | 13,0% |
+6315: | Demanda por Parceria e Articulação | 3 | 13,0% |
+6316: | Respostas Inválidas ou Vagas | 3 | 13,0% |
+6317: | Demanda por Recursos Humanos | 2 | 8,7% |
+6318: | Demanda por Infraestrutura e Equipamentos | 1 | 4,3% |
+6319: | Demandas Híbridas (Múltiplos Pedidos) | 1 | 4,3% |
+6320: | **Total** | **23** | **100,00%** |
+6321: 
+6322: # Cruzamentos Estratégicos e Análises Bivariadas
+6323: 
+6324: Este capítulo apresenta as intersecções entre as diferentes dimensões do diagnóstico, permitindo compreender como a localização, o porte financeiro e a natureza das atividades influenciam a sustentabilidade e a atuação dos Pontos de Cultura.
+6325: 
+6326: ## Geografias da Cultura: Território, Atuação e Expressão
+6327: 
+6328: Neste tópico, analisamos como o local onde o Ponto está reflete o que ele faz.
+6329: 
+6330: Para facilitar o cruzamento da distribuição territorial com as demais variáveis, decidimos considerar "Sempre" como categoria de referência a fim de realizar as comparações. No que tange as ações estruturantes desenvolvidas pelos Pontos, agrupamos em seis núcleos maiores, sendo estes:
+6331: 
+6332: - Identidade, memória e tradição: aqueles que são focados no reconhecimento de saberes, grupos e patrimônios tradicionais.
+6333: 
+6334: - Linguagens e setores artísticos: todas as ações que têm como principal atuação a arte.
+6335: 
+6336: - Temas sociais: para os Pontos que usam a cultura como ferramenta para pautas sociais específicas.
+6337: 
+6338: - Território e espacialidade: focado na relação da cultura com o espaço geográfico.
+6339: 
+6340: - Ferramentas, economia e métodos: focado em métodos de sustentabilidade, ação cultural e na comunicação/mídia.
+6341: 
+6342: - Outros: contemplam os que não têm ação estruturante e o que os respondentes preencheram com "Outra ação estruturante".
+6343: 
+6344: Para as dimensões do ecossistema cultural, consideramos os agrupamentos já existentes:
+6345: 
+6346: - Concepção e Criação
+6347: - Formação, Capacitação e Educação Cultural
+6348: - Produção e Realização
+6349: - Curadoria, Programação e Organização de Eventos
+6350: - Registro, Documentação e Preservação
+6351: - Comunicação e Divulgação Cultura
+6352: - Circulação e Distribuição
+6353: - Comercialização e Economia
+6354: - Consumo, Fruição e Participação
+6355: - Propriedade Intelectual e Direitos Culturais
+6356: - Captação e Financiamento
+6357: - Articulação Institucional, Intersetorialidade e Governança
+6358: - Avaliação, Monitoramento e Pesquisa Cultural
+6359: 

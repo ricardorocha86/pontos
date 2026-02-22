@@ -11,6 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from components import mostrar_grafico
 from config import FAIXAS_RECEITA, PALETA_CORES
+from relatorio_pagina import definir_aba_relatorio
 from utils import aplicar_filtros, para_bool, preparar_base
 
 
@@ -84,7 +85,7 @@ def _ordem_referencia_variavel(nome_variavel):
             "100.001 a 500.000 habitantes",
             "Mais de 500.000 habitantes",
         ],
-        "Q30 - Dependência da renda no Ponto": [
+        "Dependência da renda no Ponto": [
             "Nenhuma pessoa (0%)",
             "Menos de 10% das pessoas trabalhadoras do Ponto de Cultura",
             "Entre 10% e 25% das pessoas",
@@ -117,9 +118,9 @@ def _reordenar_labels(labels, ordem_ref):
 
 
 st.title("G) Cruzamentos Estratégicos")
-st.write(
-    "Nesta página, você escolhe duas variáveis para cruzamento bivariado e compara as distribuições "
-    "em contagem absoluta e frequência relativa."
+definir_aba_relatorio("Cruzamentos estratégicos")
+st.markdown(
+    "Esta página permite realizar cruzamentos bivariados para explorar relações entre território, perfil institucional e dimensões econômicas e culturais da amostra. Teste os três tipos de visualização: o heatmap funciona melhor para leitura rápida de concentração, as barras agrupadas ajudam a comparar contagens absolutas e as barras empilhadas 100% facilitam comparar proporções entre grupos. Combine variáveis e filtros, experimente alternativas e use os padrões encontrados para apoiar decisões e priorizar ações."
 )
 
 base = preparar_base()
@@ -146,14 +147,13 @@ variaveis = {
     "Acesso a recursos federais": lambda df: _serie_bool(df, "rec_federal"),
     "Acesso a recursos estaduais": lambda df: _serie_bool(df, "rec_estadual"),
     "Acesso a recursos municipais": lambda df: _serie_bool(df, "rec_municipal"),
-    "Q20 - Modelo de acesso predominante": _serie_q20,
-    "Q22 - Relação com mercado justo e solidário": lambda df: _serie_col(df, col_q22),
-    "Q30 - Dependência da renda no Ponto": lambda df: _serie_col(df, col_q30),
-    "Q31 - Sem ferramentas de gestão": lambda df: _serie_bool(df, col_q31_nenhuma),
-    "Q32 - Elaborou análise de viabilidade": lambda df: _serie_col(df, col_q32),
-    "Q32.1 - Necessidade de elaborar análise": lambda df: _serie_col(df, col_q321),
-    "Q33 - Estratégias comerciais": _serie_q33,
-    "Q34 - Participação social": lambda df: _serie_col(df, col_q34),
+    "Relação com mercado justo e solidário": lambda df: _serie_col(df, col_q22),
+    "Dependência da renda no Ponto": lambda df: _serie_col(df, col_q30),
+    "Sem ferramentas de gestão": lambda df: _serie_bool(df, col_q31_nenhuma),
+    "Elaborou análise de viabilidade": lambda df: _serie_col(df, col_q32),
+    "Necessidade de elaborar análise": lambda df: _serie_col(df, col_q321),
+    "Estratégias comerciais": _serie_q33,
+    "Participação social": lambda df: _serie_col(df, col_q34),
 }
 
 opcoes = list(variaveis.keys())
@@ -165,11 +165,13 @@ with col_cfg:
         ["Heatmap", "Barras agrupadas", "Barras empilhadas 100%"],
         index=2,
     )
-    var_linha = st.selectbox("Variável 1 (linhas)", opcoes, index=0)
+    idx_var_linha = opcoes.index("Faixa de receita") if "Faixa de receita" in opcoes else 0
+    var_linha = st.selectbox("Variável 1 (linhas)", opcoes, index=idx_var_linha)
+    idx_var_coluna = opcoes.index("Acesso a recursos federais") if "Acesso a recursos federais" in opcoes else 1
     var_coluna = st.selectbox(
         "Variável 2 (colunas)",
         opcoes,
-        index=opcoes.index("Faixa de receita") if "Faixa de receita" in opcoes else 1,
+        index=idx_var_coluna,
     )
 
 if var_linha == var_coluna:
@@ -290,3 +292,4 @@ with col_chart:
             margin=dict(r=190),
         )
         mostrar_grafico(fig, f"{var_linha} x {var_coluna}")
+

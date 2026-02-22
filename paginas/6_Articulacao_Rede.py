@@ -12,6 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from components import grafico_barras_series, grafico_donut, mostrar_grafico
 from config import PALETA_CORES
+from relatorio_pagina import definir_aba_relatorio
 from utils import aplicar_filtros, para_bool, preparar_base
 
 
@@ -167,7 +168,7 @@ def _fig_lacuna_oferta_demanda(serie_oferta, serie_demanda, base_total):
     if df_gap.empty:
         return None
 
-    df_gap = df_gap.sort_values("forca", ascending=False).head(12).copy()
+    df_gap = df_gap.sort_values("forca", ascending=False).copy()
 
     def _encurtar(txt, limite=42):
         txt = str(txt)
@@ -193,7 +194,7 @@ def _fig_lacuna_oferta_demanda(serie_oferta, serie_demanda, base_total):
         y=df_gap["cat_plot"],
         x=-df_gap["oferta_pct"],
         orientation="h",
-        name="Oferta (Q35)",
+        name="Oferta",
         marker_color=PALETA_CORES["secundarias"][2],
         text=df_gap.apply(lambda r: f"{int(r['oferta'])} ({r['oferta_pct']:.1f}%)", axis=1),
         textposition="outside",
@@ -205,7 +206,7 @@ def _fig_lacuna_oferta_demanda(serie_oferta, serie_demanda, base_total):
         y=df_gap["cat_plot"],
         x=df_gap["demanda_pct"],
         orientation="h",
-        name="Demanda (Q36)",
+        name="Demanda",
         marker_color=PALETA_CORES["principais"][1],
         text=df_gap.apply(lambda r: f"{int(r['demanda'])} ({r['demanda_pct']:.1f}%)", axis=1),
         textposition="outside",
@@ -245,18 +246,19 @@ def _fig_lacuna_oferta_demanda(serie_oferta, serie_demanda, base_total):
 
 
 st.title("F) Articulação em Rede")
-st.write(
-    "Esta página apresenta a participação social dos Pontos de Cultura (Q34 e desdobramentos) "
-    "e o compartilhamento em rede sobre ofertas e demandas na Rede Cultura Viva (Q35 e Q36)."
+definir_aba_relatorio("Participação social")
+st.markdown(
+    "Esta página aborda a articulação em rede como dimensão estratégica da Cultura Viva, observando participação social, vínculos institucionais e trocas de ofertas e demandas entre coletivos. Os gráficos mostram como redes e espaços de participação funcionam como infraestrutura política e colaborativa para sustentar ações no território. O painel apoia o mapeamento de conexões, cooperação e necessidades de fortalecimento da rede. Nesta seção, você verá conteúdos associados às questões Q34 a Q36 do formulário."
 )
 
 base = preparar_base()
 if "filtros_globais" in st.session_state:
     base = aplicar_filtros(base, st.session_state["filtros_globais"])
 
-aba1, aba2 = st.tabs(["Participação social (Q34)", "Compartilhamento em rede (Q35-Q36)"])
+aba1, aba2 = st.tabs(["Participação social", "Compartilhamento em rede"])
 
 with aba1:
+    definir_aba_relatorio("Participação social")
     col_q34 = _encontrar_coluna_local(base.columns, "34. O Ponto de Cultura é integrado a algum espaço de participação social?")
     if not col_q34:
         st.info("Sem dados de participação social na amostra filtrada.")
@@ -266,13 +268,13 @@ with aba1:
         base_participa = base[base[col_q34].astype(str).map(_norm_local) == "sim"].copy()
         n_participa = len(base_participa)
 
-        c1, c2, c3 = st.columns([2, 2, 3])
+        c1, c2, c3 = st.columns([1, 1, 1])
 
         with c1:
-            fig_q34 = grafico_donut(serie_q34, "Integração em espaços de participação social (Q34)", altura=340)
+            fig_q34 = grafico_donut(serie_q34, "Integração em espaços de participação social", altura=340)
             fig_q34.update_layout(showlegend=True, legend=dict(orientation="h", y=-0.2, x=0.0))
             fig_q34.update_traces(textposition="inside", textinfo="percent")
-            mostrar_grafico(fig_q34, "Integração em espaços de participação social (Q34)")
+            mostrar_grafico(fig_q34, "Integração em espaços de participação social")
 
         with c2:
             serie_mun = _serie_esfera_participacao(base_participa, "Esfera Municipal")
@@ -290,13 +292,13 @@ with aba1:
 
             fig_esferas = grafico_barras_series(
                 serie_esferas,
-                "Participação por esfera entre os que marcaram Q34=Sim",
+                "Participacao por esfera",
                 cor=PALETA_CORES["principais"][1],
                 horizontal=False,
                 altura=340,
             )
             fig_esferas = _aplicar_percentual_base(fig_esferas, serie_esferas, n_participa)
-            mostrar_grafico(fig_esferas, "Participação por esfera entre os que marcaram Q34=Sim")
+            mostrar_grafico(fig_esferas, "Participacao por esfera")
 
         with c3:
             s_setorial = _serie_multiescolha_por_prefixo(
@@ -309,13 +311,13 @@ with aba1:
             else:
                 fig_setorial = grafico_barras_series(
                     _encurtar_index_serie(s_setorial, limite=34),
-                    "Redes de articulação setorial (Q34.1)",
+                    "Redes de articulação setorial",
                     cor=PALETA_CORES["principais"][2],
                     horizontal=True,
                     altura=340,
                 )
                 fig_setorial = _aplicar_percentual_base(fig_setorial, s_setorial, n_participa)
-                mostrar_grafico(fig_setorial, "Redes de articulação setorial (Q34.1)")
+                mostrar_grafico(fig_setorial, "Redes de articulação setorial")
 
         e1, e2, e3 = st.columns(3)
 
@@ -365,6 +367,7 @@ with aba1:
                 mostrar_grafico(fig_m, "Espaços de participação social - Esfera municipal")
 
 with aba2:
+    definir_aba_relatorio("Compartilhamento em rede")
     s_q35 = _serie_multiescolha_por_prefixo(
         base,
         "35. O que o Ponto de Cultura gostaria de oferecer para a Rede Cultura Viva?",
@@ -378,4 +381,8 @@ with aba2:
     if fig_gap is None:
         st.info("Sem dados suficientes para o comparativo de oferta x demanda.")
     else:
-        mostrar_grafico(fig_gap, "Top 12 Lacunas estratégicas entre oferta (Q35) e demanda (Q36)")
+        mostrar_grafico(fig_gap, "Lacunas estratégicas entre oferta e demanda")
+
+
+
+

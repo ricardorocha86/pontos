@@ -1,23 +1,42 @@
 ﻿import streamlit as st
-import streamlit.components.v1 as components
 import os
+import base64
+import importlib
+import re
+from datetime import datetime
 from utils import preparar_base
 from config import PALETA_CORES
 from filters import renderizar_painel_filtros
+import relatorio_pagina as relatorio_pagina
 
 # -----------------------------------------------------------------------------
 # Configuration
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title='Consultoria Cultura Viva - V2',
-    page_icon='assets/cor-cultura viva.svg',
+    page_title='Diagnóstico Econômico da Cultura Viva',
+    page_icon='assets/favicon.png',
     layout='wide',
     initial_sidebar_state='expanded'
 )
 
+def _svg_data_uri(path):
+    try:
+        with open(path, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode("ascii")
+        return f"data:image/svg+xml;base64,{encoded}"
+    except Exception:
+        return ""
+
+
+def _slug_nome_arquivo(texto):
+    base = (texto or "").strip().lower()
+    base = re.sub(r"[^\w\s-]", "", base, flags=re.UNICODE)
+    base = re.sub(r"[\s_]+", "-", base)
+    base = re.sub(r"-{2,}", "-", base).strip("-")
+    return base or "pagina"
+
 # Custom CSS
 st.markdown(f"""
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {{
             --cv-blue: {PALETA_CORES['principais'][1]};
@@ -34,7 +53,7 @@ st.markdown(f"""
         }}
 
         html, body, [class*="css"], .stApp {{
-            font-family: 'Inter', Arial, Helvetica, sans-serif;
+            font-family: "instrument-sans", Arial, Helvetica, sans-serif !important;
             font-size: 15px;
             color: var(--cv-slate);
         }}
@@ -46,8 +65,53 @@ st.markdown(f"""
                 linear-gradient(180deg, #fbfcff 0%, #f6f8fb 100%);
         }}
 
+        [data-testid="stAppViewContainer"] {{
+            padding-top: 0.2rem !important;
+        }}
+
+        section[data-testid="stMain"] {{
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }}
+
+        [data-testid="stAppViewContainer"] > .main {{
+            padding-top: 0 !important;
+        }}
+
         [data-testid="stAppViewContainer"] > .main .block-container {{
-            padding-top: 1.15rem;
+            padding-top: 0.2rem !important;
+            margin-top: 0 !important;
+        }}
+
+        [data-testid="stMainBlockContainer"] {{
+            padding-top: 0.2rem !important;
+            margin-top: 0 !important;
+        }}
+
+        [data-testid="stMainBlockContainer"] > div:first-child {{
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }}
+
+        [data-testid="stMainBlockContainer"] [data-testid="stExpander"] {{
+            margin-top: 0 !important;
+        }}
+
+        /* Em telas menores, a barra superior fixa precisa de folga extra
+           para não sobrepor o expander de filtros. */
+        @media (max-width: 900px) {{
+            [data-testid="stAppViewContainer"] {{
+                padding-top: 0 !important;
+            }}
+            section[data-testid="stMain"] {{
+                padding-top: 0 !important;
+            }}
+            [data-testid="stMainBlockContainer"] {{
+                padding-top: 6.2rem !important;
+            }}
+            [data-testid="stMainBlockContainer"] > div:first-child {{
+                margin-top: 0 !important;
+            }}
         }}
 
         h1, h2, h3 {{
@@ -60,7 +124,7 @@ st.markdown(f"""
 
         h1 {{
             font-size: clamp(1.95rem, 1.95vw, 2.45rem);
-            font-weight: 800;
+            font-weight: 700 !important;
             color: var(--cv-h1);
         }}
 
@@ -132,7 +196,7 @@ st.markdown(f"""
             border-color: var(--cv-blue);
             background: linear-gradient(135deg, var(--cv-tab-start) 0%, var(--cv-tab-end) 100%);
             box-shadow: 0 5px 12px rgba(7, 73, 171, 0.26);
-            font-weight: 750 !important;
+            font-weight: 700 !important;
         }}
 
         [data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"] {{
@@ -140,7 +204,14 @@ st.markdown(f"""
             border-color: var(--cv-blue);
             background: linear-gradient(135deg, var(--cv-tab-start) 0%, var(--cv-tab-end) 100%);
             box-shadow: 0 5px 12px rgba(7, 73, 171, 0.26);
-            font-weight: 750 !important;
+            font-weight: 700 !important;
+        }}
+
+        [data-testid="stTabs"] [role="tab"][aria-selected="true"] p,
+        [data-testid="stTabs"] [role="tab"][aria-selected="true"] span,
+        [data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"] p,
+        [data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"] span {{
+            font-weight: 700 !important;
         }}
 
         /* Metric cards */
@@ -175,7 +246,7 @@ st.markdown(f"""
         div[data-testid="stMetricValue"] > div {{
             color: var(--cv-blue) !important;
             font-size: 2.08rem !important;
-            font-weight: 800 !important;
+            font-weight: 700 !important;
             line-height: 1.08;
             letter-spacing: -0.01em;
         }}
@@ -268,7 +339,7 @@ st.markdown(f"""
             border: 1px solid #c8d6eb;
             background: #ffffff;
             color: var(--cv-blue);
-            font-weight: 650;
+            font-weight: 600;
             transition: all 0.16s ease;
         }}
 
@@ -305,6 +376,21 @@ st.markdown(f"""
             cursor: not-allowed;
         }}
 
+        [data-testid="stSidebar"] .stDownloadButton > button {{
+            border-radius: 11px;
+            border: 1px solid #0a469f;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--cv-tab-start) 0%, var(--cv-tab-end) 100%);
+            box-shadow: 0 6px 14px rgba(7, 73, 171, 0.30);
+            font-weight: 700;
+        }}
+
+        [data-testid="stSidebar"] .stDownloadButton > button:hover {{
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+            border-color: #0a4ead;
+        }}
+
         /* Sidebar */
         [data-testid="stSidebar"] {{
             background: linear-gradient(180deg, #fffde9 0%, #fff7d8 100%);
@@ -339,7 +425,7 @@ st.markdown(f"""
 
         .cv-status-value {{
             font-size: 2.02rem;
-            font-weight: 800;
+            font-weight: 700;
             color: #0d469e;
             line-height: 1.05;
             letter-spacing: -0.01em;
@@ -355,13 +441,62 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
+_header_logo_uri = _svg_data_uri(os.path.join(os.path.dirname(__file__), "assets", "cor-completa.svg"))
+if _header_logo_uri:
+    st.markdown(
+        f"""
+        <style>
+        [data-testid="stHeader"] {{
+            position: relative;
+            height: 100px;
+            min-height: 100px;
+        }}
+        [data-testid="stHeader"] > div {{
+            height: 100px;
+            min-height: 100px;
+        }}
+        [data-testid="stToolbar"] {{
+            top: 50%;
+            transform: translateY(-50%);
+        }}
+        [data-testid="stHeader"]::before {{
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: min(780px, 92vw);
+            height: 150px;
+            background-image: url("{_header_logo_uri}");
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center center;
+            pointer-events: none;
+            z-index: 1;
+        }}
+        @media (max-width: 900px) {{
+            [data-testid="stHeader"] {{
+                height: 100px;
+                min-height: 100px;
+            }}
+            [data-testid="stHeader"] > div {{
+                height: 100px;
+                min-height: 100px;
+            }}
+            [data-testid="stHeader"]::before {{
+                width: min(620px, 94vw);
+                height: 150px;
+            }}
+        }}
+        </style>
+        """
+        ,unsafe_allow_html=True,
+    )
+
+
 # -----------------------------------------------------------------------------
 # Global Elements
 # -----------------------------------------------------------------------------
-
-# Logo da barra lateral
-logo_path = os.path.join(os.path.dirname(__file__), 'assets', 'cor-cultura viva.svg')
-st.logo(logo_path, size='large')
 
 # Dados para filtros globais (exceto Início)
 df = preparar_base()
@@ -389,31 +524,53 @@ pages = {
 pg = st.navigation(pages)
 is_home = pg.title == home_page.title
 
-# Cabeçalho global (somente páginas internas)
-if not is_home:
-    header_path = os.path.join(os.path.dirname(__file__), 'assets', 'cor-completa.svg')
-    col_sq1, col_sq2, col_sq3 = st.columns([1, 2, 1])
-    with col_sq2:
-        st.image(header_path, use_container_width=True)
+# Layout centrado somente para a página inicial.
+if is_home:
+    st.markdown(
+        """
+        <style>
+        [data-testid="stMainBlockContainer"] {
+            max-width: 980px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # Filtros globais no topo (exceto Início)
 if not is_home:
+    relatorio_pagina.iniciar_contexto_relatorio(pg.title)
     renderizar_painel_filtros(df)
-# Sidebar (Only Actions like PDF)
-st.sidebar.divider()
-st.sidebar.markdown("### Exportar")
-if st.sidebar.button("🖨️ Baixar como PDF"):
-    components.html(
-        """
-        <script>
-            window.parent.print();
-        </script>
-        """,
-        height=0,
-        width=0
-    )
-st.sidebar.caption("Use 'Salvar como PDF' na janela de impressão.")
-st.sidebar.divider()
 
 pg.run()
+
+if not is_home:
+    st.sidebar.divider()
+    st.sidebar.markdown("### Exportar")
+    with st.sidebar:
+        relatorio_pagina = importlib.reload(relatorio_pagina)
+        payload_relatorio = relatorio_pagina.gerar_payload_relatorio(st.session_state.get("filtros_globais"))
+        montar_pdf_fn = getattr(relatorio_pagina, "montar_pdf_relatorio", None)
+        pdf_relatorio = montar_pdf_fn(payload_relatorio, aba_preferida=None) if callable(montar_pdf_fn) else b""
+        stamp_relatorio = datetime.now().strftime("%Y%m%d-%H%M")
+        nome_arquivo_relatorio = (
+            f"dashboard-diagnostico-economico-cultura-viva-"
+            f"{_slug_nome_arquivo(pg.title)}-{stamp_relatorio}.pdf"
+        )
+
+        st.download_button(
+            "⬇️ Baixar Relatório da Página (PDF)",
+            data=pdf_relatorio,
+            file_name=nome_arquivo_relatorio,
+            mime="application/pdf",
+            use_container_width=True,
+            disabled=not bool(pdf_relatorio),
+        )
+        if not pdf_relatorio:
+            st.caption("Não foi possível gerar o PDF nesta execução. Recarregue a página e tente novamente.")
+
+    st.sidebar.caption("O relatório em PDF usa a página atual, filtros ativos e todas as abas disponíveis.")
+    st.sidebar.divider()
 

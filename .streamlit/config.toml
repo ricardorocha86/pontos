@@ -1,6 +1,79 @@
+[server]
+headless = true
+runOnSave = true
+fileWatcherType = "none"
+enableCORS = true
+enableXsrfProtection = true
+disconnectedSessionTTL = 300
+enableStaticServing = true
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = "none"
+
+[browser]
+gatherUsageStats = false
+
+[runner]
+fastReruns = true
+
+[[theme.fontFaces]]
+family = "instrument-sans"
+url = "app/static/InstrumentSans-Regular.ttf"
+style = "normal"
+weight = 400
+
+[[theme.fontFaces]]
+family = "instrument-sans"
+url = "app/static/InstrumentSans-Italic.ttf"
+style = "italic"
+weight = 400
+
+[[theme.fontFaces]]
+family = "instrument-sans"
+url = "app/static/InstrumentSans-Medium.ttf"
+style = "normal"
+weight = 500
+
+[[theme.fontFaces]]
+family = "instrument-sans"
+url = "app/static/InstrumentSans-MediumItalic.ttf"
+style = "italic"
+weight = 500
+
+[[theme.fontFaces]]
+family = "instrument-sans"
+url = "app/static/InstrumentSans-SemiBold.ttf"
+style = "normal"
+weight = 600
+
+[[theme.fontFaces]]
+family = "instrument-sans"
+url = "app/static/InstrumentSans-SemiBoldItalic.ttf"
+style = "italic"
+weight = 600
+
+[[theme.fontFaces]]
+family = "instrument-sans"
+url = "app/static/InstrumentSans-Bold.ttf"
+style = "normal"
+weight = 700
+
+[[theme.fontFaces]]
+family = "instrument-sans"
+url = "app/static/InstrumentSans-BoldItalic.ttf"
+style = "italic"
+weight = 700
+
 [theme]
 base = "light"
 primaryColor = "#0749AB"
 backgroundColor = "#FFFFFF"
 secondaryBackgroundColor = "#FFFCF0" # Amarelo muito suave identidade (#DDB33F tint)
 textColor = "#1F1F1F"
+font = "instrument-sans, sans-serif"
+headingFont = "instrument-sans, sans-serif"
+
+[theme.sidebar]
+font = "instrument-sans, sans-serif"
+headingFont = "instrument-sans, sans-serif"

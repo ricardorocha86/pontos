@@ -11,6 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from components import grafico_barras_series, grafico_donut, mostrar_grafico
 from config import FONTE_FAMILIA, FONTE_TAMANHOS, PALETA_CORES
+from relatorio_pagina import definir_aba_relatorio, registrar_imagem_array
 from texto_wordcloud import gerar_wordcloud
 from utils import aplicar_filtros, para_bool, preparar_base
 
@@ -154,15 +155,17 @@ def _serie_participacao_faixas(df, coluna):
 
 def _mostrar_titulo_wordcloud(titulo):
     st.markdown(
-        "<div style='"
-        f"font-family:{FONTE_FAMILIA};"
-        f"font-size:{FONTE_TAMANHOS['titulo']}px;"
-        "font-weight:700;"
-        "line-height:1.15;"
-        "margin:0 0 6px 0;"
-        "'>"
-        f"{titulo}"
-        "</div>",
+        (
+            f'<div style="'
+            f'font-family:{FONTE_FAMILIA};'
+            f'font-size:{FONTE_TAMANHOS["titulo"]}px;'
+            f'font-weight:750;'
+            f'line-height:1.15;'
+            f'color:#2E435F;'
+            f'margin:0 0 6px 0;'
+            f'text-align:left;'
+            f'">{titulo}</div>'
+        ),
         unsafe_allow_html=True,
     )
 
@@ -304,9 +307,9 @@ def _serie_q30(df):
 
 
 st.title("E) Infraestrutura e Gestão")
-st.write(
-    "Esta página reúne os resultados de infraestrutura (Q25 e Q28), serviços ofertados à comunidade "
-    "(Q26 e Q27) e gestão dos Pontos de Cultura (Q29 a Q33)."
+definir_aba_relatorio("Infraestrutura")
+st.markdown(
+    "Esta página consolida informações sobre infraestrutura, serviços ofertados à comunidade e práticas de gestão dos Pontos e Pontões. Condições materiais, capacidade organizativa e estratégias de gestão influenciam diretamente a continuidade, a qualidade e o alcance das ações culturais. A leitura integrada dos blocos permite identificar fortalezas operacionais, lacunas estruturais e oportunidades de qualificação da gestão. Nesta seção, você verá conteúdos associados às questões Q25 a Q33 do formulário."
 )
 
 base = preparar_base()
@@ -315,14 +318,15 @@ if "filtros_globais" in st.session_state:
 
 aba1, aba2, aba3, aba4 = st.tabs(
     [
-        "Infraestrutura (Q25-Q28)",
-        "Serviços ofertados à comunidade (Q26-Q27)",
-        "Gestão dos Pontos de Cultura (Q29-Q32.1)",
-        "Estratégias comerciais (Q33)",
+        "Infraestrutura",
+        "Serviços ofertados à comunidade",
+        "Gestão dos Pontos de Cultura",
+        "Estratégias comerciais",
     ]
 )
 
 with aba1:
+    definir_aba_relatorio("Infraestrutura")
     col1, col2 = st.columns([4, 6])
 
     with col1:
@@ -335,7 +339,7 @@ with aba1:
             serie_q28_plot_vis.index = [_quebrar_linha_label(lbl, largura=10) for lbl in serie_q28_plot_vis.index]
             fig_q28 = grafico_barras_series(
                 serie_q28_plot_vis,
-                "Situação da sede do Ponto de Cultura (Q28)",
+                "Situação da sede do Ponto de Cultura",
                 cor=PALETA_CORES["principais"][2],
                 horizontal=False,
                 altura=560,
@@ -345,7 +349,7 @@ with aba1:
                 margin=dict(l=8, r=8, t=52, b=28),
             )
             fig_q28.update_xaxes(tickangle=0, automargin=True)
-            mostrar_grafico(fig_q28, "Situação da sede do Ponto de Cultura (Q28)")
+            mostrar_grafico(fig_q28, "Situação da sede do Ponto de Cultura")
 
     with col2:
         serie_q25 = _serie_multiescolha_por_prefixo(
@@ -357,14 +361,15 @@ with aba1:
         else:
             fig_q25 = grafico_barras_series(
                 _encurtar_index_serie(serie_q25, limite=52),
-                "Infraestruturas disponíveis para uso público/comunitário (Q25)",
+                "Infraestruturas disponíveis para uso público/comunitário",
                 cor=PALETA_CORES["principais"][1],
                 horizontal=True,
                 altura=560,
             )
-            mostrar_grafico(fig_q25, "Infraestruturas disponíveis para uso público/comunitário (Q25)")
+            mostrar_grafico(fig_q25, "Infraestruturas disponíveis para uso público/comunitário")
 
 with aba2:
+    definir_aba_relatorio("Serviços ofertados à comunidade")
     serie_q26 = _serie_multiescolha_por_prefixo(
         base,
         "26. Quais serviços são prestados pelo Ponto de Cultura à comunidade?",
@@ -383,7 +388,7 @@ with aba2:
             st.info("Sem dados de participação direta/indireta na amostra filtrada.")
         else:
             fig_esp = _grafico_espelhado_participacao(serie_dir, serie_ind)
-            mostrar_grafico(fig_esp, "Participação média mensal por faixa (Direta x Indireta) (Q27)")
+            mostrar_grafico(fig_esp, "Participação média mensal por faixa (Direta x Indireta)")
 
     with c2:
         if serie_q26.empty:
@@ -391,25 +396,26 @@ with aba2:
         else:
             fig_q26 = grafico_barras_series(
                 _encurtar_index_serie(serie_q26, limite=54),
-                "Serviços prestados à comunidade (Q26)",
+                "Serviços prestados à comunidade",
                 cor=PALETA_CORES["principais"][2],
                 horizontal=True,
                 altura=680,
             )
-            mostrar_grafico(fig_q26, "Serviços prestados à comunidade (Q26)")
+            mostrar_grafico(fig_q26, "Serviços prestados à comunidade")
 
 with aba3:
+    definir_aba_relatorio("Gestão dos Pontos de Cultura")
     l1, l2, l3 = st.columns(3)
 
     with l1:
         col_q32 = _encontrar_coluna_local(base.columns, "31. O Ponto de Cultura elaborou alguma Análise de Viabilidade Econômica?")
         if col_q32 and col_q32 in base.columns:
             serie_q32 = _ordenar_serie_sim_nao(base[col_q32].value_counts())
-            fig_q32 = grafico_donut(serie_q32, "Análise de Viabilidade Econômica elaborada (Q32)", altura=360)
+            fig_q32 = grafico_donut(serie_q32, "Análise de Viabilidade Econômica elaborada", altura=360)
             fig_q32 = _aplicar_cores_donut_sim_nao(fig_q32)
             fig_q32.update_layout(showlegend=True, legend=dict(orientation="h", y=-0.2, x=0.0))
             fig_q32.update_traces(textposition="inside", textinfo="percent")
-            mostrar_grafico(fig_q32, "Análise de Viabilidade Econômica elaborada (Q32)")
+            mostrar_grafico(fig_q32, "Análise de Viabilidade Econômica elaborada")
         else:
             st.info("Sem dados de Q32 na amostra filtrada.")
 
@@ -423,13 +429,13 @@ with aba3:
             if not serie_q321.empty:
                 fig_q321 = grafico_donut(
                     serie_q321,
-                    "Necessidade de elaborar análise (Q32.1)",
+                    "Necessidade de elaborar análise",
                     altura=360,
                 )
                 fig_q321 = _aplicar_cores_donut_sim_nao(fig_q321)
                 fig_q321.update_layout(showlegend=True, legend=dict(orientation="h", y=-0.2, x=0.0))
                 fig_q321.update_traces(textposition="inside", textinfo="percent")
-                mostrar_grafico(fig_q321, "Necessidade de elaborar análise (Q32.1)")
+                mostrar_grafico(fig_q321, "Necessidade de elaborar análise")
             else:
                 st.info("Sem dados de Q32.1 na amostra filtrada.")
         else:
@@ -442,12 +448,12 @@ with aba3:
         else:
             fig_q29 = grafico_barras_series(
                 serie_q29,
-                "Pontos com presença de cada vínculo de trabalho (Q29)",
+                "Pontos com presença de cada vínculo de trabalho",
                 cor=PALETA_CORES["principais"][0],
                 horizontal=True,
                 altura=360,
             )
-            mostrar_grafico(fig_q29, "Pontos com presença de cada vínculo de trabalho (Q29)")
+            mostrar_grafico(fig_q29, "Pontos com presença de cada vínculo de trabalho")
 
     m1, m2 = st.columns(2)
 
@@ -458,12 +464,12 @@ with aba3:
         else:
             fig_q30 = grafico_barras_series(
                 _encurtar_index_serie(serie_q30, limite=48),
-                "Pessoas que têm o Ponto como principal fonte de renda (Q30)",
+                "Pessoas que têm o Ponto como principal fonte de renda",
                 cor=PALETA_CORES["principais"][1],
                 horizontal=True,
                 altura=420,
             )
-            mostrar_grafico(fig_q30, "Pessoas que têm o Ponto como principal fonte de renda (Q30)")
+            mostrar_grafico(fig_q30, "Pessoas que têm o Ponto como principal fonte de renda")
 
     with m2:
         serie_q31 = _serie_multiescolha_por_prefixo(
@@ -475,14 +481,15 @@ with aba3:
         else:
             fig_q31 = grafico_barras_series(
                 _encurtar_index_serie(serie_q31, limite=52),
-                "Ferramentas e práticas de gestão financeira utilizadas (Q31)",
+                "Ferramentas e práticas de gestão financeira utilizadas",
                 cor=PALETA_CORES["secundarias"][3],
                 horizontal=True,
                 altura=420,
             )
-            mostrar_grafico(fig_q31, "Ferramentas e práticas de gestão financeira utilizadas (Q31)")
+            mostrar_grafico(fig_q31, "Ferramentas e práticas de gestão financeira utilizadas")
 
 with aba4:
+    definir_aba_relatorio("Estratégias comerciais")
     b1, b2 = st.columns([2, 3])
 
     with b1:
@@ -492,10 +499,10 @@ with aba4:
         )
         if col_q33 and col_q33 in base.columns:
             serie_q33 = base[col_q33].value_counts()
-            fig_q33 = grafico_donut(serie_q33, "Estratégias comerciais declaradas (Q33)", altura=414)
+            fig_q33 = grafico_donut(serie_q33, "Estratégias comerciais declaradas", altura=414)
             fig_q33.update_layout(showlegend=True, legend=dict(orientation="h", y=-0.2, x=0.0))
             fig_q33.update_traces(textposition="inside", textinfo="percent")
-            mostrar_grafico(fig_q33, "Estratégias comerciais declaradas (Q33)")
+            mostrar_grafico(fig_q33, "Estratégias comerciais declaradas")
         else:
             st.info("Sem dados de Q33 na amostra filtrada.")
 
@@ -511,14 +518,19 @@ with aba4:
                 st.info("Sem conteúdo textual suficiente em Q33.1 na amostra filtrada.")
             else:
                 wc_q331 = gerar_wordcloud(textos, altura_plot=414, colormap="tab20")
-                titulo_q331 = "Palavras mais frequentes em estratégias comerciais (Q33.1)"
+                titulo_q331 = "Palavras mais frequentes em estratégias comerciais"
                 if wc_q331["tipo"] == "image":
                     _mostrar_titulo_wordcloud(titulo_q331)
                     st.image(wc_q331["img"], use_container_width=True)
+                    registrar_imagem_array(wc_q331["img"], titulo_q331)
                 elif wc_q331["tipo"] == "plotly":
                     mostrar_grafico(wc_q331["fig"], titulo_q331)
                 else:
                     st.info("Sem conteúdo textual suficiente em Q33.1 na amostra filtrada.")
         else:
             st.info("Sem dados textuais de Q33.1 na amostra filtrada.")
+
+
+
+
 

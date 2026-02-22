@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from config import FAIXAS_RECEITA, ORDEM_FAIXA_POPULACIONAL
+from config import FAIXAS_RECEITA, ORDEM_FAIXA_POPULACIONAL, SIGLA_PARA_ESTADO_NOME
 from texto_para_filtros import interpretar_solicitacao_texto, tem_algum_filtro
 from utils import ACOES_ESTRUTURANTES, aplicar_filtros
 
@@ -105,6 +105,9 @@ def renderizar_painel_filtros(df):
             txt = str(valor)
             txt = txt.replace('(como coletivo ou grupo)', '(como coletivo)')
             return txt
+
+        def _rotulo_estado_sigla(sigla):
+            return SIGLA_PARA_ESTADO_NOME.get(str(sigla), str(sigla))
         opcoes_acessos_recursos = [
             ('rec_federal', 'Recursos Federais'),
             ('rec_minc', 'Editais do Ministério da Cultura'),
@@ -323,7 +326,13 @@ def renderizar_painel_filtros(df):
                 placeholder='Todos',
                 key=get_key('municipio'),
             )
-            sel_estados = st.multiselect('Estado', options=opcoes_estado, placeholder='Todos', key=get_key('estado'))
+            sel_estados = st.multiselect(
+                'Estado',
+                options=opcoes_estado,
+                format_func=_rotulo_estado_sigla,
+                placeholder='Todos',
+                key=get_key('estado'),
+            )
             sel_regiao = st.multiselect('Região', options=opcoes_regiao, placeholder='Todas', key=get_key('regiao'))
 
             opcoes_faixa_pop = [f for f in ORDEM_FAIXA_POPULACIONAL if f in df['faixa_populacional'].unique()]
@@ -448,7 +457,7 @@ def renderizar_painel_filtros(df):
             if sel_regiao:
                 _renderizar_chips_sidebar(st, 'Região', sel_regiao)
             if sel_estados:
-                _renderizar_chips_sidebar(st, 'Estado', sel_estados)
+                _renderizar_chips_sidebar(st, 'Estado', [_rotulo_estado_sigla(s) for s in sel_estados])
             if sel_cidades:
                 _renderizar_chips_sidebar(st, 'Município', sel_cidades)
             if sel_pop:

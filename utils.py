@@ -102,7 +102,6 @@ def preparar_base(versao_cache='v2'):
     df = carregar_base().copy()
     df.columns = [str(c) for c in df.columns]
 
-    col_estado = encontrar_coluna(df.columns, 'Estado')
     col_cidade_api = encontrar_coluna(df.columns, 'cidade_api')
     col_uf_api = encontrar_coluna(df.columns, 'uf_api')
     col_pontao = encontrar_coluna(df.columns, 'Pontão')
@@ -120,11 +119,12 @@ def preparar_base(versao_cache='v2'):
     col_tcc_mun_ponto = encontrar_coluna(df.columns, 'Indique qual modalidade de edital municipal da PNAB: (Termo de Compromisso Cultural (TCC) de Ponto de Cultura)')
     col_tcc_mun_pontao = encontrar_coluna(df.columns, 'Indique qual modalidade de edital municipal da PNAB: (Termo de Compromisso Cultural (TCC) de Pontão de Cultura)')
 
-    df['estado'] = df[col_estado] if col_estado else np.nan
     df['cidade'] = df[col_cidade_api] if col_cidade_api else np.nan
     df['uf_api'] = df[col_uf_api] if col_uf_api else np.nan
     df['uf_api'] = df['uf_api'].fillna('').astype(str).str.upper().str.strip()
     df['uf_api'] = df['uf_api'].where(df['uf_api'].str.match(r'^[A-Z]{2}$'), np.nan)
+    # Estado passa a ser derivado exclusivamente da UF normalizada (uf_api).
+    df['estado'] = df['uf_api']
     df['regiao'] = df['uf_api'].map(lambda uf: REGIOES_POR_UF.get(uf, np.nan))
     df['uf'] = df['uf_api']
     df['tipo_ponto'] = df[col_pontao].apply(lambda x: 'Pontão' if str(x).strip().lower() == 'sim' else 'Ponto') if col_pontao else np.nan

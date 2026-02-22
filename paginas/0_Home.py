@@ -61,19 +61,31 @@ st.markdown(
         }
 
         .cv-home-card-icon {
-            font-size: 2rem;
+            font-size: 2.45rem;
             line-height: 1;
-            width: 52px;
-            height: 52px;
-            border-radius: 12px;
+            width: 68px;
+            height: 68px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(145deg, #0b4ca8 0%, #3f78bf 100%);
             color: #fff;
-            box-shadow: 0 8px 16px rgba(7, 73, 171, 0.26);
+            box-shadow: 0 10px 22px rgba(7, 73, 171, 0.32), 0 0 22px rgba(94, 160, 255, 0.52);
+            margin-left: auto;
+            margin-right: auto;
             margin-bottom: 0.15rem;
             z-index: 1;
+            position: relative;
+        }
+
+        .cv-home-card-icon::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 18px;
+            background: radial-gradient(circle, rgba(135, 189, 255, 0.45) 0%, rgba(135, 189, 255, 0.0) 72%);
+            z-index: -1;
         }
 
         .cv-home-card h4 {
@@ -83,6 +95,7 @@ st.markdown(
             font-weight: 800;
             line-height: 1.25;
             z-index: 1;
+            text-align: center;
         }
 
         .cv-home-card p {
@@ -94,18 +107,26 @@ st.markdown(
         }
 
         .cv-home-card-btn {
-            display: inline-block;
-            text-decoration: none;
+            display: block;
+            text-decoration: none !important;
             background: linear-gradient(135deg, #0b4ca8 0%, #3f78bf 100%);
             color: #ffffff !important;
             font-weight: 700;
             font-size: 0.88rem;
             border-radius: 10px;
             padding: 0.5rem 0.78rem;
-            width: fit-content;
+            width: 100%;
+            text-align: center;
             box-shadow: 0 6px 14px rgba(7, 73, 171, 0.28);
             transition: transform 0.15s ease, filter 0.15s ease;
             z-index: 1;
+        }
+
+        .cv-home-card-btn:link,
+        .cv-home-card-btn:visited,
+        .cv-home-card-btn:hover,
+        .cv-home-card-btn:active {
+            text-decoration: none !important;
         }
 
         .cv-home-card-btn:hover {
@@ -152,83 +173,85 @@ else:
     n_ponto = n_total
     n_pontao = 0
 
-st.title('Diagnóstico Econômico da Rede Cultura Viva')
+st.title('Diagnóstico Econômico da Cultura Viva')
 st.markdown(
     f"""
-Esta plataforma apresenta os resultados da pesquisa nacional conduzida pelo **Consórcio Universitário Cultura Viva (UFBA, UFF e UFPR)**, em parceria com a **Secretaria de Cidadania e Diversidade Cultural do Ministério da Cultura**.
+Este painel integra o projeto **Diagnóstico Econômico da Cultura Viva**, realizado pelo **Consórcio Universitário Cultura Viva (UFBA, UFF e UFPR)** em parceria com a **Secretaria de Cidadania e Diversidade Cultural do Ministério da Cultura**. Sua finalidade é produzir evidências aplicadas sobre a situação econômica dos Pontos e Pontões de Cultura, com foco em condições reais de sustentabilidade, geração de renda e continuidade das ações culturais nos territórios.
 
-A amostra consolidada desta edição reúne **N = {_fmt_int(n_total)}** respostas válidas, distribuídas em **{_fmt_int(n_municipios)} municípios**, **{_fmt_int(n_ufs)} unidades da federação** e **{_fmt_int(n_regioes)} regiões do país**.
+A proposta responde a uma demanda histórica da Rede Cultura Viva: transformar informação dispersa em base estratégica para orientar políticas públicas mais estáveis, especialmente no enfrentamento da sazonalidade de editais, da descontinuidade de fomento e dos limites de circulação econômica entre iniciativas culturais. O dashboard existe para apoiar decisões concretas de gestão, pactuação federativa e fortalecimento de arranjos produtivos locais, solidários e criativos.
 
-No conjunto analisado, observam-se **{_fmt_int(n_ponto)} Pontos de Cultura** e **{_fmt_int(n_pontao)} Pontões de Cultura**, permitindo uma leitura nacional da dimensão econômica, institucional e territorial da rede.
+Nesta versão, o painel organiza uma base ativa de **{_fmt_int(n_total)} respostas válidas**, com cobertura em **{_fmt_int(n_municipios)} municípios em todos os estados do Brasil**. A análise dinâmica do dashboard permite combinar filtros, revelar padrões territoriais e institucionais, testar hipóteses e transformar evidências em decisões mais precisas para fomento, gestão e articulação da Rede Cultura Viva.
     """
 )
 
 st.markdown('#### Contexto e objetivos da pesquisa')
 st.markdown(
     """
-- Atualizar evidências sobre sustentabilidade econômica e dinâmica de funcionamento da Rede Cultura Viva.
-- Subsidiar decisões de política pública para fomento, fortalecimento institucional e implementação da PNAB.
-- Valorizar uma metodologia participativa e formativa, com envolvimento de Pontões no processo de mobilização e coleta.
+- Qualificar evidências sobre sustentabilidade econômica e funcionamento da Rede Cultura Viva.
+- Subsidiar decisões de política pública para fomento, fortalecimento institucional e implementação da PNCV/PNAB.
+- Integrar pesquisa e formação em abordagem participativa, com mobilização dos Pontões e apoio à coordenação federativa.
+    """
+)
+
+st.markdown('#### Como usar o Dashboard')
+st.markdown(
+    """
+- Comece pelos filtros estratégicos para definir o recorte territorial e temático da análise.
+- Navegue pelas páginas A-G para comparar resultados por dimensão (identificação, recursos, mercados, gestão, redes e cruzamentos).
+- Combine filtros para gerar recortes úteis e apoiar decisões, prioridades e monitoramento no Dashboard.
+- Para melhor experiência visual, use preferencialmente desktop em tela Full HD (1920x1080) ou superior.
     """
 )
 
 st.divider()
 
-titulo_mapa = 'Distribuição Amostral da Pesquisa Cultura Viva no Brasil'
+st.markdown('### Distribuição amostral da pesquisa no Brasil')
+st.markdown(
+    'Este mapa apresenta a distribuição territorial da amostra coletada na pesquisa, em que os marcadores azuis representam Pontos de Cultura e os vermelhos representam Pontões de Cultura, evidenciando a capilaridade e a diversidade de presença da Rede Cultura Viva no país.'
+)
+fig_mapa = mapa_pontos_matplotlib(df, titulo='')
+st.pyplot(fig_mapa, use_container_width=True)
+plt.close(fig_mapa)
 
-col_mapa, col_docs = st.columns([3, 2], gap='small')
+st.markdown('### Materiais completos da pesquisa')
+st.markdown('Acesse os materiais oficiais de referência utilizados no painel.')
 
-with col_mapa:
-    fig_mapa = mapa_pontos_matplotlib(df, titulo=titulo_mapa)
-    st.pyplot(fig_mapa, use_container_width=True)
-    plt.close(fig_mapa)
+materiais = [
+    {
+        'titulo': 'Consórcio Cultura Viva',
+        'descricao': 'Portal oficial da pesquisa com publicações, notícias e materiais institucionais.',
+        'url': 'https://pesquisaculturaviva.org/',
+        'icone': '🌐',
+    },
+    {
+        'titulo': 'Projeto de Pesquisa',
+        'descricao': 'Documento-base com justificativa, desenho metodológico e plano amostral.',
+        'url': 'https://pesquisaculturaviva.org/wp-content/uploads/2025/08/Projeto-de-Pesquisa-Diagnostico-Economico-da-Cultura-Viva.pdf',
+        'icone': '📘',
+    },
+    {
+        'titulo': 'Formulário de Diagnóstico',
+        'descricao': 'Instrumento completo de coleta aplicado aos Pontos e Pontões de Cultura.',
+        'url': 'https://pesquisaculturaviva.org/wp-content/uploads/2025/08/FORMULARIO-DE-DIAGNOSTICO-ECONOMICO-DA-CULTURA-VIVA.pdf',
+        'icone': '📝',
+    },
+    {
+        'titulo': 'Relatório completo',
+        'descricao': 'Relatório analítico completo da pesquisa, com visualizações e resultados detalhados.',
+        'url': 'https://pesquisaculturaviva.netlify.app/',
+        'icone': '📊',
+    },
+]
 
-with col_docs:
-    st.markdown('### Materiais completos da pesquisa')
-    st.markdown('Acesse os materiais oficiais de referência utilizados no painel.')
-
-    materiais = [
-        {
-            'titulo': 'Consórcio Cultura Viva',
-            'descricao': 'Portal oficial da pesquisa com publicações, notícias e materiais institucionais.',
-            'url': 'https://pesquisaculturaviva.org/',
-            'icone': '🌐',
-        },
-        {
-            'titulo': 'Projeto de Pesquisa',
-            'descricao': 'Documento-base com justificativa, desenho metodológico e plano amostral.',
-            'url': 'https://pesquisaculturaviva.org/wp-content/uploads/2025/08/Projeto-de-Pesquisa-Diagnostico-Economico-da-Cultura-Viva.pdf',
-            'icone': '📘',
-        },
-        {
-            'titulo': 'Formulário de Diagnóstico',
-            'descricao': 'Instrumento completo de coleta aplicado aos Pontos e Pontões de Cultura.',
-            'url': 'https://pesquisaculturaviva.org/wp-content/uploads/2025/08/FORMULARIO-DE-DIAGNOSTICO-ECONOMICO-DA-CULTURA-VIVA.pdf',
-            'icone': '📝',
-        },
-        {
-            'titulo': 'Relatório completo',
-            'descricao': 'Relatório analítico completo da pesquisa, com visualizações e resultados detalhados.',
-            'url': 'https://relatorio-pontos.netlify.app/',
-            'icone': '📊',
-        },
-    ]
-
-    card_cols = st.columns(2, gap='small')
-    for i, material in enumerate(materiais):
-        with card_cols[i % 2]:
-            _render_card_material(
-                titulo=material['titulo'],
-                descricao=material['descricao'],
-                url=material['url'],
-                icone=material['icone'],
-            )
+card_cols = st.columns(2, gap='small')
+for i, material in enumerate(materiais):
+    with card_cols[i % 2]:
+        _render_card_material(
+            titulo=material['titulo'],
+            descricao=material['descricao'],
+            url=material['url'],
+            icone=material['icone'],
+        )
 
 st.divider()
 
-# Cabeçalho institucional anterior movido para o final da página
-header_path = os.path.join(ASSETS_DIR, 'cor-completa.svg')
-if os.path.exists(header_path):
-    col_h1, col_h2, col_h3 = st.columns([1, 2, 1])
-    with col_h2:
-        st.image(header_path, use_container_width=True)

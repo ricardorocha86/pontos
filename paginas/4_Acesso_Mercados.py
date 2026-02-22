@@ -11,6 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from components import grafico_barras_series, grafico_donut, mostrar_grafico
 from config import CORES_GRAFICOS, FONTE_FAMILIA, FONTE_TAMANHOS, PALETA_CORES
+from relatorio_pagina import definir_aba_relatorio, registrar_imagem_array
 from texto_wordcloud import gerar_wordcloud
 from utils import aplicar_filtros, para_bool, preparar_base
 
@@ -134,15 +135,17 @@ def _mostrar_legenda_donut(labels, cores_por_label=None):
 
 def _mostrar_titulo_wordcloud(titulo):
     st.markdown(
-        "<div style='"
-        f"font-family:{FONTE_FAMILIA};"
-        f"font-size:{FONTE_TAMANHOS['titulo']}px;"
-        "font-weight:700;"
-        "line-height:1.15;"
-        "margin:0 0 6px 0;"
-        "'>"
-        f"{titulo}"
-        "</div>",
+        (
+            f'<div style="'
+            f'font-family:{FONTE_FAMILIA};'
+            f'font-size:{FONTE_TAMANHOS["titulo"]}px;'
+            f'font-weight:750;'
+            f'line-height:1.15;'
+            f'color:#2E435F;'
+            f'margin:0 0 6px 0;'
+            f'text-align:left;'
+            f'">{titulo}</div>'
+        ),
         unsafe_allow_html=True,
     )
 
@@ -375,8 +378,8 @@ def _fig_q23_por_q22(df, col_q22):
         rotulo = str(col).split("(", 1)[1].rsplit(")", 1)[0].strip()
         c_sim = int(para_bool(base_sim[col]).sum()) if n_sim > 0 else 0
         c_nao = int(para_bool(base_nao[col]).sum()) if n_nao > 0 else 0
-        registros.append({"Dificuldade": rotulo, "Grupo": "Com relação (Q22=Sim)", "Contagem": c_sim, "Base": n_sim})
-        registros.append({"Dificuldade": rotulo, "Grupo": "Sem relação (Q22=Não)", "Contagem": c_nao, "Base": n_nao})
+        registros.append({"Dificuldade": rotulo, "Grupo": "Com relação (Sim)", "Contagem": c_sim, "Base": n_sim})
+        registros.append({"Dificuldade": rotulo, "Grupo": "Sem relação (Não)", "Contagem": c_nao, "Base": n_nao})
 
     dfx = pd.DataFrame(registros)
     if dfx.empty:
@@ -426,8 +429,8 @@ def _fig_q23_por_q22(df, col_q22):
         text="Texto",
         category_orders={"LabelCurta": ordem_curta},
         color_discrete_map={
-            "Com relação (Q22=Sim)": PALETA_CORES["secundarias"][1],
-            "Sem relação (Q22=Não)": PALETA_CORES["principais"][0],
+            "Com relação (Sim)": PALETA_CORES["secundarias"][1],
+            "Sem relação (Não)": PALETA_CORES["principais"][0],
         },
         custom_data=["Dificuldade", "Percentual", "Base"],
     )
@@ -463,9 +466,9 @@ def _serie_q24(df):
 
 
 st.title("D) Acesso a Mercados")
+definir_aba_relatorio("Comercialização de produtos e serviços")
 st.markdown(
-    "Esta página apresenta a dinâmica de comercialização dos Pontos de Cultura e os principais "
-    "desafios/estratégias de acesso a mercados com base nas questões 20 a 24."
+    "Esta página examina a dinâmica de comercialização dos Pontos e Pontões, incluindo modelo de acesso às ações, tipos de produtos e serviços, estratégias de mercado e dificuldades para vender e circular. Os gráficos evidenciam como a economia cultural se organiza entre práticas presenciais, redes de circulação e tentativas de inserção em mercados mais amplos. O objetivo é apoiar decisões sobre fortalecimento comercial, diversificação de receitas e redução de barreiras de mercado. Nesta seção, você verá conteúdos associados às questões Q20 a Q24 do formulário."
 )
 
 df = preparar_base()
@@ -474,12 +477,13 @@ if "filtros_globais" in st.session_state:
 
 tab1, tab2 = st.tabs(
     [
-        "Comercialização de produtos e serviços (Q20-Q21)",
-        "Dificuldades e estratégias de acesso a mercados (Q22-Q24)",
+        "Comercialização de produtos e serviços",
+        "Dificuldades e estratégias de acesso a mercados",
     ]
 )
 
 with tab1:
+    definir_aba_relatorio("Comercialização de produtos e serviços")
     col_q21 = _encontrar_por_prefixo(
         df.columns,
         ["21. o ponto de cultura comercializou (vendeu) produtos e/ou servicos nos ultimos 24 meses?"],
@@ -498,7 +502,7 @@ with tab1:
     with r1c1:
         if not serie_q21.empty and int(serie_q21.sum()) > 0:
             serie_q21_plot = _ordenar_serie_sim_nao(serie_q21)
-            fig_q21 = grafico_donut(serie_q21_plot, "Comercialização ativa (Q21)", altura=370)
+            fig_q21 = grafico_donut(serie_q21_plot, "Comercialização ativa", altura=370)
             fig_q21 = _aplicar_padrao_donut(fig_q21)
             fig_q21 = _aplicar_cores_donut_sim_nao(fig_q21)
             fig_q21.update_layout(
@@ -511,7 +515,7 @@ with tab1:
                     yanchor="top",
                 ),
             )
-            mostrar_grafico(fig_q21, "Comercialização ativa (Q21)")
+            mostrar_grafico(fig_q21, "Comercialização ativa")
         else:
             st.info("Sem dados de Q21 na amostra filtrada.")
 
@@ -521,13 +525,13 @@ with tab1:
             serie_q20_plot.index = [_quebrar_linha_label(lbl, largura=16) for lbl in serie_q20_plot.index]
             fig_q20 = grafico_barras_series(
                 serie_q20_plot,
-                "Modelo de acesso predominante das ações (Q20)",
+                "Modelo de acesso predominante das ações",
                 cor=PALETA_CORES["principais"][1],
                 horizontal=False,
                 altura=370,
             )
             fig_q20.update_xaxes(tickangle=0, automargin=True)
-            mostrar_grafico(fig_q20, "Modelo de acesso predominante das ações (Q20)")
+            mostrar_grafico(fig_q20, "Modelo de acesso predominante das ações")
         else:
             st.info("Sem dados de Q20 na amostra filtrada.")
 
@@ -536,7 +540,7 @@ with tab1:
             serie_uso_plot, labels_uso = _encurtar_serie_labels(serie_uso_venda, limite=42)
             fig_uso = grafico_barras_series(
                 serie_uso_plot,
-                "Destinação dos recursos obtidos com a venda (Q21.2)",
+                "Destinação dos recursos obtidos com a venda",
                 cor=PALETA_CORES["secundarias"][1],
                 horizontal=True,
                 altura=370,
@@ -550,7 +554,7 @@ with tab1:
             max_uso = max(float(serie_uso_venda.max()), 1.0)
             fig_uso.update_xaxes(range=[0, max_uso * 1.15])
             fig_uso.update_layout(margin=dict(l=12, r=48, t=58, b=24))
-            mostrar_grafico(fig_uso, "Destinação dos recursos obtidos com a venda (Q21.2)")
+            mostrar_grafico(fig_uso, "Destinação dos recursos obtidos com a venda")
         else:
             st.info("Sem dados de destinação dos recursos de venda (Q21.2) na amostra filtrada.")
 
@@ -563,7 +567,7 @@ with tab1:
             serie_prod_plot, labels_prod = _encurtar_serie_labels(serie_prod, limite=34)
             fig_prod = grafico_barras_series(
                 serie_prod_plot,
-                "Produtos comercializados (Q21.1)",
+                "Produtos comercializados",
                 cor=PALETA_CORES["principais"][2],
                 horizontal=True,
                 altura=430,
@@ -577,7 +581,7 @@ with tab1:
             max_prod = max(float(serie_prod.max()), 1.0)
             fig_prod.update_xaxes(range=[0, max_prod * 1.15])
             fig_prod.update_layout(margin=dict(l=12, r=42, t=58, b=24))
-            mostrar_grafico(fig_prod, "Produtos comercializados (Q21.1)")
+            mostrar_grafico(fig_prod, "Produtos comercializados")
         else:
             st.info("Sem dados de produtos comercializados na amostra filtrada.")
 
@@ -586,7 +590,7 @@ with tab1:
             serie_serv_plot, labels_serv = _encurtar_serie_labels(serie_serv, limite=34)
             fig_serv = grafico_barras_series(
                 serie_serv_plot,
-                "Serviços comercializados (Q21.1)",
+                "Serviços comercializados",
                 cor=PALETA_CORES["secundarias"][2],
                 horizontal=True,
                 altura=430,
@@ -600,11 +604,12 @@ with tab1:
             max_serv = max(float(serie_serv.max()), 1.0)
             fig_serv.update_xaxes(range=[0, max_serv * 1.15])
             fig_serv.update_layout(margin=dict(l=12, r=42, t=58, b=24))
-            mostrar_grafico(fig_serv, "Serviços comercializados (Q21.1)")
+            mostrar_grafico(fig_serv, "Serviços comercializados")
         else:
             st.info("Sem dados de serviços comercializados na amostra filtrada.")
 
 with tab2:
+    definir_aba_relatorio("Dificuldades e estratégias de acesso a mercados")
     col_q22 = _encontrar_por_prefixo(
         df.columns,
         ["22. o ponto de cultura possui relacao comercial com o mercado justo e solidario?"],
@@ -624,10 +629,10 @@ with tab2:
         with d1:
             if not serie_q22.empty and int(serie_q22.sum()) > 0:
                 serie_q22_plot = serie_q22.sort_values(ascending=False)
-                fig_q22 = grafico_donut(serie_q22_plot, "Mercado justo e solidário (Q22)", altura=290)
+                fig_q22 = grafico_donut(serie_q22_plot, "Mercado justo e solidário", altura=290)
                 fig_q22 = _aplicar_padrao_donut(fig_q22)
                 fig_q22 = _aplicar_cores_donut_sim_nao(fig_q22)
-                mostrar_grafico(fig_q22, "Mercado justo e solidário (Q22)")
+                mostrar_grafico(fig_q22, "Mercado justo e solidário")
                 _mostrar_legenda_donut(
                     list(serie_q22_plot.index),
                     cores_por_label={
@@ -643,11 +648,11 @@ with tab2:
             if not serie_q24.empty and int(serie_q24.sum()) > 0:
                 serie_q24_plot_ord = serie_q24_plot.sort_values(ascending=False)
                 fig_q24 = grafico_donut(
-                    serie_q24_plot_ord, "Práticas de base tradicional/popular (Q24)", altura=290
+                    serie_q24_plot_ord, "Pratica de base popular", altura=290
                 )
                 fig_q24 = _aplicar_padrao_donut(fig_q24)
                 fig_q24 = _aplicar_cores_donut_sim_nao(fig_q24)
-                mostrar_grafico(fig_q24, "Práticas de base tradicional/popular (Q24)")
+                mostrar_grafico(fig_q24, "Pratica de base popular")
                 _mostrar_legenda_donut(
                     list(serie_q24_plot_ord.index),
                     cores_por_label={
@@ -664,7 +669,7 @@ with tab2:
             serie_q23_plot, labels_q23 = _encurtar_serie_labels(serie_q23, limite=42)
             fig_q23 = grafico_barras_series(
                 serie_q23_plot,
-                "Top 8 Principais dificuldades para acesso a mercados (Q23)",
+                "Principais dificuldades para acesso a mercados",
                 cor=PALETA_CORES["secundarias"][1],
                 horizontal=True,
                 altura=650,
@@ -676,7 +681,7 @@ with tab2:
             max_q23 = max(float(serie_q23.max()), 1.0)
             fig_q23.update_xaxes(range=[0, max_q23 * 1.15])
             fig_q23.update_layout(margin=dict(l=12, r=42, t=58, b=24))
-            mostrar_grafico(fig_q23, "Top 8 Principais dificuldades para acesso a mercados (Q23)")
+            mostrar_grafico(fig_q23, "Principais dificuldades para acesso a mercados")
         else:
             st.info("Sem dados de dificuldades de comercialização (Q23) na amostra filtrada.")
 
@@ -690,16 +695,21 @@ with tab2:
                 st.info("Sem conteúdo textual suficiente em Q24.1 na amostra filtrada.")
             else:
                 wc_q241 = gerar_wordcloud(textos_q241, altura_plot=430, colormap="tab20")
-                titulo_q241 = "Palavras mais frequentes em práticas de base (Q24.1)"
+                titulo_q241 = "Palavras mais frequentes em práticas de base"
                 if wc_q241["tipo"] == "image":
                     _mostrar_titulo_wordcloud(titulo_q241)
                     st.image(wc_q241["img"], use_container_width=True)
+                    registrar_imagem_array(wc_q241["img"], titulo_q241)
                 elif wc_q241["tipo"] == "plotly":
                     mostrar_grafico(wc_q241["fig"], titulo_q241)
                 else:
                     st.info("Sem conteúdo textual suficiente em Q24.1 na amostra filtrada.")
         else:
             st.info("Sem dados textuais de Q24.1 na amostra filtrada.")
+
+
+
+
 
 
 

@@ -18,14 +18,15 @@ from components import (
     mostrar_grafico,
 )
 from config import PALETA_CORES
+from relatorio_pagina import definir_aba_relatorio, registrar_figura_matplotlib
 from utils import aplicar_filtros, encontrar_coluna, preparar_base
 
 st.title("A) Identificação")
+definir_aba_relatorio("Visão geral")
 
 st.markdown(
     """
-A cultura deve ser vista como recurso estratégico para desenvolvimento social e econômico.
-Nesta página, apresentamos a distribuição territorial da rede e os principais sinais de estrutura institucional e comunicação digital.
+Esta página apresenta o perfil institucional e territorial da Rede Cultura Viva na amostra, articulando distribuição geográfica, forma de registro jurídico e presença digital declarada. A leitura combinada desses indicadores permite identificar como os Pontos e Pontões se organizam no território e quais canais mobilizam para visibilidade e articulação. O objetivo é oferecer uma base de referência para interpretar diferenças regionais e capacidades institucionais da rede. Nesta seção, você verá conteúdos associados às questões Q1 a Q8 do formulário.
 """
 )
 
@@ -161,19 +162,36 @@ else:
                 contagem_estado = _contagem_estado_para_mapa(_df)
                 if contagem_estado.empty:
                     fig_mapa = None
+                    titulo_mapa_relatorio = "Distribuição dos Pontos de Cultura por Estado"
                 else:
                     fig_mapa = mapa_estados_matplotlib(contagem_estado)
+                    titulo_mapa_relatorio = "Distribuição dos Pontos de Cultura por Estado"
             elif visao == 'Por Região':
                 contagem_regiao = _df['regiao'].value_counts().reset_index()
                 contagem_regiao.columns = ['regiao', 'contagem']
                 fig_mapa = mapa_regioes_matplotlib(contagem_regiao)
+                titulo_mapa_relatorio = "Distribuição dos Pontos de Cultura por Região"
             else:
-                contagem_cidades = _df['cidade'].value_counts().reset_index()
-                contagem_cidades.columns = ['cidade', 'contagem']
+                col_cidade_mapa = 'cidade_api' if 'cidade_api' in _df.columns else 'cidade'
+                if 'uf_api' in _df.columns:
+                    contagem_cidades = (
+                        _df[[col_cidade_mapa, 'uf_api']]
+                        .dropna(subset=[col_cidade_mapa, 'uf_api'])
+                        .groupby([col_cidade_mapa, 'uf_api'])
+                        .size()
+                        .reset_index(name='contagem')
+                    )
+                    contagem_cidades.columns = ['cidade', 'uf', 'contagem']
+                else:
+                    contagem_cidades = _df[col_cidade_mapa].value_counts().reset_index()
+                    contagem_cidades.columns = ['cidade', 'contagem']
                 fig_mapa = mapa_municipios_matplotlib(contagem_cidades)
+                titulo_mapa_relatorio = "Pontos de Cultura por Município"
         if fig_mapa is None:
             st.info('Sem UFs válidas para renderizar o mapa estadual.')
         else:
+            definir_aba_relatorio(f"Mapa - {visao}")
+            registrar_figura_matplotlib(fig_mapa, titulo_mapa_relatorio)
             st.pyplot(fig_mapa, use_container_width=True)
             plt.close(fig_mapa)
         st.radio(
@@ -222,6 +240,8 @@ else:
                 st.info('Nenhuma rede social identificada nos filtros atuais.')
         else:
             st.info('Coluna de presença digital não encontrada na base.')
+
+
 
 
 

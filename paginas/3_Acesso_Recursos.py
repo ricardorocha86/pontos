@@ -10,6 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from config import FAIXAS_RECEITA, FONTE_FAMILIA, FONTE_TAMANHOS, PALETA_CORES
 from components import grafico_barras_series, grafico_donut, mostrar_grafico
+from relatorio_pagina import definir_aba_relatorio
 from utils import aplicar_filtros, encontrar_coluna, normalizar_texto, para_bool, preparar_base
 
 
@@ -171,9 +172,9 @@ def _q19_receita_anual(df):
 
 
 st.title("C) Acesso a Recursos")
+definir_aba_relatorio("Economia do Ponto de Cultura")
 st.markdown(
-  "Esta página organiza os resultados de sustentabilidade econômica em dois blocos: "
-  "economia do Ponto de Cultura (Q13 a Q15) e dificuldades/estratégias financeiras (Q16 a Q19)."
+  "Esta página reúne a dimensão de sustentabilidade econômica da rede, relacionando dependência de renda, acesso a recursos públicos e privados, crédito e principais barreiras financeiras. A análise permite distinguir onde o fomento está mais presente e onde persistem gargalos de financiamento, formalização e capacidade de captação. O uso combinado dos painéis facilita priorizar estratégias de apoio econômico e desenho de políticas de fomento. Nesta seção, você verá conteúdos associados às questões Q13 a Q19 do formulário."
 )
 
 df = preparar_base()
@@ -188,6 +189,7 @@ tab_economia, tab_dificuldades = st.tabs(
 )
 
 with tab_economia:
+  definir_aba_relatorio("Economia do Ponto de Cultura")
   col_q13 = encontrar_coluna(
     df.columns,
     "13. O Projeto do Ponto de Cultura representa a principal fonte de renda da entidade/coletivo/pessoa física?",
@@ -282,10 +284,10 @@ with tab_economia:
   d1, d2, d3, d4 = st.columns(4)
   with d1:
     if not serie_q13.empty and int(serie_q13.sum()) > 0:
-      fig_q13 = grafico_donut(serie_q13, "Principal fonte de renda (Q13)", altura=360)
+      fig_q13 = grafico_donut(serie_q13, "Principal fonte de renda", altura=360)
       fig_q13 = _aplicar_padrao_donut_pagina_a(fig_q13)
       fig_q13 = _aplicar_cores_donut_sim_nao(fig_q13)
-      mostrar_grafico(fig_q13, "Principal fonte de renda (Q13)")
+      mostrar_grafico(fig_q13, "Principal fonte de renda")
     else:
       st.info("Sem dados de Q13 na amostra filtrada.")
 
@@ -300,13 +302,13 @@ with tab_economia:
       )
       fig_acesso = grafico_barras_series(
         serie_acesso_bar,
-        "Acesso a recursos (Q14-Q15)",
+        "Acesso a recursos",
         cor=PALETA_CORES["principais"][0],
         horizontal=False,
         altura=360,
       )
       fig_acesso = _aplicar_padrao_labels_barra_vertical(fig_acesso, largura=16)
-      mostrar_grafico(fig_acesso, "Acesso a recursos (Q14-Q15)")
+      mostrar_grafico(fig_acesso, "Acesso a recursos")
     else:
       st.info("Sem dados de Q14/Q15 na amostra filtrada.")
 
@@ -314,13 +316,13 @@ with tab_economia:
     if not serie_esferas.empty and int(serie_esferas.sum()) > 0:
       fig_esferas = grafico_barras_series(
         serie_esferas.sort_values(ascending=False),
-        "Esferas de recursos públicos (Q14.1)",
+        "Esferas de recursos públicos",
         cor=PALETA_CORES["secundarias"][1],
         horizontal=False,
         altura=360,
       )
       fig_esferas = _aplicar_padrao_labels_barra_vertical(fig_esferas, largura=16)
-      mostrar_grafico(fig_esferas, "Esferas de recursos públicos (Q14.1)")
+      mostrar_grafico(fig_esferas, "Esferas de recursos públicos")
     else:
       st.info("Sem dados de desdobramento da Q14 na amostra filtrada.")
 
@@ -328,13 +330,13 @@ with tab_economia:
     if not serie_modalidade.empty and int(serie_modalidade.sum()) > 0:
       fig_modalidade = grafico_barras_series(
         serie_modalidade.sort_values(ascending=False),
-        "Tipo de financiamento (Q15)",
+        "Tipo de financiamento",
         cor=PALETA_CORES["principais"][1],
         horizontal=False,
         altura=360,
       )
       fig_modalidade = _aplicar_padrao_labels_barra_vertical(fig_modalidade, largura=16)
-      mostrar_grafico(fig_modalidade, "Tipo de financiamento (Q15)")
+      mostrar_grafico(fig_modalidade, "Tipo de financiamento")
     else:
       st.info("Sem dados de modalidade de financiamento na amostra filtrada.")
 
@@ -344,7 +346,7 @@ with tab_economia:
       serie_privados_plot, labels_privados = _encurtar_serie_para_barra(serie_privados, limite=30)
       fig_privados = grafico_barras_series(
         serie_privados_plot,
-        "Fontes de recursos financeiros privados (Q15.1)",
+        "Fontes de recursos financeiros privados",
         cor=PALETA_CORES["principais"][2],
         horizontal=True,
         altura=430,
@@ -353,7 +355,7 @@ with tab_economia:
         customdata=labels_privados,
         hovertemplate="%{customdata}<br>Frequência: %{x}<extra></extra>",
       )
-      mostrar_grafico(fig_privados, "Fontes de recursos financeiros privados (Q15.1)")
+      mostrar_grafico(fig_privados, "Fontes de recursos financeiros privados")
     else:
       st.info("Sem dados de fontes privadas na amostra filtrada.")
 
@@ -361,16 +363,17 @@ with tab_economia:
     if not serie_publico_detalhe.empty and int(serie_publico_detalhe.sum()) > 0:
       fig_det_pub = grafico_barras_series(
         serie_publico_detalhe.tail(10),
-        "Top 10 Instrumentos públicos mais acessados (Q14.1)",
+        "Top 10 Instrumentos públicos mais acessados",
         cor=PALETA_CORES["secundarias"][2],
         horizontal=True,
         altura=430,
       )
-      mostrar_grafico(fig_det_pub, "Top 10 Instrumentos públicos mais acessados (Q14.1)")
+      mostrar_grafico(fig_det_pub, "Top 10 Instrumentos públicos mais acessados")
     else:
       st.info("Sem dados detalhados de instrumentos públicos na amostra filtrada.")
 
 with tab_dificuldades:
+  definir_aba_relatorio("Dificuldades e estratégias financeiras dos Pontos de Cultura")
   col_q17 = encontrar_coluna(
     df.columns,
     "17. O Ponto de Cultura mobilizou recursos não-monetários de colaboração e solidariedade nos últimos 24 meses?",
@@ -400,12 +403,12 @@ with tab_dificuldades:
     if not serie_q17.empty and int(serie_q17.sum()) > 0:
       fig_q17 = grafico_donut(
         serie_q17.sort_values(ascending=False),
-        "Mobilização não-monetária (Q17)",
+        "Mobilização não-monetária",
         altura=360,
       )
       fig_q17 = _aplicar_padrao_donut_pagina_a(fig_q17)
       fig_q17 = _aplicar_cores_donut_sim_nao(fig_q17)
-      mostrar_grafico(fig_q17, "Mobilização não-monetária (Q17)")
+      mostrar_grafico(fig_q17, "Mobilização não-monetária")
     else:
       st.info("Sem dados de Q17 na amostra filtrada.")
 
@@ -413,12 +416,12 @@ with tab_dificuldades:
     if not serie_q18.empty and int(serie_q18.sum()) > 0:
       fig_q18 = grafico_donut(
         serie_q18.sort_values(ascending=False),
-        "Acesso a crédito (Q18)",
+        "Acesso a crédito",
         altura=360,
       )
       fig_q18 = _aplicar_padrao_donut_pagina_a(fig_q18)
       fig_q18 = _aplicar_cores_donut_sim_nao(fig_q18)
-      mostrar_grafico(fig_q18, "Acesso a crédito (Q18)")
+      mostrar_grafico(fig_q18, "Acesso a crédito")
     else:
       st.info("Sem dados de Q18 na amostra filtrada.")
 
@@ -427,7 +430,7 @@ with tab_dificuldades:
       serie_q17_plot, labels_q17 = _encurtar_serie_para_barra(serie_q17_detalhe, limite=20)
       fig_q17_detalhe = grafico_barras_series(
         serie_q17_plot,
-        "Tipos de recursos não-monetários mobilizados (Q17.1)",
+        "Tipos de recursos não-monetários mobilizados",
         cor=PALETA_CORES["secundarias"][0],
         horizontal=True,
         altura=360,
@@ -440,7 +443,7 @@ with tab_dificuldades:
       fig_q17_detalhe.update_xaxes(range=[0, max_q17 * 1.15])
       fig_q17_detalhe.update_layout(margin=dict(l=10, r=40, t=58, b=24))
       fig_q17_detalhe.update_yaxes(tickfont=dict(size=10), automargin=True)
-      mostrar_grafico(fig_q17_detalhe, "Tipos de recursos não-monetários mobilizados (Q17.1)")
+      mostrar_grafico(fig_q17_detalhe, "Tipos de recursos não-monetários mobilizados")
     else:
       st.info("Sem dados de desdobramento da Q17 na amostra filtrada.")
 
@@ -469,7 +472,7 @@ with tab_dificuldades:
       )
       fig_q19.update_xaxes(title="", tickangle=45, automargin=True, tickfont=dict(size=10))
       fig_q19.update_yaxes(title="")
-      mostrar_grafico(fig_q19, "Receita anual dos Pontos de Cultura em 2024 (Q19)")
+      mostrar_grafico(fig_q19, "Receita anual dos Pontos de Cultura em 2024")
     else:
       st.info("Sem dados da Q19 na amostra filtrada.")
 
@@ -479,7 +482,7 @@ with tab_dificuldades:
       serie_q16_plot, labels_q16 = _encurtar_serie_para_barra(serie_q16, limite=40)
       fig_q16 = grafico_barras_series(
         serie_q16_plot,
-        "Principais dificuldades para acessar recursos públicos (Q16)",
+        "Principais dificuldades para acessar recursos públicos",
         cor=PALETA_CORES["secundarias"][4],
         horizontal=True,
         altura=430,
@@ -492,7 +495,7 @@ with tab_dificuldades:
       fig_q16.update_xaxes(range=[0, max_q16 * 1.15])
       fig_q16.update_layout(margin=dict(l=12, r=48, t=58, b=24))
       fig_q16.update_yaxes(tickfont=dict(size=10), automargin=True)
-      mostrar_grafico(fig_q16, "Principais dificuldades para acessar recursos públicos (Q16)")
+      mostrar_grafico(fig_q16, "Principais dificuldades para acessar recursos públicos")
     else:
       st.info("Sem dados da Q16 na amostra filtrada.")
 
@@ -501,7 +504,7 @@ with tab_dificuldades:
       serie_q18_plot, labels_q18 = _encurtar_serie_para_barra(serie_q18_motivos, limite=40)
       fig_q18_motivos = grafico_barras_series(
         serie_q18_plot,
-        "Motivos para não acessar crédito (Q18.2)",
+        "Motivos para não acessar crédito",
         cor=PALETA_CORES["secundarias"][2],
         horizontal=True,
         altura=430,
@@ -514,9 +517,13 @@ with tab_dificuldades:
       fig_q18_motivos.update_xaxes(range=[0, max_q18 * 1.15])
       fig_q18_motivos.update_layout(margin=dict(l=12, r=48, t=58, b=24))
       fig_q18_motivos.update_yaxes(tickfont=dict(size=10), automargin=True)
-      mostrar_grafico(fig_q18_motivos, "Motivos para não acessar crédito (Q18.2)")
+      mostrar_grafico(fig_q18_motivos, "Motivos para não acessar crédito")
     else:
       st.info("Sem dados de motivos da Q18.2 na amostra filtrada.")
+
+
+
+
 
 
 

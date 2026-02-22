@@ -39,6 +39,36 @@ ESTADO_NOME_PARA_SIGLA = {
     'sergipe': 'SE', 'tocantins': 'TO'
 }
 
+SIGLA_PARA_ESTADO_NOME = {
+    'AC': 'Acre',
+    'AL': 'Alagoas',
+    'AP': 'Amapa',
+    'AM': 'Amazonas',
+    'BA': 'Bahia',
+    'CE': 'Ceara',
+    'DF': 'Distrito Federal',
+    'ES': 'Espirito Santo',
+    'GO': 'Goias',
+    'MA': 'Maranhao',
+    'MT': 'Mato Grosso',
+    'MS': 'Mato Grosso do Sul',
+    'MG': 'Minas Gerais',
+    'PA': 'Para',
+    'PB': 'Paraiba',
+    'PR': 'Parana',
+    'PE': 'Pernambuco',
+    'PI': 'Piaui',
+    'RJ': 'Rio de Janeiro',
+    'RN': 'Rio Grande do Norte',
+    'RS': 'Rio Grande do Sul',
+    'RO': 'Rondonia',
+    'RR': 'Roraima',
+    'SC': 'Santa Catarina',
+    'SP': 'Sao Paulo',
+    'SE': 'Sergipe',
+    'TO': 'Tocantins',
+}
+
 ORDEM_FAIXA_POPULACIONAL = [
     'Até 5.000 habitantes',
     '5.001 a 10.000 habitantes',
@@ -66,7 +96,7 @@ FAIXAS_RECEITA = [
 # ---------------------------------------------------------------------------
 # Tipografia Global (Sans-Serif padronizada)
 # ---------------------------------------------------------------------------
-FONTE_FAMILIA = "Inter, Arial, Helvetica, sans-serif"
+FONTE_FAMILIA = "'instrument-sans', Arial, Helvetica, sans-serif"
 
 FONTE_TAMANHOS = {
     'titulo': 18,       # título do gráfico

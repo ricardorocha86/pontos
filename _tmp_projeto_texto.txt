@@ -1,0 +1,455 @@
+ DIAGNÓSTICO ECONÔMICO DA CUL TURA VIV A 
+ Projeto de Pesquisa - TED UFBA 
+ O  Consórcio  Universitário  Cultura  Viva  integra  três  universidades  federais  -  Universidade  Federal 
+ da  Bahia  (UFBA),  Universidade  Federal  Fluminense  (UFF)  e  Universidade  Federal  do  Paraná 
+ (UFPR)  -,  em  parceria  com  a  Secretaria  de  Cidadania  e  Diversidade  Cultural  do  Ministério  da 
+ Cultura  (SCDC-MinC),  para  a  realização  de  pesquisa  aplicada  e  processos  formativos  no  âmbito 
+ da Política Nacional de Cultura Viva (PNCV). 
+ Organi  zado  em  duas  frentes,  pesquisa  e  formação,  a  parceria  vislumbrou  a  realização  em  2024 
+ do  Encontro  de  Comemoração  dos  20  anos  de  Cultura  Viva  e  do  Encontr  o  de  Pesquisa  sobre  a 
+ Cultura  Viva,  além  de  publicações  com  dados  das  pesquisas  em  andamento,  como  a  distribuição 
+ de  recursos  da  Política  Nacional  Aldir  Blanc  de  Fomento  à  Cultura  (PNAB)  (  BoletimVivo#1  )  e  a 
+ análise  do  Edital  dos  Pontões  de  Cultura  (Edital  nº  9/2023)  (  BoletimVivo#2  ).  No  que  diz  respeito 
+ à  frente  de  formação,  foram  realizados  encontros  de  formação  compartilhada  com  os  Pontões  de 
+ Cultura  voltados  ao  mapeamento  e  diagnóstico  da  Rede  Cultura  Viva.  A  ação  formadora  é 
+ destinada  aos  gestores  públicos  municipais  para  orientações  sobre  a  implementação  da  PNCV 
+ via  PNAB  e  a  série  Podcast  Cultura  é  Viva 
+ (  https://open.spotify.com/show/73hXAIbEpGvTwCI61kwZKm?si=Y_WDsEzRSWyNsTVDOSowK 
+ A  ) destinada para Agentes Cultura Viva. 
+ Em  2025,  no  âmbito  dessa  ação  de  cooperação,  a  Universidade  Federal  da  Bahia  tem  prevista  a 
+ realização  do  Diagnóstico  da  Dimensão  Econômica  da  Rede  Cultura  Viva.  Esta  proposta  integra 
+ as  frentes  de  pesquisa  e  de  formação  Cultura  Viva  (UFBA-UFF-UFPR).  O  objetivo  desta 
+ pesquisa  é  obter  dados  da  situação  econômica  atual  dos  Pontos  e  Pontões  de  Cultura  e 
+ subsidiar  a  implementação  da  PNCV  com  informações  para  o  desenvolvimento  de  ação 
+ governamental voltada à geração de renda dos pontos de cultura. 
+ Histórico 
+ Ao  longo  dos  20  anos  de  Cultura  Viva,  os  Pontos  de  Cultura  enfrentaram  desafios  para  acessar 
+ recursos  e  fomentar  seus  projetos  de  maneira  contínua  e  regular.  A  sazonalidade  dos  editas  e  a 
+ descontinuidade  das  políticas  culturais,  somadas  à  insuficiência  de  incentivo  às  redes  produtivas 
+ e  de  circulação  de  serviços,  produtos  e  bens  entre  os  próprios  Pontos  de  Cultura  faz  com  que 
+ haja  uma  demanda  histórica  por  mais  políticas  públicas  voltadas  à  sustentabilidade  econômica 
+ da  Rede  Cultura  Viva,  especialmente  por  meio  da  economia  solidária,  circular  e  criativa  do 
+ fomento  aos  arranjos  produtivos  locais  que  integrem  diversidade  econômica  e  o 
+ desenvolvimento territorial local. 
+ 1 
+
+
+ Estudos  e  pesquisas  (IPEA,  2010;  Vilutis,  2015;  Freitas,  2020),  além  das  próprias  manifestações 
+ dos  Pontos  de  Cultura,  têm  apontado  que  os  modelos  econômicos  tradicionais,  orientados  pela 
+ lógica  de  mercado  e  de  acumulação,  são  insuficientes  para  garantir  autonomia  financeira  e 
+ administrativa  aos  projetos  e  ações  dos  Pontos  de  Cultura.  Neste  sentido,  há  forte  interesse  em 
+ articular  práticas  culturais  a  modelos  da  economia  solidária,  circular  e  criativa  que  valorizem  o 
+ trabalho  associativo  e  cooperativo,  o  compartilhamento  de  recursos,  uma  gest  ão  mais  horizontal 
+ e democrática com formação continuada. 
+ Isso  reforça  a  neces  sidade  de  ações  formativas  e  a  criação  de  mecanismos  de  financiamento 
+ que  incentivem  a  integração  produtiva  dos  Pontos  de  Cultura,  com  apoio  estratégico  à 
+ articulação  em  rede  e  à  criação  de  circuitos  produtivos  e  de  difusão,  permitindo  ganhos 
+ econômicos,  intercâmbios  culturais  e  maior  alcance  das  ações  culturais,  econômicas  e 
+ pedagógicas  conjuntas  da  Rede  Cultura  Viva.  A  criação  de  circuitos  integrados  possibilita  o 
+ encontro  de  saberes,  práticas  e  recursos,  além  de  valorizar  as  potencialidades  econômicas  dos 
+ Pontos e proporcionar uma escala de produção mais sustentável. 
+ Justificativa 
+ A  realização  deste  diagnóstico  econômico  se  justifica  pela  necessidade  premente  de  obter  dados 
+ consistentes  e  atualizados  que  reflitam  a  real  situação  econômica  dos  Pontos  de  Cultura.  O 
+ expressivo  aumento  de  Pontos  de  Cultura  nos  últimos  12  meses  a  partir  do  estímulo 
+ impulsionado  pela  Política  Nacional  Aldir  Blanc  de  Fomento  à  Cultura  (PNAB)  reforça  a 
+ necessidade  de  atualização  do  mapeamento  da  Rede  Cultura  Viva  e  da  identificação  de  suas 
+ potencialidades,  vocações,  desafios  e  fragilidades.  Os  indicadores  previstos  nesta  pesquisa 
+ permitirão  à  SCDC/MinC  formular  ações  de  incentivo  direcionadas  e  eficazes,  capazes  de 
+ atender  às  demandas  reais  da  Rede  Cultura  Viva.  Com  tais  informações,  será  possível  criar 
+ estratégias  de  fortalecimento  econômico,  incentivar  a  geração  de  renda  e  potencializar  a 
+ articulação  em  redes  produtivas  e  solidárias,  contribuindo  para  a  sustentabilidade  dos  Pontos  e  o 
+ fortalecimento da Política Nacional de Cultura Viva em todo o território nacional. 
+ Objetivos Gerais: 
+ (i)  Mapear  e  analisar  a  situação  econômica  atual  dos  Pontos  de  Cultura,  gerando 
+ evidências  e  informações  qualificadas  que  subsidiem  a  elaboração  de  políticas  voltadas  à 
+ sustentabilidade econômica das iniciativas culturais ligadas à Rede Cultura Viva. 
+ (ii)  Identificar  estratégias  sustentáveis  de  geração  de  renda  e  de  fortalecimento  das 
+ iniciativas  culturais  comunitárias,  especialmente  aquelas  baseadas  na  economia 
+ solidária, que permitam orientar incentivos públicos. 
+ 2 
+
+ Objetivos Específicos: 
+ ●  Caracterizar  economicamente  os  Pontos  de  Cultura  quanto  ao  nível  de  formalização; 
+ fontes  e  modelos  de  financiamento;  tipos  de  gestão  financeira  e  administrativa  e  formas 
+ de mobilização de recursos não monetários. 
+ ●  Identificar a escala territorial prioritária de atuação dos Pontos de Cultura (local, 
+ municipal, regional, nacional ou digital) e apontar possíveis influências dessa 
+ abrangência nas estratégias de geração de renda e circulação de bens e serviços 
+ culturais. 
+ ●  Levantar  as  principais  dificuldades  enfrentadas  pelos  Pontos  no  acesso  a  recursos 
+ financeiros e analisar sua inserção em circuitos econômicos, comerciais e solidários. 
+ ●  Mapear a distribuição da receita anual dos Pontos de Cultura por faixas de rendimento, 
+ produzindo evidências descritivas que possam orientar futuras estratégias de apoio. 
+ ●  Estimar o grau de gratuidade ou cobrança das atividades culturais dos Pontos de Cultura 
+ e registrar tendências iniciais sobre sua relação com a sustentabilidade financeira. 
+ ●  Mensurar  a  distribuição  percentual  dos  trabalhadores  e  trabalhadoras  dos  Pontos  de 
+ Cultura  segundo  os  diferentes  tipos  de  vínculo  (empregados CLT;  prestadores MEI; 
+ Prestadores  PJ  e  PF;  bolsistas;  voluntários), para  compreender  a  participação  relativa  de 
+ cada categoria na execução das atividades do Ponto. 
+ ●  Identificar  estratégias  de  geração  de  renda  e  inserção  econômica  dos  Pontos  de  Cultura, 
+ considerando  seus  diferentes  modelos  de  comercialização  de  produtos  e  serviços, 
+ parcerias e práticas solidárias. 
+ ●  Identificar  práticas  culturais,  espirituais,  ancestrais  ou  produtivas  com  impacto  econômico 
+ nos  territórios,  desenvolvidas  por  comunidades  tradicionais,  povos  indígenas, 
+ quilombolas e terreiros. 
+ ●  Analisar  a  infraestrutura  disponível  nos  Pontos  de  Cultura,  destacando  as  demandas 
+ específicas  para  sua  ampliação  ou  aprimoramento  visando  a  sustentabilidade  e  as 
+ oportunidades de democratização do acesso à cultura nas comunidades. 
+ ●  Levantar  informações  sobre  a  adoção  de  práticas  de  gestão  contábil  e  planejamento 
+ econômico ‑ financeiro  pelos  Pontos  de  Cultura,  incluindo  assessoria  contábil  e  análises 
+ de viabilidade econômica. 
+ ●  Avaliar  o  grau  e  as  formas  de  inserção  dos  Pontos  de  Cultura  em  redes  colaborativas  e 
+ circuitos econômicos solidários de produção, circulação ou comercialização. 
+ 3 
+
+ ●  Analisar  as  formas  de  articulação  em  rede,  participação  social  e  integração  institucional 
+ dos  Pontos  de  Cultura,  incluindo  suas  expectativas,  interesses,  ofertas  e  demandas  em 
+ relação à Rede Cultura Viva e outros espaços de participação social. 
+ ●  Identificar  possibilidades  concretas  de  articulação  intersetorial  dos  Pontos  de  Cultura  com 
+ outras  redes  e  políticas  públicas,  visando  potencializar  a  sustentabilidade  econômica  e  o 
+ impacto social dos Pontos de Cultura. 
+ ●  Oferecer  evidências  e  subsídios  objetivos  para  a  Secretaria  de  Cidadania  e  Diversidade 
+ Cultural  (SCDC/MinC)  formular  políticas  e  instrumentos  adequados  à  realidade 
+ econômica  dos  Pontos  de  Cultura,  fortalecendo  a  integração  produtiva  e  a 
+ sustentabilidade dessas iniciativas. 
+ Indicadores 
+ Os  principais  indicadores  que  poderão  ser  obtidos  com  o  preenchimento  do  formulário  pela 
+ amostra prevista são: 
+ Identificação Econômica dos Pontos de Cultura: 
+ -  Proporção  de  Pontos  com  CNPJ  próprio  em  relação  àqueles  organizados  como  coletivos 
+ ou grupos informais (CPF). 
+ -  Distribuição  territorial,  setorial  e  por  linguagens  artísticas  das  atividades  culturais 
+ desenvolvidas pelos Pontos de Cultura. 
+ -  Percentual  de  Pontos  de  Cultura  que  utilizam  plataformas  digitais  para  comercializar 
+ produtos e serviços culturais. 
+ -  Proporção de Pontos segundo a abrangência territorial prioritária de atuação (local, 
+ municipal, regional, nacional, virtual). 
+ Acesso e Mobilização de Recursos Financeiros e Não-Financeiros: 
+ -  Percentual  de  Pontos  de  Cultura  cujo  projeto  de  Cultura  Viva  é  a  principal  fonte  de  renda 
+ da entidade, coletivo ou pessoa proponente. 
+ -  Percentual  de  Pontos  que  acessaram  recursos  públicos  (federais,  estaduais  e 
+ municipais) e recursos privados, nos últimos 24 meses. 
+ -  Principais fontes e tipos de recursos públicos e privados mobilizados. 
+ -  Principais dificuldades enfrentadas pelos Pontos na captação de recursos públicos. 
+ -  Percentual  e  tipos  de  recursos  não  monetários  e  solidários  mobilizados  pelos  Pontos,  tais 
+ como trabalho voluntário, trocas diretas e ações colaborativas. 
+ -  Percentual  de  Pontos  que  acessaram  linhas  de  crédito  (bancárias  ou  comunitárias)  nos 
+ últimos 24 meses, por tipo de linha. 
+ -  Distribuição dos Pontos de Cultura por faixas de receita anual (até R$ 15 mil, 
+ 15.001–50.000, etc.). 
+ Relações com o Mercado, Comercialização e Circuitos Econômicos: 
+ -  Percentual de Pontos que comercializam produtos ou serviços culturais. 
+ -  Principais produtos e serviços culturais comercializados pelos Pontos. 
+ 4 
+
+ -  Destinação dos recursos obtidos com a comercialização. 
+ -  Principais dificuldades encontradas para a comercialização dos produtos e serviços. 
+ -  Percentual  de  Pontos  de  Cultura  inseridos  em  circuitos,  redes  e  mercados  de  economia 
+ solidária. 
+ -  Percentual  de  Pontos  de  Cultura  de  matriz  africana,  povos  indígenas,  terreiros  e  outras 
+ comunidades  tradicionais  que  realizam  práticas  culturais,  espirituais  ou  produtivas  com 
+ impacto econômico em seus territórios. 
+ -  Percentual  de  Pontos  cujas  atividades  são  predominantemente  gratuitas,  pagas  ou 
+ mistas. 
+ -  Percentual  de  Pontos  que  adotam  estratégias  comerciais  formais  (feiras,  vendas  diretas, 
+ eventos,  vendas  online,  rodadas  de  negócios,  redes  de  comercialização  e/ou  consumo, 
+ etc.). 
+ Infraestrutura e Gestão Operacional: 
+ -  Infraestrutura  disponível  e  compartilhada  com  a  comunidade  (equipamentos,  espaços 
+ físicos, recursos e ferramentas digitais). 
+ -  Principais serviços culturais e sociais prestados pelos Pontos às comunidades locais. 
+ -  Quantidade média de trabalhadores e tipo de vínculo trabalhista ou voluntário. 
+ -  Percentual  de  pessoas  atuantes  nos  Pontos  de  Cultura  para  as  quais  o  trabalho  no  Ponto 
+ representa mais de 50% de sua renda total. 
+ -  Percentual  de  Pontos  com  ferramentas  de  gestão  financeira,  apoio  contábil  e  análise  de 
+ viabilidade econômica. 
+ Articulação em Rede e Participação Social: 
+ -  Percentual  de  Pontos  integrados  em  redes  e  espaços  institucionais  (municipais, 
+ estaduais e nacionais). 
+ -  Principais  interesses  dos  Pontos  com  a  participação  na  Rede  Cultura  Viva  (formações, 
+ intercâmbios, trocas econômicas, etc.). 
+ -  Serviços  que  os  Pontos  gostariam  de  obter  e  oferecer  à  Rede  Cultura  Viva  (assessorias, 
+ formação, equipamentos, parcerias em projetos, etc.). 
+ Com  base  nestas  informações,  será  possível  desenhar  políticas  públicas  mais  assertivas, 
+ capazes  não  apenas  de  promover  ações  pontuais,  mas  sim  de  consolidar  uma  rede  sustentável, 
+ integrada  à  economia  solidária,  que  promova  autonomia  econômica,  desenvolvimento  territorial  e 
+ fortalecimento  da  diversidade  cultural  brasileira.  A  realização  deste  diagnóstico  se  justifica, 
+ portanto,  pela  necessidade  urgente  de  aprofundar  o  conhecimento  sobre  a  realidade  econômica 
+ dos  Pontos,  permitindo  decisões  públicas  qualificadas,  que  resultem  em  impacto  efetivo  e 
+ duradouro nas comunidades culturais e territórios em que os Pontos de Cultura estão inseridos. 
+ Pesquisa e formação 
+ O  Diagnóstico  proposto  é  concebido  como  um  processo  pedagógico  e  colaborativo,  com 
+ encontros  formativos  sobre  a  dimensão  econômica  da  Cultura  Viva,  com  a  participação  de 
+ Pontões  de  Cultura.  Em  2025,  foram  realizados  três  encontros  online  nos  dias  31  de  janeiro,  7  e 
+ 19  de  fevereiro  nos  quais  estiveram  presentes  Pontões  de  Cultura  estaduais  e  temáticos, 
+ 5 
+
+ representantes  do  MinC/SCDC  e  a  equipe  da  UFBA  do  Consórcio  Cultura  Viva.  Os  encontros 
+ tiveram  o  objetivo  de  debater  estratégias,  ferramentas  e  desafios  do  mapeamento  e  diagnóstico 
+ dos  Pontões  de  Cultura  selecionados  no  Edital  MinC  nº  09/2023,  permitindo  um  diálogo  sobre  a 
+ dimensão econômica dessas iniciativas. 
+ A  intenção  dos  encontros  formativos  foi  contribuir  com  a  execução  da  Meta  2  dos  Pontões  de 
+ Cultura  voltada  ao  mapeamento  e  diagnóstico  de  grupos,  coletivos  e  entidades  culturais  e 
+ construir  a  ferramenta  de  diagnóstico  da  dimensão  econômica  da  Rede  Cultura  Viva  de  forma 
+ dialógica  e  participativa.  Para  tanto,  os  encontros  tiveram  dinâmicas,  programações  e  objetivos 
+ específicos,  como  o  compartilhamento  de  metodologias  de  mapeamento  desenvolvidas  pelos 
+ Pontões;  a  difusão  de  tecnologias  utilizadas  e  as  ferramentas  mobilizadas  no  processo  de 
+ execução  da  Meta  2  e  a  discussão  conceitual,  histórica  e  de  experiências  de  promoção  da 
+ dimensão econômica da Cultura Viva. 
+ O  processo  de  formação  foi  participativo  e  contou  com  a  presença  de  29  Pontões  de  Cultura, 
+ envolvendo  53  participantes,  entre  eles  Coordenadores  de  Pontões  de  Cultura,  Agentes  Cultura 
+ Viva,  Coordenadores  da  Meta  de  Mapeamento  e  Diagnóstico.  Eles  permitiram  conhecer  como  a 
+ expansão  territorial  e  temática  da  Rede  Cultura  Viva  vem  sendo  tecida,  e  refletir  coletivamente 
+ sobre  seus  alcances  e  limites;  contribuindo  para  fortalecer  o  trabalho  em  rede  dos  Pontões  na 
+ execução da Meta 2. 
+ O  primeiro  Encontro  foi  voltado  ao  compartilhamento  das  experiências  de  mapeamento 
+ previstas  e  em  realização  pelos  Pontões  de  Cultura  temáticos  e  estaduais  e  ao  final  do  encontro, 
+ disponibilizamos  o  link  da  primeira  versão  do  formulário  de  diagnóstico  no  Plantaformas 
+ (  https://plantaformas.org/conferences/consorcio-universitario-cultura-viva/f/197/  )  para  consulta 
+ pública. 
+ No  segundo  Encontro,  os  participantes  foram  organizados  em  cinco  grupos  menores  mistos 
+ (pontões  estaduais  e  temáticos  integrados)  para  discutirem  o  formulário  de  diagnóstico  e  após 
+ isso  cada  grupo  apresentou  suas  propostas  e  contribuições.  O  principal  encaminhamento  foi 
+ atender  o  pedido  de  adequação  do  formulário  para  contemplar  a  economia  solidária  e  a 
+ dimensão  social  e  política  dos  Pontos  de  Cultura.  Além  disso,  os  Pontões  sinalizaram  a 
+ importância  de:  ampliação  da  amostra  do  diagnóstico  proposto  para  além  da  rede  de  Pontões  de 
+ Cultura  e  de  seus  comitês  gestores;  unificação  dos  instrumentos  de  coleta  de  dados  do 
+ diagnóstico;  renovação  ou  ampliação  do  prazo  de  vigência  das  parcerias  dos  Pontões  com  o 
+ MinC  e  construção  de  um  banco  de  dados  compartilhado  para  gestão  e  análise  dos  resultados 
+ de todos os mapeamentos e diagnósticos realizados pelos Pontões de Cultura. 
+ O  terceiro  Encontro  atendeu  uma  solicitação  dos  Pontões  de  Cultura  para  ampliar  a  discussão 
+ conceitual  sobre  a  dimensão  econômica  da  Cultura  Viva.  Para  tanto,  Carolina  Freitas 
+ (SCDC/MinC)  e  Luana  Vilutis  (Consórcio  Universitário  Cultura  Viva/UFBA)  fizeram 
+ apresentações  sobre  a  dimensão  econômica  da  Cultura  Viva.  Também  foram  apresentadas 
+ experiências  de  Pontos  de  Cultura  sobre  Economia  Viva  com  os  palestrantes  Ródnei  Lopes  (Ogã 
+ Ródininho)  do  Ponto  de  Cultura  Axé  Afauman  de  Curitiba/PR  que  compartilhou  “Relatos  de 
+ resistência  e  resiliência  na  cultura  de  terreiro”  e  Josiene  Souza,  Conselheira  da  Associação 
+ 6 
+
+ Sociocultural  de  Matarandiba  (ASCOMAT)  da  Ilha  de  Matarandiba  em  Vera  Cruz/BA  que  fez  o 
+ “Relatos da Rede Matarandiba de Economia Solidária e Cultura”. 
+ Após  a  consolidação  deste  Projeto  de  Pesquisa  sobre  a  Dimensão  Econômica  da  Rede  Cultura 
+ Viva,  os  Pontões  de  Cultura  serão  convidados  para  conhecerem  a  versão  reformulada  do 
+ instrumento  de  coleta  de  dados  e  a  proposta  de  campanha  para  preenchimento  do  formulário. 
+ Nessa  ocasião  será  possível  retomar  o  diálogo  iniciado  no  primeiro  Encontro  acerca  das 
+ possíveis  contribuições  dos  Pontões  de  Cultura  e  seus  comitês  gestores  na  consolidação  da 
+ proposta de diagnóstico e na mobilização para o preenchimento do instrumento de pesquisa. 
+ Amostra 
+ Para  o  Diagnóstico  da  dimensão  econômica  da  Rede  de  Pontos  de  Cultura  usamos  a 
+ amostragem  estatística  aleatória.  Esta  metodologia  permite  uma  seleção  imparcial  e 
+ representativa  dos  Pontos  de  Cultura,  garantindo  que  cada  unidade  tenha  uma  chance  igual  de 
+ ser  contemplada.  Isso  assegura  que  os  dados  coletados  sejam  confiáveis  e  possam  refletir  com 
+ precisão  a  realidade  da  Rede.  Além  disso,  a  amostragem  aleatória  ajuda  a  minimizar  vieses  e  a 
+ tornar  os  resultados  do  diagnóstico  mais  robustos,  facilitando  a  tomada  de  decisões  informadas 
+ e eficazes para o desenvolvimento e aprimoramento das políticas culturais. 
+ Usamos  como  base  de  dados  as  informações  do  Mapas  da  Cultura  do  dia  25  de  fevereiro  de 
+ 2025,  que  contabiliza  6939  Pontos  de  Cultura  incluindo  Coletivos  sem  CNPJ  e  Entidades  com 
+ CNPJ. Como podemos verificar na figura abaixo: 
+ Figura 1:  Print da tela do Mapa da Cultura Viva no  dia 25/02/2025 
+ Fonte: Mapa da Cultura Viva. 
+ 7 
+
+
+ No  cálculo  do  tamanho  da  amostra  de  Pontos  de  Cultura  1  ,  o  nível  de  confiança  é  de  95%  e  a 
+ margem  de  erro,  5%.  Em  termos  práticos,  isso  significa  que  podemos  afirmar  com  alto  grau  de 
+ segurança  que  os  resultados  da  pesquisa  representam  adequadamente  as  características  do 
+ conjunto  dos  Pontos  de  Cultura.  Especificamente,  um  nível  de  confiança  de  95%  indica  que, 
+ caso  repetíssemos  o  processo  de  amostragem  inúmeras  vezes,  95%  das  amostras  resultariam 
+ em  estimativas  que  representariam  a  verdadeira  média  da  população  (Pontos  de  Cultura).  Por 
+ sua  vez,  a  margem  de  erro  de  5%  implica  que  a  diferença  entre  a  média  da  amostra  e  a  média 
+ real  da  Rede  Cultura  Viva  não  excederá  5%,  para  mais  ou  para  menos.  Esses  parâmetros 
+ garantem,  portanto,  maior  precisão  e  credibilidade  aos  dados  coletados,  proporcionando  uma 
+ base consistente para a análise e tomada de decisões estratégicas. 
+ Calculamos  três  tipos  de  amostra:  nacional,  regional  e  estadual,  todas  com  mesmo  grau  de 
+ confiabilidade de dados, para a decisão do que será mais viável. 
+ A  amostra  NACIONAL  de  364  Pontos  de  Cultura  torna-se  viável  para  ser  alcançada  em  um  curto 
+ espaço  de  tempo  e  pode  ser  obtida  a  partir  de  uma  mobilização  do  Consórcio  Universitário 
+ Cultura  Viva.  Contudo,  o  panorama  geral  da  Rede  Cultura  Viva  que  ela  apresenta  é 
+ excessivamente  generalizante  e  não  reflete  completamente  as  especificidades  regionais  ou 
+ locais da Rede Cultura Viva. 
+ A  amostra  POR  REGIÃO  totaliza  1.173  Pontos  de  Cultura  e  sua  distribuição  foi  planejada  para 
+ refletir  de  maneira  mais  abrangente  os  aspectos  regionais  da  Rede  Cultura  Viva  e  as 
+ especificidades de cada Unidade Federativa (UF). 
+ A  amostra  por  Unidade  Federativa  engloba  3424  Pontos  de  Cultura  e  apresenta  maior 
+ profundidade  ao  oferecer  um  panorama  para  cada  UF.  Contudo,  a  amostra  torna-se  inviável  em 
+ relação  ao  tempo  disponível  e  à  quantidade  de  Pontos  de  Cultura  em  alguns  estados  mais 
+ populosos.  Embora  a  amostra  por  UF  seja  uma  opção  rica  para  analisar  particularidades 
+ estaduais, sua execução requer planejamento robusto, tempo e recursos significativos. 
+ Considerando  o  desafio  de  mobilização  dos  Pontos  de  Cultura  para  o  preenchimento  do 
+ formulário,  optamos  pela  amostragem  regional  por  ela  combinar  dois  aspectos  chaves  para  o 
+ alcance da meta amostral: viabilidade e representatividade. 
+ AMOSTRA POR REGIÃO 
+ Com  o  intuito  de  permitir  uma  análise  mais  direcionada  e  sensível  às  particularidades  regionais, 
+ cada  amostra  regional  foi  subdividida  em  amostras  por  UFs.  Para  tanto,  somamos  o  total  de 
+ Pontos  de  Cultura  das  Unidades  Federativas  de  cada  Região  do  Brasil,  logo  após  submetemos 
+ ao cálculo amostral estatístico que resultou nas quantidades da coluna C, da tabela abaixo: 
+ 1  Utilizamos a calculadora de amostra Qualtrics: 
+ https://www.qualtrics.com/pt-br/gestao-de-experiencia/pesquisa-de-mercado/determine-sample-size/ 
+ 8 
+
+ Amostra de Pontos de Cultura por Região com base no cadastro no Mapas da Cultura do dia 
+ 25/02/2025 
+ REGIÃO  TOTAL  AMOSTRA 
+ NORTE  481  214 
+ NORDESTE  2.228  328 
+ CENTRO OESTE  445  207 
+ SUDESTE  3.039  170 
+ SUL  746  254 
+ 1.173 
+ O cálculo dessa subdivisão por UF foi realizado da seguinte maneira: 
+ 1º  passo:  Dividimos  o  total  de  Pontos  de  Cultura  das  UFs  pelo  total  da  Região,  depois 
+ multiplicamos por cem e encontramos o percentual da UF: 
+ Exemplo: Acre (39/481=0,081*100=8,11%) 
+ 2º  passo:  Multiplicamos  o  percentual  da  UF  pela  amostra  total  da  região  para  obter  a  amostra 
+ proporcional de Pontos por UF: 
+ Exemplo: Acre (8,11%*214=17,35), arredondando fica 17. 
+ REGIÃO  UF  TOTAL DE PONTOS  PERCENTUAL  AMOSTRA 
+ NORTE  ACRE  39  8,11%  17 
+ AMAZONAS  103  21,41%  46 
+ AMAPÁ  35  7,28%  16 
+ PARÁ  180  37,42%  80 
+ RONDÔNIA  48  9,98%  21 
+ RORAIMA  26  5,41%  12 
+ TOCANTINS  50  10,40%  22 
+ 481  214 
+ REGIÃO  UF  TOTAL DE PONTOS  PERCENTUAL  AMOSTRA 
+ NORDESTE  ALAGOAS  107  4,80%  16 
+ BAHIA  631  28,32%  93 
+ CEARÁ  381  17,10%  56 
+ MARANHÃO  266  11,94%  39 
+ PARAÍBA  141  6,33%  21 
+ 9 
+
+ PERNAMBUCO  348  15,62%  51 
+ PIAUÍ  164  7,36%  24 
+ RIO GRANDE DO 
+ NORTE  128  5,75%  19 
+ SERGIPE  62  2,78%  9 
+ 2228  328 
+ REGIÃO  UF  TOTAL DE PONTOS  PERCENTUAL  AMOSTRA 
+ CENTRO 
+ OESTE  DISTRITO FEDERAL  112  25,17%  52 
+ GOIÁS  147  33,03%  68 
+ MATO GROSSO DO SUL  67  15,06%  31 
+ MATO GROSSO  119  26,74%  55 
+ 445  207 
+ REGIÃO  UF  TOTAL DE PONTOS  PERCENTUAL  AMOSTRA 
+ SUDESTE  ESPÍRITO SANTO  124  4,08%  7 
+ MINAS GERAIS  786  25,86%  44 
+ RIO DE JANEIRO  740  24,35%  41 
+ SÃO PAULO  1389  45,71%  78 
+ 3039  170 
+ REGIÃO  UF  TOTAL DE PONTOS  PERCENTUAL  AMOSTRA 
+ SUL  PARANÁ  193  25,87%  66 
+ RIO GRANDE DO SUL  353  47,32%  120 
+ SANTA CATARINA  200  26,81%  68 
+ 746  254 
+ O  princípio  que  orienta  essa  lógica  baseia-se  na  estatística  amostral,  segundo  a  qual  populações 
+ com  menor  número  de  indivíduos  demandam  uma  cobertura  mais  ampla  para  reduzir  o  risco  de 
+ omitir  traços  singulares  ou  padrões  significativos.  Já  nas  populações  mais  numerosas,  a 
+ diversidade  interna  costuma  ser  suficientemente  representada  mesmo  quando  a  amostragem  é 
+ proporcionalmente  menor.  Por  isso,  o  tamanho  da  amostra  é  calibrado  de  acordo  com  as 
+ especificidades e exigências metodológicas de cada universo investigado. 
+ 10 
+
+ Nas  etapas  de  definição  da  amostra,  é  fundamental  considerar  que,  quanto  menor  for  a 
+ população,  maior  será  a  proporção  de  indivíduos  que  precisa  ser  incluída.  Isso  se  deve  ao  fato 
+ de  que,  em  grupos  reduzidos,  cada  participante  exerce  um  peso  mais  expressivo  nas  médias  e 
+ nos  comportamentos  observados,  o  que  aumenta  a  necessidade  de  captar  a  variabilidade 
+ existente.  Essa  atenção  ao  desenho  amostral  é  essencial  para  garantir  a  representatividade  dos 
+ dados e assegurar a inclusão de dimensões relevantes na análise. 
+ A  amostra  POR  REGIÃO  reúne  1.173  Pontos  de  Cultura  e,  apesar  de  conseguir  abordar  mais 
+ amplamente  os  aspectos  regionais  e  ter  uma  subdivisão  viável  por  UF,  sua  execução  demanda 
+ mais  tempo  e  maior  esforço  logístico  e  estratégico  do  que  na  amostra  nacional  para  engajar 
+ todos  os  Pontos  de  Cultura  de  maneira  eficiente.  Sua  mobilização  requer  uma  Campanha  de 
+ Preenchimento  do  Diagnóstico  Econômico,  para  a  qual  o  apoio  de  mobilização  da  SCDC  se 
+ torna muito importante. 
+ MOBILIZAÇÃO PARA PREENCHIMENTO 
+ O  Consórcio  Universitário  Cultura  Viva,  em  parceria  com  a  SCDC/MinC,  elaborará  uma 
+ campanha  de  mobilização  para  o  preenchimento  do  formulário  do  Diagnóstico  da  Dimensão 
+ Econômica  da  Rede  Cultura  Viva.  Recomenda-se,  ainda,  a  articulação  com  o  Fórum  Nacional  de 
+ Secretários  e  Dirigentes  Estaduais  de  Cultura,  visando  um  esforço  conjunto  de  divulgação  e 
+ engajamento, dado o caráter estratégico das informações que serão geradas por esta pesquisa. 
+ A  fim  de  ampliar  o  alcance  e  garantir  uma  participação  qualificada,  foi  elaborado  um  conjunto  de 
+ estratégias  que  compõem  a  campanha  de  mobilização.  A  proposta  busca  fortalecer  o 
+ engajamento  da  Rede  Cultura  Viva,  promovendo  uma  comunicação  horizontal,  sensível  às 
+ especificidades  territoriais  e  à  diversidade  de  formas  de  organização  cultural  presentes  nos 
+ Pontos e Pontões de Cultura. 
+ A  campanha  parte  do  pressuposto  de  que  a  produção  cultural  movimentada  pelos  Pontos  de 
+ Cultura  integra  uma  economia  que  vai  além  dos  indicadores  tradicionais,  como  o  Produto  Interno 
+ Bruto  (PIB)  e  as  indústrias  criativas  convencionais.  Trata-se  de  uma  economia  de  base 
+ comunitária,  enraizada  nos  territórios  e  modos  de  vida,  que  se  manifesta  nos  terreiros, 
+ comunidades  indígenas,  ribeirinhas,  quilombolas  e  nas  periferias  urbanas.  Seu  valor  reside  na 
+ capacidade  de  gerar  relações  de  confiança,  fortalecer  o  pertencimento  e  preservar  os  bens 
+ comuns — ambientais, culturais e simbólicos. 
+ A  campanha  terá  a  hashtag  #MeuPontoMovimenta  para  reforçar  sua  ideia  central  de  que  a 
+ economia  viva  movimenta  muito  para  além  de  valores  monetários.  O  objetivo  da  campanha  é 
+ estimular  o  maior  número  possível  de  respostas  ao  formulário  de  diagnóstico,  fortalecendo  o 
+ reconhecimento  da  dimensão  econômica  da  Cultura  Viva.  Como  objetivo  complementar, 
+ busca-se  mobilizar  os  Pontos  de  Cultura  para  uma  atuação  articulada  no  campo  da  economia 
+ viva,  reforçando  a  relevância  de  sua  produção  simbólica,  política  e  social.  A  ideia  com  essa 
+ hashtag  é  ressaltar  o  protagonismo  dos  pontos  de  cultura,  com  a  premissa  de  que  “sem  os 
+ pontos  não  tem  economia  viva”.  A  campanha  busca  estimular  a  mobilização  através  da  hashtag, 
+ 11 
+
+ questionando:  “seu  ponto  movimenta?  movimenta  o  quê?  como?”.  O  conceito  de  "Economia 
+ Viva",  que  já  é  conhecido  pela  Rede,  será  retomado  na  pergunta  central  da  campanha:  “Qual  o 
+ tamanho da Economia Viva no Brasil?”. 
+ Para  isso,  a  linguagem  da  campanha  assume  um  tom  propositivo  e  colaborativo,  com 
+ mensagens que convocam a Rede à ação coletiva, como: 
+ ●  “Compartilhe sua realidade econômica com a Rede Cultura Viva.” 
+ ●  “Vamos construir juntos o retrato da Economia Viva no Brasil.” 
+ ●  “Contribua com o mapeamento da Economia Viva e integre o retrato completo da Rede.” 
+ ●  “Mostrar sua realidade é fortalecer a Rede. Vamos juntos?” 
+ Essas  mensagens  têm  como  finalidade  não  apenas  estimular  o  preenchimento  do  diagnóstico, 
+ mas  também  fortalecer  o  senso  de  pertencimento  à  Rede  Cultura  Viva.  Algumas  frases-chave 
+ que compõem as peças da campanha incluem: 
+ ●  “Mostre a força da sua cultura na economia do Brasil.” 
+ ●  “Participar é fortalecer.” 
+ ●  “Rede que se conhece, se fortalece.” 
+ ●  “A sua produção movimenta mais do que você imagina.” 
+ A  campanha  será  realizada  majoritariamente  em  mídias  digitais,  com  ações  distribuídas  nos 
+ seguintes canais: 
+ 1.  Instagram:  Postagens  semanais  com  cards  interativos  e  conteúdos  audiovisuais, 
+ explorando a base já estabelecida de seguidores. 
+ 2.  YouTube: Realização de uma série de encontros, incluindo: 
+ a.  Encontro  com  Pontões  (30/06):  Apresentação  dos  resultados  do  teste  coletivo  do 
+ formulário, da arte da campanha e do cronograma de mobilização. 
+ b.  Encontro  com  Pontões  (16/07):  Espaço  de  tira-dúvidas  e  avaliação  da  estratégia 
+ de mobilização em andamento. 
+ c.  Encontros  regionais  de  mobilização  (21  à  30/07):  Momentos  de  escuta  e 
+ articulação  com  os  Pontos  de  Cultura  organizados  por  região  (Sudeste,  Nordeste, 
+ Norte, Sul e Centro-Oeste). 
+ d.  Encontros  periódicos  com  os  Pontões  (ao  longo  das  fases  do  diagnóstico): 
+ Transmissões  para  apresentação  de  resultados  parciais,  avaliação  de  estratégias 
+ e construção coletiva do processo. 
+ 3.  E-mail  e  WhatsApp:  Envio  de  mensagens  regulares  com  conteúdos  informativos, 
+ orientações  sobre  o  preenchimento  do  formulário  e  estabelecimento  de  canais  de 
+ resposta para acolhimento de dúvidas e incentivo à participação. 
+ 4.  Mídias  especializadas:  Inserções  e  divulgação  em  canais  como  a  TV  Brasil  e  rádios 
+ comunitárias para fortalecer a visibilidade da ação junto aos territórios. 
+ Também  está  prevista  a  colaboração  direta  com  o  Ministério  da  Cultura  (MinC),  considerando 
+ sua  capilaridade  comunicacional.  Com  mais  de  1,4  milhão  de  seguidores  em  suas  redes,  o  MinC 
+ 12 
+
+ será  parceiro  estratégico  na  ampliação  do  alcance  das  peças  da  campanha.  Para  tanto,  será 
+ necessário o agendamento de reuniões de alinhamento entre as equipes envolvidas. 
+ Entre  os  conteúdos  centrais  da  campanha  está  a  série  de  depoimentos  intitulada 
+ #MeuPontoMovimenta  porque...,  que  convida  os  próprios  Pontos  de  Cultura  a  narrarem  como 
+ suas  ações  movimentam  territórios  e  economias.  Esses  relatos  serão  compartilhados  como 
+ estímulo à adesão ao diagnóstico, promovendo o reconhecimento das potências locais da Rede. 
+ O  cronograma  de  ações  estará  alinhado  à  produção  e  circulação  dos  conteúdos,  com  um 
+ planejamento  detalhado  das  primeiras  semanas  organizado  na  planilha  de  Cronograma 
+ #MeuPontoMovimenta,  que  servirá  como  referência  para  execução  e  monitoramento  da 
+ campanha. 
+ Além  da  campanha  nacional,  a  equipe  da  UFBA,  integrante  do  Consórcio,  realizará  o  contato 
+ direto  com  Pontos  de  Cultura  de  todos  os  Estados,  com  o  objetivo  de  apresentar  o  Diagnóstico 
+ Econômico,  orientar  o  preenchimento  do  formulário  e  esclarecer  dúvidas.  Esses  contatos  serão 
+ realizados por e-mail, telefone e redes sociais. 
+ Também  serão  acionados  os  Pontões  de  Cultura,  tanto  para  o  preenchimento  do  formulário 
+ quanto  para  apoiar  a  mobilização  de  seus  respectivos  Comitês  Gestores.  Outras  estratégias  de 
+ engajamento  poderão  ser  implementadas  conforme  as  necessidades  identificadas  ao  longo  do 
+ processo. 
+ 13 
+

@@ -1,0 +1,23 @@
+Submission ID
+id_para_merge
+Respondent ID
+Submitted at
+1. Nome do Ponto ou Pontão de Cultura:
+2. Nome da Instituição Proponente do Ponto de Cultura:
+4. 1. Em qual CEP o Ponto/Pontão de Cultura está localizado?
+Nome:
+Telefone com DDD:
+Email:
+7. 1. Informe o CPF:
+7. 1. Informe o CNPJ:
+Concepção e Criação
+Concepção e Criação (Ideação artística, pesquisa cultural e investigação estética.)
+Concepção e Criação (Experimentalismo e inovação cultural.)
+Consumo, Fruição e Participação (Participação social, interação e recepção crítica das ações culturais.)
+16. Identifique até três principais diﬁculdades do Ponto de Cultura para acessar recursos públicos? (Não ter CNPJ)
+16. Identifique até três principais diﬁculdades do Ponto de Cultura para acessar recursos públicos? (Irregularidade no CNPJ)
+23. Identifique até três principais dificuldades do Ponto de Cultura para acessar mercados/comercializar produtos e/ou serviços? (Não ter CNPJ)
+23. Identifique até três principais dificuldades do Ponto de Cultura para acessar mercados/comercializar produtos e/ou serviços? (O CNPJ está irregular)
+cep_corrigido
+id_para_merge_x
+id_para_merge_y

@@ -10,8 +10,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils import preparar_base, aplicar_filtros, para_bool, ACOES_ESTRUTURANTES, encontrar_coluna
 from components import mostrar_grafico, grafico_barras_series, grafico_donut
 from config import PALETA_CORES, FONTE_FAMILIA, FONTE_TAMANHOS
+from relatorio_pagina import definir_aba_relatorio
 
 st.title("B) Atuação Cultural")
+definir_aba_relatorio("Abrangência Territorial e Ações Estruturantes")
+st.markdown(
+    """
+Esta página analisa como os Pontos e Pontões atuam no território e no ecossistema cultural, conectando abrangência de atuação, linguagens artísticas e dimensões de trabalho prioritárias. Ela ajuda a compreender a vocação pedagógica, produtiva e comunitária das iniciativas, além da coexistência de múltiplas frentes de atuação em um mesmo coletivo. O conjunto dos gráficos permite comparar intensidade, diversidade e foco das práticas culturais. Nesta seção, você verá conteúdos associados às questões Q9 a Q12 do formulário.
+"""
+)
 
 df = preparar_base()
 if 'filtros_globais' in st.session_state:
@@ -25,6 +32,7 @@ tab1, tab2, tab3 = st.tabs([
 ])
 
 with tab1:
+    definir_aba_relatorio("Abrangência Territorial e Ações Estruturantes")
     def grafico_abrangencia_empilhado(filtrado):
         dicionario = {
             '9. Municipal': 'Municipal',
@@ -178,6 +186,7 @@ with tab1:
             st.info("Sem dados de ações estruturantes.")
 
 with tab2:
+    definir_aba_relatorio("Linguagens Artísticas e Ecossistema")
     c1, c2 = st.columns([2, 3])
 
     with c1:
@@ -215,7 +224,7 @@ with tab2:
                     cliponaxis=False,
                 )
             )
-            fig_ling.update_layout(height=450)
+            fig_ling.update_layout(height=540)
             fig_ling.update_xaxes(title='')
             fig_ling.update_yaxes(title='')
             mostrar_grafico(fig_ling, "Linguagens artísticas predominantes dos Pontos de Cultura")
@@ -264,7 +273,7 @@ with tab2:
                         cliponaxis=False,
                     )
                 )
-                fig_eco.update_layout(height=450)
+                fig_eco.update_layout(height=540)
                 fig_eco.update_xaxes(title='')
                 fig_eco.update_yaxes(title='')
                 mostrar_grafico(fig_eco, "Dimensões do ecossistema cultural de atuação dos Pontos de Cultura")
@@ -274,6 +283,7 @@ with tab2:
             st.info("Dimensões do ecossistema cultural não encontradas na base.")
 
 with tab3:
+    definir_aba_relatorio("Detalhamento por Linguagem Artística")
     DICIONARIO_MICRO = {
         'Artes visuais (Pintura)': 'Pintura',
         'Artes visuais (Escultura)': 'Escultura',
@@ -398,5 +408,8 @@ with tab3:
                 st.info('Sem dados para a linguagem selecionada.')
     else:
         st.info('Sem dados suficientes para o detalhamento micro.')
+
+
+
 
 
